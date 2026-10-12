@@ -37,8 +37,9 @@ class DemoSeeder extends Seeder
             $maya->id => ['role' => 'admin'],
             $leo->id => ['role' => 'member'],
             $jo->id => ['role' => 'member'],
-            $clientUser->id => ['role' => 'client', 'client_id' => $client->id],
         ]);
+        // Attached separately: a batch insert needs the same columns on every row.
+        $ws->users()->attach($clientUser->id, ['role' => 'client', 'client_id' => $client->id]);
         foreach ([$owner, $maya, $leo, $jo, $clientUser] as $u) {
             $u->forceFill(['current_workspace_id' => $ws->id])->save();
         }
