@@ -25,7 +25,7 @@ class Workspace extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->withPivot(['role', 'client_id'])->withTimestamps();
+        return $this->belongsToMany(User::class, 'workspace_user')->withPivot(['role', 'client_id'])->withTimestamps();
     }
 
     /** Internal people (everyone except client contacts). */

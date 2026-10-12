@@ -16,7 +16,7 @@ return new class extends Migration
             return;
         }
 
-        (new DemoSeeder)->run();
+        \Illuminate\Support\Facades\DB::transaction(fn () => (new DemoSeeder)->run());
     }
 
     public function down(): void
