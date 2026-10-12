@@ -6,6 +6,8 @@ use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Activity;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\TimeEntry;
+use App\Support\TimeTracker;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -27,8 +29,26 @@ class MyTasks extends Component
     public string $newDue = '';
 
     #[On('task-saved')]
+    #[On('timer-changed')]
     public function onTaskSaved(): void
     {
+    }
+
+    public function startTimer(int $taskId): void
+    {
+        $task = Task::findOrFail($taskId);
+        $this->authorize('update', $task);
+        TimeTracker::start($task, $this->me());
+        $this->dispatch('timer-changed');
+    }
+
+    public function stopTimer(): void
+    {
+        $entry = TimeTracker::stop($this->me());
+        $this->dispatch('timer-changed');
+        if ($entry) {
+            $this->toast('Logged '.TimeEntry::formatShort($entry->duration_seconds).'.');
+        }
     }
 
     public function toggleComplete(int $taskId): void
@@ -93,7 +113,8 @@ class MyTasks extends Component
     {
         $me = $this->me();
         $query = Task::query()->inVisibleProjects($me)->where('assignee_id', $me->id)
-            ->with(['project', 'parent'])->withCount('subtasks');
+            ->with(['project', 'parent'])->withCount('subtasks')
+            ->withSum(['timeEntries as tracked_seconds' => fn ($t) => $t->whereNotNull('ended_at')], 'duration_seconds');
 
         if ($this->show === 'completed') {
             $tasks = $query->whereNotNull('completed_at')->latest('completed_at')->limit(100)->get();
@@ -109,6 +130,11 @@ class MyTasks extends Component
             $this->newProject = (string) $projects->first()->id;
         }
 
-        return view('livewire.my-tasks', ['groups' => $groups, 'projects' => $projects, 'total' => $tasks->count()]);
+        return view('livewire.my-tasks', [
+            'groups' => $groups,
+            'projects' => $projects,
+            'total' => $tasks->count(),
+            'running' => TimeTracker::running($me),
+        ]);
     }
 }

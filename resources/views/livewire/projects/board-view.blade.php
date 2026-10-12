@@ -41,6 +41,7 @@
                             <div class="mt-2.5 flex items-center gap-2 pl-7 text-xs text-ink-500">
                                 <x-avatar :user="$task->assignee" size="xs" />
                                 @if ($task->due_date)<span class="{{ $task->dueClass() }}">{{ $task->dueLabel() }}</span>@endif
+                                <x-task-timer :task="$task" :running="$running" />
                                 <span class="ml-auto flex items-center gap-2">
                                     @if ($task->subtasks_count)<span class="flex items-center gap-0.5"><x-icon name="subtask" class="h-3.5 w-3.5" />{{ $task->completed_subtasks_count }}/{{ $task->subtasks_count }}</span>@endif
                                     @if ($task->comments_count)<span class="flex items-center gap-0.5"><x-icon name="chat" class="h-3.5 w-3.5" />{{ $task->comments_count }}</span>@endif

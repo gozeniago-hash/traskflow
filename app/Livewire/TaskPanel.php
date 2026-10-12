@@ -6,6 +6,8 @@ use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Activity;
 use App\Models\Attachment;
 use App\Models\Task;
+use App\Models\TimeEntry;
+use App\Support\TimeTracker;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
@@ -37,6 +39,11 @@ class TaskPanel extends Component
     public bool $commentForClient = false;
     public array $uploads = [];
 
+    // Manual time entry
+    public string $manualDuration = '';
+    public string $manualDate = '';
+    public string $manualNote = '';
+
     #[On('open-task')]
     public function open(int $id): void
     {
@@ -45,9 +52,16 @@ class TaskPanel extends Component
 
         $this->taskId = $task->id;
         $this->fillFrom($task);
-        $this->reset(['newSubtask', 'comment', 'uploads']);
+        $this->reset(['newSubtask', 'comment', 'uploads', 'manualDuration', 'manualNote']);
+        $this->manualDate = today()->toDateString();
         $this->commentForClient = false;
         $this->resetValidation();
+    }
+
+    #[On('timer-changed')]
+    public function onTimerChanged(): void
+    {
+        // Re-render so totals and the running state stay current.
     }
 
     public function close(): void
@@ -243,6 +257,51 @@ class TaskPanel extends Component
         $this->saved();
     }
 
+    public function startTimer(): void
+    {
+        TimeTracker::start($this->task(), $this->me());
+        $this->dispatch('timer-changed');
+    }
+
+    public function stopTimer(): void
+    {
+        $entry = TimeTracker::stop($this->me());
+        $this->dispatch('timer-changed');
+        if ($entry) {
+            $this->toast('Logged '.TimeEntry::formatShort($entry->duration_seconds).'.');
+        }
+    }
+
+    public function addTime(): void
+    {
+        $task = $this->task();
+        $this->validate([
+            'manualDuration' => ['required', 'string', 'max:20'],
+            'manualDate' => ['required', 'date', 'before_or_equal:today'],
+            'manualNote' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $seconds = TimeEntry::parseDuration($this->manualDuration);
+        if (! $seconds || $seconds > 24 * 3600) {
+            $this->addError('manualDuration', 'Use a format like 1h 30m, 45m or 1.5h (max 24h).');
+
+            return;
+        }
+
+        TimeTracker::addManual($task, $this->me(), $seconds, \Carbon\Carbon::parse($this->manualDate), $this->manualNote ?: null);
+        $this->reset(['manualDuration', 'manualNote']);
+        $this->toast('Added '.TimeEntry::formatShort($seconds).'.');
+        $this->dispatch('timer-changed');
+    }
+
+    public function deleteTimeEntry(int $id): void
+    {
+        $entry = $this->task()->timeEntries()->findOrFail($id);
+        abort_unless($entry->user_id === $this->me()->id || $this->me()->isAdmin(), 403);
+        $entry->delete();
+        $this->dispatch('timer-changed');
+    }
+
     public function requestApproval(): void
     {
         $task = $this->task();
@@ -303,6 +362,9 @@ class TaskPanel extends Component
             'people' => $this->workspace()->members()->orderBy('name')->get(),
             'timeline' => $timeline,
             'canEdit' => $this->me()->can('update', $task),
+            'timeEntries' => $task->timeEntries()->with('user')->latest('started_at')->limit(50)->get(),
+            'trackedTotal' => TimeTracker::totalFor($task),
+            'running' => TimeTracker::running($this->me()),
             'clientUserIds' => $this->workspace()->clientUsers()->pluck('users.id')->map(fn ($id) => (int) $id)->all(),
         ]);
     }

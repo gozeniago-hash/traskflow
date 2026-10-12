@@ -107,6 +107,11 @@ class Project extends Model
         return $this->hasMany(Attachment::class);
     }
 
+    public function timeEntries(): HasMany
+    {
+        return $this->hasMany(TimeEntry::class);
+    }
+
     public function statusUpdates(): HasMany
     {
         return $this->hasMany(StatusUpdate::class)->latest();

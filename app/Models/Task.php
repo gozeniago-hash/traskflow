@@ -89,6 +89,11 @@ class Task extends Model
         return $this->hasMany(Attachment::class)->latest();
     }
 
+    public function timeEntries(): HasMany
+    {
+        return $this->hasMany(TimeEntry::class);
+    }
+
     public function activities(): HasMany
     {
         return $this->hasMany(Activity::class)->oldest();

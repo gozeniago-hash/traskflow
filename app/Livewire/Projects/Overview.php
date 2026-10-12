@@ -5,6 +5,7 @@ namespace App\Livewire\Projects;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\TimeEntry;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -34,6 +35,7 @@ class Overview extends Component
     }
 
     #[On('task-saved')]
+    #[On('timer-changed')]
     public function onTaskSaved(): void
     {
     }
@@ -106,6 +108,9 @@ class Overview extends Component
             'upcoming' => $project->tasks()->whereNull('parent_id')->open()->whereNotNull('due_date')
                 ->orderBy('due_date')->with('assignee')->limit(6)->get(),
             'pendingApprovals' => $project->tasks()->where('approval_status', 'pending')->count(),
+            'timeTotal' => (int) TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')->sum('duration_seconds'),
+            'timeByPerson' => TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')
+                ->selectRaw('user_id, sum(duration_seconds) as seconds')->groupBy('user_id')->orderByDesc('seconds')->with('user')->get(),
             'byAssignee' => Task::query()->where('project_id', $project->id)->whereNull('parent_id')->open()
                 ->selectRaw('assignee_id, count(*) as total')->groupBy('assignee_id')->with('assignee')->get(),
         ]);

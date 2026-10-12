@@ -97,6 +97,7 @@
                 <x-icon name="search" class="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <input name="q" value="{{ request('q') }}" placeholder="Search tasks and projects" class="h-8 w-full rounded-full border border-gray-200 bg-gray-50 pl-8 pr-3 text-sm focus:border-coral-400 focus:bg-white focus:ring-2 focus:ring-coral-100 focus:outline-none">
             </form>
+            <livewire:timer-bar />
             <a href="{{ route('projects.index', ['new' => 1]) }}" wire:navigate class="btn-primary btn hidden sm:inline-flex"><x-icon name="plus" /> Create</a>
         </header>
 

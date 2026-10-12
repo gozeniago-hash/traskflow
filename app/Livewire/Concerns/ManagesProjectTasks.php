@@ -6,6 +6,8 @@ use App\Models\Activity;
 use App\Models\Project;
 use App\Models\Section;
 use App\Models\Task;
+use App\Models\TimeEntry;
+use App\Support\TimeTracker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +29,7 @@ trait ManagesProjectTasks
     public string $sectionName = '';
 
     #[On('task-saved')]
+    #[On('timer-changed')]
     public function onTaskSaved(): void
     {
         // Re-render picks up the change.
@@ -72,6 +75,27 @@ trait ManagesProjectTasks
         $this->ensureCanEdit();
         $this->projectTask($taskId)->toggleComplete($this->me());
         $this->dispatch('task-saved');
+    }
+
+    public function startTimer(int $taskId): void
+    {
+        $this->ensureCanEdit();
+        TimeTracker::start($this->projectTask($taskId), $this->me());
+        $this->dispatch('timer-changed');
+    }
+
+    public function stopTimer(): void
+    {
+        $entry = TimeTracker::stop($this->me());
+        $this->dispatch('timer-changed');
+        if ($entry) {
+            $this->toast('Logged '.TimeEntry::formatShort($entry->duration_seconds).'.');
+        }
+    }
+
+    protected function runningEntry(): ?TimeEntry
+    {
+        return TimeTracker::running($this->me());
     }
 
     /** Called by the Sortable helper with the full new order of a section. */
@@ -172,7 +196,7 @@ trait ManagesProjectTasks
                 'subtasks as completed_subtasks_count' => fn (Builder $s) => $s->whereNotNull('completed_at'),
                 'comments',
                 'attachments',
-            ]);
+            ])->withSum(['timeEntries as tracked_seconds' => fn (Builder $t) => $t->whereNotNull('ended_at')], 'duration_seconds');
 
             match ($this->filter) {
                 // Keep just-completed tasks visible for a few minutes so the click feels right.

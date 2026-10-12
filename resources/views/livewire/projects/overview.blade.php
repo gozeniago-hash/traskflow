@@ -18,12 +18,13 @@
         </section>
 
         {{-- Progress --}}
-        <section class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <section class="grid grid-cols-2 gap-3 sm:grid-cols-3 2xl:grid-cols-5">
             @foreach ([
                 ['Total tasks', $progress['total'], 'text-ink-900'],
                 ['Completed', $progress['completed'], 'text-emerald-600'],
                 ['Overdue', $progress['overdue'], $progress['overdue'] ? 'text-red-600' : 'text-ink-900'],
                 ['Awaiting client', $pendingApprovals, $pendingApprovals ? 'text-violet-600' : 'text-ink-900'],
+                ['Time logged', \App\Models\TimeEntry::formatShort($timeTotal), 'text-ink-900'],
             ] as [$label, $value, $color])
                 <div class="card p-4">
                     <p class="text-xs text-ink-500">{{ $label }}</p>
@@ -128,6 +129,17 @@
                     </button></li>
                 @empty
                     <li class="text-sm text-ink-500">Nothing scheduled.</li>
+                @endforelse
+            </ul>
+        </section>
+
+        <section class="card p-5">
+            <h2 class="mb-3 font-semibold">Time logged by person</h2>
+            <ul class="space-y-2 text-sm">
+                @forelse ($timeByPerson as $row)
+                    <li class="flex items-center gap-2"><x-avatar :user="$row->user" size="xs" /><span class="flex-1 truncate">{{ $row->user?->name ?? 'Former member' }}</span><span class="font-medium tabular-nums">{{ \App\Models\TimeEntry::formatShort((int) $row->seconds) }}</span></li>
+                @empty
+                    <li class="text-ink-500">No time logged yet. Press ▶ on any task to start a timer.</li>
                 @endforelse
             </ul>
         </section>

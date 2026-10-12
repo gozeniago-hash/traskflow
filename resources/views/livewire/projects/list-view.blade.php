@@ -3,7 +3,7 @@
 
     <div class="px-6 pb-10">
         <div class="hidden grid-cols-[minmax(0,1fr)_140px_110px_90px_60px] gap-2 border-b border-gray-200 px-2 pb-2 text-xs font-medium text-ink-500 md:grid">
-            <span class="pl-7">Task name</span><span>Assignee</span><span>Due date</span><span>Priority</span><span class="text-center">Client</span>
+            <span class="pl-7">Task name</span><span>Assignee</span><span>Due date</span><span>Priority</span><span>Time</span><span class="text-center">Client</span>
         </div>
 
         @foreach ($sections as $section)
@@ -34,7 +34,7 @@
                     <div x-data x-init="taskflowSortable($el, $wire)" data-section-id="{{ $section->id }}" data-group="list-{{ $project->id }}" class="min-h-[2px]">
                         @foreach ($section->tasks as $task)
                             <div wire:key="task-{{ $task->id }}" data-task-id="{{ $task->id }}"
-                                 class="group grid cursor-pointer grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-gray-100 px-2 py-2 hover:bg-gray-50 md:grid-cols-[minmax(0,1fr)_140px_110px_90px_60px]"
+                                 class="group grid cursor-pointer grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-gray-100 px-2 py-2 hover:bg-gray-50 md:grid-cols-[minmax(0,1fr)_140px_110px_90px_104px_60px]"
                                  wire:click="$dispatch('open-task', { id: {{ $task->id }} })">
                                 <div class="flex min-w-0 items-center gap-2">
                                     <button wire:click.stop="toggleComplete({{ $task->id }})" class="check {{ $task->isCompleted() ? 'check-done' : '' }}" title="Mark complete"><x-icon name="check" class="h-3 w-3" /></button>
@@ -52,6 +52,7 @@
                                 </div>
                                 <div class="text-sm {{ $task->dueClass() }} md:block">{{ $task->dueLabel() }}</div>
                                 <div class="hidden md:block"><x-priority-pill :priority="$task->priority" /></div>
+                                <div class="hidden md:block"><x-task-timer :task="$task" :running="$running" /></div>
                                 <div class="hidden text-center md:block">
                                     @if ($task->client_visible)<x-icon name="eye" class="mx-auto h-4 w-4 text-emerald-600" title="Visible in client portal" />@endif
                                 </div>

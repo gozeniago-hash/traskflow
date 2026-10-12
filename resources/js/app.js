@@ -39,3 +39,32 @@ window.taskflowSortable = function (el, wire, method = 'reorder') {
         },
     });
 };
+
+/**
+ * Live timer display. `running` ticks every second from `base` seconds;
+ * otherwise it just shows `base`. Server re-renders replace the element (via wire:key),
+ * so the starting value is always fresh.
+ */
+document.addEventListener('alpine:init', () => {
+    window.Alpine.data('tfTimer', (running = false, base = 0) => ({
+        seconds: base,
+        handle: null,
+        init() {
+            if (!running) return;
+            const startedAt = Date.now() - base * 1000;
+            this.handle = setInterval(() => {
+                this.seconds = Math.floor((Date.now() - startedAt) / 1000);
+            }, 1000);
+        },
+        destroy() {
+            clearInterval(this.handle);
+        },
+        get clock() {
+            const s = this.seconds;
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const sec = s % 60;
+            return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        },
+    }));
+});

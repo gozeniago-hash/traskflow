@@ -33,6 +33,7 @@
                                 <span class="block truncate text-sm {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</span>
                                 @if ($task->parent)<span class="block truncate text-xs text-ink-500">↳ {{ $task->parent->title }}</span>@endif
                             </span>
+                            <x-task-timer :task="$task" :running="$running" />
                             <x-priority-pill :priority="$task->priority" class="hidden sm:inline-flex" />
                             <span class="hidden max-w-40 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white sm:inline" style="background-color: {{ $task->project->color }}">{{ $task->project->name }}</span>
                             <span class="w-20 text-right text-xs {{ $task->dueClass() }}">{{ $show === 'completed' ? $task->completed_at->format('M j') : $task->dueLabel() }}</span>

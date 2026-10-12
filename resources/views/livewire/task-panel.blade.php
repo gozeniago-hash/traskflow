@@ -151,6 +151,61 @@
                         @endforeach
                     </div>
                 </div>
+
+                {{-- Time tracking --}}
+                @php($isRunningHere = $running && (int) $running->task_id === (int) $task->id)
+                <div class="mt-5">
+                    <p class="label">Time tracking</p>
+                    <div class="rounded-md border border-gray-200">
+                        <div class="flex flex-wrap items-center gap-3 px-3 py-2.5">
+                            <div wire:key="pt-{{ $task->id }}-{{ $isRunningHere ? 'on' : 'off' }}-{{ $trackedTotal }}" x-data="tfTimer({{ $isRunningHere ? 'true' : 'false' }}, {{ $trackedTotal }})" class="flex items-center gap-2">
+                                <x-icon name="clock" class="h-4 w-4 {{ $isRunningHere ? 'text-coral-500' : 'text-ink-300' }}" />
+                                <span class="text-lg font-semibold tabular-nums {{ $isRunningHere ? 'text-coral-600' : 'text-ink-900' }}" x-text="clock">{{ \App\Models\TimeEntry::formatClock($trackedTotal) }}</span>
+                                <span class="text-xs text-ink-500">total</span>
+                            </div>
+                            @if ($canEdit)
+                                <div class="ml-auto">
+                                    @if ($isRunningHere)
+                                        <button wire:click="stopTimer" class="btn bg-coral-500 text-white hover:bg-coral-600"><x-icon name="stop" class="h-3.5 w-3.5" /> Stop</button>
+                                    @else
+                                        <button wire:click="startTimer" class="btn-secondary btn"><x-icon name="play" class="h-3.5 w-3.5" /> {{ $running ? 'Switch timer here' : 'Start timer' }}</button>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+
+                        @if ($canEdit)
+                            <form wire:submit="addTime" class="flex flex-wrap items-start gap-2 border-t border-gray-100 px-3 py-2.5">
+                                <div>
+                                    <input wire:model="manualDuration" placeholder="1h 30m" class="input input-sm w-24" aria-label="Duration">
+                                </div>
+                                <input type="date" wire:model="manualDate" max="{{ today()->toDateString() }}" class="input input-sm w-36" aria-label="Date">
+                                <input wire:model="manualNote" placeholder="What did you work on? (optional)" class="input input-sm min-w-40 flex-1" aria-label="Note">
+                                <button class="btn-secondary btn py-1 text-xs">Log time</button>
+                                @error('manualDuration')<p class="error w-full">{{ $message }}</p>@enderror
+                                @error('manualDate')<p class="error w-full">{{ $message }}</p>@enderror
+                            </form>
+                        @endif
+
+                        @if ($timeEntries->isNotEmpty())
+                            <ul class="max-h-48 divide-y divide-gray-100 overflow-y-auto border-t border-gray-100">
+                                @foreach ($timeEntries as $e)
+                                    <li wire:key="te-{{ $e->id }}" class="group flex items-center gap-2 px-3 py-1.5 text-sm">
+                                        <x-avatar :user="$e->user" size="xs" />
+                                        <span class="w-16 shrink-0 font-medium tabular-nums">
+                                            @if ($e->isRunning())<span class="text-coral-600">running</span>@else{{ \App\Models\TimeEntry::formatShort($e->duration_seconds) }}@endif
+                                        </span>
+                                        <span class="min-w-0 flex-1 truncate text-ink-500">{{ $e->note ?: ($e->is_manual ? 'Logged manually' : 'Timer') }}</span>
+                                        <span class="shrink-0 text-xs text-ink-500">{{ $e->started_at->format('M j') }}</span>
+                                        @if (! $e->isRunning() && ($e->user_id === auth()->id() || auth()->user()->isAdmin()))
+                                            <button wire:click="deleteTimeEntry({{ $e->id }})" wire:confirm="Delete this time entry?" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                </div>
             </div>
 
             {{-- Activity & comments --}}
