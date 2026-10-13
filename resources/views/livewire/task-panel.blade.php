@@ -198,6 +198,31 @@
                     </div>
                 </div>
 
+                {{-- Pull requests (GitHub) --}}
+                @if ($githubEnabled)
+                    <div class="mt-5">
+                        <div class="mb-1 flex items-center justify-between">
+                            <p class="label mb-0">Pull requests</p>
+                            <button type="button" x-data x-on:click="navigator.clipboard.writeText(@js($task->branchName())); $dispatch('toast', { message: 'Branch name copied' })"
+                                    class="btn-ghost btn py-1 text-xs" title="{{ $task->branchName() }}"><x-icon name="copy" /> Copy branch name</button>
+                        </div>
+                        @forelse ($task->pullRequests as $pr)
+                            @php($st = \App\Models\PullRequest::STATUS_STYLES[$pr->status()])
+                            <a wire:key="pr-{{ $pr->id }}" href="{{ $pr->url }}" target="_blank" rel="noopener"
+                               class="flex items-center gap-2.5 rounded-md border border-gray-200 px-3 py-2 hover:bg-gray-50 [&+&]:mt-1.5">
+                                <x-icon name="git-pull" class="h-4 w-4 {{ $st['icon'] }}" />
+                                <span class="min-w-0 flex-1">
+                                    <span class="block truncate text-sm text-ink-900">{{ $pr->title }} <span class="text-ink-500">#{{ $pr->number }}</span></span>
+                                    <span class="block truncate text-xs text-ink-500">{{ $pr->repository?->full_name }} · {{ $pr->author_login ? '@'.$pr->author_login.' · ' : '' }}updated {{ $pr->gh_updated_at?->diffForHumans() }}</span>
+                                </span>
+                                <span class="pill shrink-0 {{ $st['class'] }}">{{ $st['label'] }}</span>
+                            </a>
+                        @empty
+                            <p class="text-xs text-ink-500">None yet. Mention <span class="font-mono">{{ $task->ticket() }}</span> in a pull request's title or branch name to link it here.</p>
+                        @endforelse
+                    </div>
+                @endif
+
                 {{-- Time tracking --}}
                 @php($isRunningHere = $running && (int) $running->task_id === (int) $task->id)
                 <div class="mt-5">

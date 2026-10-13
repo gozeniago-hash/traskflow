@@ -44,6 +44,7 @@
                                         @if ($task->subtasks_count)<span class="flex items-center gap-0.5" title="Subtasks"><x-icon name="subtask" class="h-3.5 w-3.5" />{{ $task->completed_subtasks_count }}/{{ $task->subtasks_count }}</span>@endif
                                         @if ($task->comments_count)<span class="flex items-center gap-0.5" title="Comments"><x-icon name="chat" class="h-3.5 w-3.5" />{{ $task->comments_count }}</span>@endif
                                         @if ($task->attachments_count)<span class="flex items-center gap-0.5" title="Attachments"><x-icon name="paperclip" class="h-3.5 w-3.5" />{{ $task->attachments_count }}</span>@endif
+                                        @if ($task->pull_requests_count)<span class="flex items-center gap-0.5 {{ $task->open_prs_count ? 'text-emerald-700' : 'text-violet-700' }}" title="{{ $task->pull_requests_count }} pull {{ \Illuminate\Support\Str::plural('request', $task->pull_requests_count) }}{{ $task->open_prs_count ? ', '.$task->open_prs_count.' open' : '' }}"><x-icon name="git-pull" class="h-3.5 w-3.5" />{{ $task->pull_requests_count }}</span>@endif
                                         <x-approval-pill :status="$task->approval_status" />
                                         <x-field-chips :task="$task" :fields="$cardFields" :people="$fieldPeople" />
                                     </span>

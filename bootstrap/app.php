@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // Railway (and most PaaS hosts) terminate HTTPS at a proxy.
         $middleware->trustProxies(at: '*');
+        $middleware->validateCsrfTokens(except: ['github/webhook/*']);
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('dashboard'));
     })

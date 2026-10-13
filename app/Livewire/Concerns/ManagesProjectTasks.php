@@ -213,6 +213,8 @@ trait ManagesProjectTasks
                 'subtasks as completed_subtasks_count' => fn (Builder $s) => $s->whereNotNull('completed_at'),
                 'comments',
                 'attachments',
+                'pullRequests',
+                'pullRequests as open_prs_count' => fn (Builder $p) => $p->where('state', 'open'),
             ])->withSum(['timeEntries as tracked_seconds' => fn (Builder $t) => $t->whereNotNull('ended_at')], 'duration_seconds');
 
             match ($this->filter) {

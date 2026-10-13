@@ -23,6 +23,10 @@ Route::middleware('guest')->group(function () {
 });
 
 // Invitations work whether or not someone is signed in.
+// GitHub calls this; it's authenticated by the per-repository webhook signature, not a session.
+Route::post('/github/webhook/{repository}', \App\Http\Controllers\GitHubWebhookController::class)
+    ->middleware('throttle:120,1')->name('github.webhook');
+
 Route::get('/invitations/{token}', [InvitationController::class, 'show'])->name('invitations.show');
 Route::post('/invitations/{token}', [InvitationController::class, 'accept'])->name('invitations.accept');
 

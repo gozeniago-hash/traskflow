@@ -18,6 +18,18 @@ class Workspace extends Model
 
     protected $fillable = ['name', 'owner_id'];
 
+    protected $hidden = ['github_token'];
+
+    protected function casts(): array
+    {
+        return ['github_token' => 'encrypted'];
+    }
+
+    public function githubRepositories(): HasMany
+    {
+        return $this->hasMany(GithubRepository::class)->orderBy('full_name');
+    }
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');

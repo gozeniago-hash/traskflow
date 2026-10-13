@@ -258,6 +258,44 @@ class AccessTest extends TestCase
             ->assertSee('Appyugo Inc');
     }
 
+    public function test_github_sync_links_pull_requests_to_tickets(): void
+    {
+        $admin = User::where('email', 'admin@taskflow.test')->first();
+        $ws = $admin->currentWorkspace;
+        $web = Project::where('name', 'Brightside Website Redesign')->first();
+        $task = $web->tasks()->whereNull('parent_id')->orderBy('number')->first();
+        $ticket = $task->ticket($web->key);
+
+        $ws->forceFill(['github_token' => 'test-token', 'github_login' => 'octo'])->save();
+        $repo = $ws->githubRepositories()->create(['full_name' => 'acme/site', 'webhook_secret' => 'shh']);
+
+        \Illuminate\Support\Facades\Http::fake([
+            'api.github.com/repos/acme/site/pulls*' => \Illuminate\Support\Facades\Http::response([
+                ['number' => 7, 'title' => $ticket.' Hero section', 'html_url' => 'https://github.com/acme/site/pull/7', 'state' => 'open', 'draft' => false, 'merged_at' => null, 'head' => ['ref' => 'feature'], 'user' => ['login' => 'octo'], 'updated_at' => now()->toIso8601String(), 'body' => ''],
+                ['number' => 8, 'title' => 'Unrelated', 'html_url' => 'https://github.com/acme/site/pull/8', 'state' => 'closed', 'merged_at' => now()->toIso8601String(), 'head' => ['ref' => 'chore'], 'user' => ['login' => 'octo'], 'updated_at' => now()->toIso8601String(), 'body' => null],
+            ]),
+        ]);
+
+        $this->assertSame(2, \App\Support\GitHub::for($ws)->sync($repo));
+        $this->assertSame([7], $task->pullRequests()->pluck('number')->all());
+
+        // A webhook moves the link to another ticket via the branch name; bad signatures are refused.
+        $other = $web->tasks()->whereNull('parent_id')->where('id', '!=', $task->id)->first();
+        $payload = json_encode(['action' => 'edited', 'pull_request' => [
+            'number' => 7, 'title' => 'Hero section', 'html_url' => 'https://github.com/acme/site/pull/7', 'state' => 'closed',
+            'merged_at' => now()->toIso8601String(), 'head' => ['ref' => strtolower($other->ticket($web->key)).'-hero'], 'user' => ['login' => 'octo'], 'updated_at' => now()->toIso8601String(),
+        ]]);
+        $headers = ['X-GitHub-Event' => 'pull_request', 'Content-Type' => 'application/json'];
+
+        $this->call('POST', route('github.webhook', $repo), [], [], [], $this->transformHeadersToServerVars($headers + ['X-Hub-Signature-256' => 'sha256=bad']), $payload)
+            ->assertStatus(401);
+        $this->call('POST', route('github.webhook', $repo), [], [], [], $this->transformHeadersToServerVars($headers + ['X-Hub-Signature-256' => 'sha256='.hash_hmac('sha256', $payload, 'shh')]), $payload)
+            ->assertOk();
+
+        $this->assertSame([], $task->pullRequests()->pluck('number')->all());
+        $this->assertSame('merged', $other->pullRequests()->first()->status());
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);

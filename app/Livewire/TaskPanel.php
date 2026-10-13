@@ -497,7 +497,7 @@ class TaskPanel extends Component
 
         $task->load([
             'project.sections', 'project.fields', 'fieldValues', 'parent', 'assignee', 'creator',
-            'subtasks.assignee', 'ownAttachments.user', 'comments.user', 'comments.attachments.user', 'activities.user',
+            'subtasks.assignee', 'ownAttachments.user', 'comments.user', 'comments.attachments.user', 'activities.user', 'pullRequests.repository',
         ]);
 
         $timeline = $task->comments->map(fn ($c) => ['type' => 'comment', 'at' => $c->created_at, 'item' => $c])
@@ -509,6 +509,7 @@ class TaskPanel extends Component
             'people' => $this->workspace()->members()->orderBy('name')->get(),
             'timeline' => $timeline,
             'canEdit' => $this->me()->can('update', $task),
+            'githubEnabled' => $task->pullRequests->isNotEmpty() || $this->workspace()->githubRepositories()->exists(),
             'timeEntries' => $task->timeEntries()->with('user')->latest('started_at')->limit(50)->get(),
             'trackedTotal' => TimeTracker::totalFor($task),
             'running' => TimeTracker::running($this->me()),

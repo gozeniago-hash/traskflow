@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Task extends Model
@@ -112,6 +113,19 @@ class Task extends Model
     public function fieldValueMap(): array
     {
         return $this->fieldValues->pluck('value', 'field_id')->all();
+    }
+
+    public function pullRequests(): BelongsToMany
+    {
+        return $this->belongsToMany(PullRequest::class)->orderByDesc('gh_updated_at');
+    }
+
+    /** A branch name that links a PR to this task, e.g. bwr-5-visual-design-homepage. */
+    public function branchName(?string $projectKey = null): string
+    {
+        $slug = \Illuminate\Support\Str::of($this->title)->slug()->limit(40, '')->rtrim('-');
+
+        return strtolower($this->ticket($projectKey)).($slug->isNotEmpty() ? '-'.$slug : '');
     }
 
     public function timeEntries(): HasMany
