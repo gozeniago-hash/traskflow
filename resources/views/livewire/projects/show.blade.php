@@ -48,6 +48,7 @@
                     <button x-on:click="open = !open" class="btn-ghost btn px-1.5"><x-icon name="dots" class="h-5 w-5" /></button>
                     <div x-cloak x-show="open" x-on:click.outside="open = false" x-on:click="open = false" class="absolute right-0 z-30 mt-1 w-48 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
                         <button wire:click="openEdit" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Edit project details</button>
+                        <button wire:click="openFields" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Custom fields</button>
                         @if ($canDelete)
                             <button wire:click="archive" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $project->archived_at ? 'Restore project' : 'Archive project' }}</button>
                             <button wire:click="deleteProject" wire:confirm="Permanently delete “{{ $project->name }}” and all of its tasks and files?" class="block w-full rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">Delete project</button>
@@ -151,11 +152,25 @@
                     @endif
                 </div>
 
+                <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 sm:col-span-2">
+                    <div>
+                        <p class="text-sm font-medium">Custom fields</p>
+                        <p class="text-xs text-ink-500">{{ $project->fields()->count() }} configured — extra details your team fills in on each task.</p>
+                    </div>
+                    <button type="button" wire:click="openFields" class="btn-secondary btn">Manage fields</button>
+                </div>
+
                 <div class="flex justify-end gap-2 sm:col-span-2">
                     <button type="button" wire:click="$set('showEdit', false)" class="btn-secondary btn">Cancel</button>
                     <button class="btn-primary btn">Save changes</button>
                 </div>
             </form>
+        </x-modal>
+    @endif
+
+    @if ($showFields)
+        <x-modal title="Custom fields" close="showFields" width="max-w-2xl">
+            <livewire:projects.fields :project="$project" :key="'fields-'.$project->id" />
         </x-modal>
     @endif
 </div>

@@ -17,6 +17,7 @@ class Show extends Component
     public string $view = 'list';
 
     public bool $showEdit = false;
+    public bool $showFields = false;
     public array $form = [];
 
     public function mount(Project $project, ?string $view = null): void
@@ -24,6 +25,13 @@ class Show extends Component
         $this->authorize('view', $project);
         $this->project = $project;
         $this->view = array_key_exists((string) $view, Project::VIEWS) ? $view : ($project->default_view ?: 'list');
+    }
+
+    public function openFields(): void
+    {
+        $this->authorize('update', $this->project);
+        $this->showEdit = false;
+        $this->showFields = true;
     }
 
     public function setStatus(string $status): void

@@ -30,6 +30,7 @@ trait ManagesProjectTasks
 
     #[On('task-saved')]
     #[On('timer-changed')]
+    #[On('fields-updated')]
     public function onTaskSaved(): void
     {
         // Re-render picks up the change.
@@ -91,6 +92,17 @@ trait ManagesProjectTasks
         if ($entry) {
             $this->toast('Logged '.TimeEntry::formatShort($entry->duration_seconds).'.');
         }
+    }
+
+    /** Fields shown on cards/rows, and names for person fields. */
+    protected function cardFields(): array
+    {
+        $fields = $this->project->fields()->where('show_on_card', true)->get();
+
+        return [
+            'cardFields' => $fields,
+            'fieldPeople' => $fields->contains('type', 'person') ? \App\Support\CustomFields::peopleMap($this->project) : [],
+        ];
     }
 
     protected function runningEntry(): ?TimeEntry
@@ -191,7 +203,7 @@ trait ManagesProjectTasks
         $me = $this->me();
 
         $scope = function ($q) use ($me) {
-            $q->with('assignee')->withCount([
+            $q->with(['assignee', 'fieldValues'])->withCount([
                 'subtasks',
                 'subtasks as completed_subtasks_count' => fn (Builder $s) => $s->whereNotNull('completed_at'),
                 'comments',

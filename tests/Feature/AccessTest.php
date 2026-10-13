@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Attachment;
 use App\Models\Project;
+use App\Models\ProjectField;
 use App\Models\ProjectDoc;
 use App\Models\Task;
 use App\Models\User;
@@ -163,5 +164,29 @@ class AccessTest extends TestCase
         // Ticket links resolve to the task.
         $this->actingAs($owner)->get('/t/bwr-'.$next->number)->assertRedirectContains('task='.$next->id);
         $this->actingAs($owner)->get('/t/NOPE-1')->assertNotFound();
+    }
+
+    public function test_custom_fields_validate_and_store_values(): void
+    {
+        $web = Project::where('name', 'Brightside Website Redesign')->first();
+        $type = $web->fields()->where('name', 'Type')->first();
+        $points = $web->fields()->where('name', 'Story points')->first();
+
+        $this->assertNotNull($type);
+        $bug = collect($type->optionList())->firstWhere('label', 'Bug');
+
+        $this->assertSame($bug['id'], $type->normalize($bug['id']));
+        $this->assertSame('Bug', $type->display($bug['id']));
+        $this->assertSame('8', $points->normalize('8'));
+        $this->assertNull($points->normalize(''));
+        $this->assertContains('numeric', $points->rules());
+
+        $multi = $web->fields()->create(['name' => 'Platforms', 'type' => 'multiselect', 'options' => ProjectField::makeOptions(['Web', 'iOS'])]);
+        [$a, $b] = array_column($multi->optionList(), 'id');
+        $this->assertSame(json_encode([$a]), $multi->normalize([$a, 'not-an-option']));
+        $this->assertSame('Web, iOS', $multi->display(json_encode([$a, $b])));
+
+        $owner = User::where('email', 'admin@taskflow.test')->first();
+        $this->actingAs($owner)->get(route('projects.show', [$web, 'board']))->assertOk()->assertSee('Story points');
     }
 }

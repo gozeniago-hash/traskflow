@@ -52,6 +52,7 @@ class Activity extends Model
             'approved' => 'approved this task',
             'changes_requested' => 'requested changes',
             'client_request' => 'submitted this request from the client portal',
+            'field_changed' => isset($m['to']) && $m['to'] !== null && $m['to'] !== '' ? 'set '.($m['field'] ?? 'a field').' to '.$m['to'] : 'cleared '.($m['field'] ?? 'a field'),
             default => str_replace('_', ' ', $this->action),
         };
     }

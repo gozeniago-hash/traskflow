@@ -103,6 +103,17 @@ class Task extends Model
         return $this->hasMany(Attachment::class)->whereNull('comment_id')->latest();
     }
 
+    public function fieldValues(): HasMany
+    {
+        return $this->hasMany(TaskFieldValue::class);
+    }
+
+    /** field_id => stored value */
+    public function fieldValueMap(): array
+    {
+        return $this->fieldValues->pluck('value', 'field_id')->all();
+    }
+
     public function timeEntries(): HasMany
     {
         return $this->hasMany(TimeEntry::class);

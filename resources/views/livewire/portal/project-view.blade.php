@@ -173,6 +173,27 @@
                 <p class="mt-4 whitespace-pre-line text-sm text-ink-800">{{ $openTask->description }}</p>
             @endif
 
+            @php $vals = $openTask->fieldValues->pluck('value', 'field_id')->all(); @endphp
+            @if ($clientFields->isNotEmpty() && collect($clientFields)->contains(fn ($f) => isset($vals[$f->id])))
+                <dl class="mt-4 grid grid-cols-[140px_minmax(0,1fr)] gap-x-3 gap-y-1.5 rounded-lg bg-gray-50 p-3 text-sm">
+                    @foreach ($clientFields as $f)
+                        @continue(! isset($vals[$f->id]))
+                        <dt class="text-ink-500">{{ $f->name }}</dt>
+                        <dd>
+                            @if ($f->type === 'select' && ($o = $f->option($vals[$f->id])))
+                                <span class="pill {{ \App\Models\ProjectField::COLORS[$o['color']] ?? '' }}">{{ $o['label'] }}</span>
+                            @elseif ($f->type === 'url')
+                                <a href="{{ $vals[$f->id] }}" target="_blank" rel="noopener noreferrer" class="text-coral-600 hover:underline">{{ \Illuminate\Support\Str::limit($vals[$f->id], 50) }}</a>
+                            @elseif ($f->type === 'person')
+                                {{ $team->firstWhere('id', (int) $vals[$f->id])?->name ?? '—' }}
+                            @else
+                                <span class="whitespace-pre-line">{{ $f->display($vals[$f->id]) }}</span>
+                            @endif
+                        </dd>
+                    @endforeach
+                </dl>
+            @endif
+
             @if ($openTask->subtasks->isNotEmpty())
                 <ul class="mt-4 space-y-1.5">
                     @foreach ($openTask->subtasks as $sub)

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Loads the demo workspace on a fresh database when SEED_DEMO_DATA=true.
- * Always the last migration, so every table and column already exists.
+ * Dated 2099 so it always runs last, after every table and column exists.
  */
 return new class extends Migration
 {

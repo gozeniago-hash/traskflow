@@ -45,6 +45,7 @@
                                         @if ($task->comments_count)<span class="flex items-center gap-0.5" title="Comments"><x-icon name="chat" class="h-3.5 w-3.5" />{{ $task->comments_count }}</span>@endif
                                         @if ($task->attachments_count)<span class="flex items-center gap-0.5" title="Attachments"><x-icon name="paperclip" class="h-3.5 w-3.5" />{{ $task->attachments_count }}</span>@endif
                                         <x-approval-pill :status="$task->approval_status" />
+                                        <x-field-chips :task="$task" :fields="$cardFields" :people="$fieldPeople" />
                                     </span>
                                 </div>
                                 <div class="hidden items-center gap-1.5 truncate text-sm md:flex">

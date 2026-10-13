@@ -157,6 +157,11 @@ class Project extends Model
         return $this->hasMany(TimeEntry::class);
     }
 
+    public function fields(): HasMany
+    {
+        return $this->hasMany(ProjectField::class)->orderBy('position')->orderBy('id');
+    }
+
     public function docs(): HasMany
     {
         return $this->hasMany(ProjectDoc::class)->orderBy('position')->orderBy('id');

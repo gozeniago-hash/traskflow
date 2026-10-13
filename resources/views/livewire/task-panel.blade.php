@@ -80,6 +80,18 @@
                         @endforeach
                     </dd>
 
+                    @foreach ($fields as $f)
+                        <dt wire:key="fdt-{{ $f->id }}" class="self-start pt-1.5 text-ink-500" title="{{ $f->description }}">{{ $f->name }}@if ($f->required)<span class="text-red-600"> *</span>@endif</dt>
+                        <dd wire:key="fdd-{{ $f->id }}">
+                            <x-field-input :field="$f" model="fieldValues.{{ $f->id }}" :people="$fieldPeople" :live="true" :disabled="! $canEdit" />
+                            @if ($f->type === 'url' && ! empty($fieldValues[$f->id]))
+                                <a href="{{ $fieldValues[$f->id] }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-xs text-coral-600 hover:underline">Open link <x-icon name="arrow-up-right" class="h-3 w-3" /></a>
+                            @endif
+                            @error('fieldValues.'.$f->id)<p class="error">{{ $message }}</p>@enderror
+                            @if ($f->required && $f->normalize($fieldValues[$f->id] ?? null) === null)<p class="mt-0.5 text-[11px] text-red-600">Required — please fill this in.</p>@endif
+                        </dd>
+                    @endforeach
+
                     @if ($task->project->client_id)
                         <dt class="text-ink-500">Client</dt>
                         <dd class="flex flex-wrap items-center gap-2">

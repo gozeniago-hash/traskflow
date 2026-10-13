@@ -26,6 +26,6 @@ class ListView extends Component
 
     public function render()
     {
-        return view('livewire.projects.list-view', ['sections' => $this->sectionsWithTasks(), 'running' => $this->runningEntry()]);
+        return view('livewire.projects.list-view', ['sections' => $this->sectionsWithTasks(), 'running' => $this->runningEntry(), ...$this->cardFields()]);
     }
 }

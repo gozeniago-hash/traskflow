@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Activity;
 use App\Models\Project;
+use App\Models\ProjectField;
 use App\Models\Task;
 use App\Models\TimeEntry;
 use App\Models\User;
@@ -134,6 +135,43 @@ class DemoSeeder extends Seeder
 
         $this->seedTimeEntries();
         $this->seedDocs();
+        $this->seedFields();
+    }
+
+    /** Example custom fields on the Brightside project. Safe to run more than once. */
+    public function seedFields(): void
+    {
+        $web = Project::where('name', 'Brightside Website Redesign')->first();
+        if (! $web || $web->fields()->exists()) {
+            return;
+        }
+
+        $type = $web->fields()->create([
+            'name' => 'Type', 'type' => 'select', 'position' => 1, 'show_on_card' => true, 'client_visible' => true,
+            'options' => ProjectField::makeOptions(['Feature' => 'blue', 'Bug' => 'red', 'Design' => 'purple', 'Content' => 'amber']),
+        ]);
+        $points = $web->fields()->create(['name' => 'Story points', 'type' => 'number', 'position' => 2, 'show_on_card' => true]);
+        $web->fields()->create(['name' => 'Figma link', 'type' => 'url', 'position' => 3, 'show_on_card' => false, 'description' => 'Link to the design file']);
+
+        $values = [
+            'Homepage wireframes' => ['Design', 5],
+            'Visual design: homepage and pricing' => ['Design', 8],
+            'Design system tokens' => ['Design', 3],
+            'Audit current site analytics' => ['Content', 3],
+            'Set up CMS and staging environment' => ['Feature', 5],
+            'Build homepage template' => ['Feature', 8],
+            'Pricing page with plan comparison' => ['Feature', 5],
+            'Copy review round 1' => ['Content', 2],
+            'Go-live checklist and DNS cutover' => ['Feature', 3],
+        ];
+        $optionIds = collect($type->optionList())->pluck('id', 'label');
+
+        foreach ($values as $title => [$label, $sp]) {
+            if ($task = $web->tasks()->where('title', $title)->first()) {
+                $task->fieldValues()->create(['field_id' => $type->id, 'value' => $optionIds[$label]]);
+                $task->fieldValues()->create(['field_id' => $points->id, 'value' => (string) $sp]);
+            }
+        }
     }
 
     protected function seedTimeEntries(): void

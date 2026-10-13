@@ -7,6 +7,7 @@ use App\Models\Activity;
 use App\Models\Attachment;
 use App\Models\Project;
 use App\Models\Task;
+use App\Support\CustomFields;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
@@ -33,6 +34,9 @@ class CreateTask extends Component
     public bool $client_visible = false;
     public bool $openAfter = false;
 
+    /** Custom field inputs: field_id => value */
+    public array $fieldValues = [];
+
     /** Files queued for upload, and the input that feeds them (so picking twice adds, not replaces). */
     public array $files = [];
     public array $newFiles = [];
@@ -43,9 +47,10 @@ class CreateTask extends Component
         $project = Project::findOrFail($projectId);
         $this->authorize('update', $project);
 
-        $this->reset(['title', 'description', 'assignee_id', 'due_date', 'priority', 'client_visible', 'files', 'newFiles', 'openAfter']);
+        $this->reset(['title', 'description', 'assignee_id', 'due_date', 'priority', 'client_visible', 'files', 'newFiles', 'openAfter', 'fieldValues']);
         $this->resetValidation();
         $this->projectId = $project->id;
+        $this->fieldValues = CustomFields::blankInputs($project->fields);
         $this->section_id = (string) ($sectionId && $project->sections()->whereKey($sectionId)->exists() ? $sectionId : $project->firstSection()->id);
         $this->due_date = $dueDate && strtotime($dueDate) ? date('Y-m-d', strtotime($dueDate)) : '';
         $this->show = true;
@@ -85,7 +90,8 @@ class CreateTask extends Component
             'due_date' => ['nullable', 'date'],
             'priority' => ['required', Rule::in(array_keys(Task::PRIORITIES))],
             'files.*' => ['file', 'max:'.config('taskflow.max_upload_kb')],
-        ], [], ['files.*' => 'file']);
+            ...CustomFields::rules($project->fields),
+        ], [], ['files.*' => 'file', ...CustomFields::attributes($project->fields)]);
 
         $me = $this->me();
         $task = DB::transaction(function () use ($project, $data, $me) {
@@ -101,6 +107,7 @@ class CreateTask extends Component
                 'position' => $project->nextTaskPosition((int) $data['section_id']),
             ]);
             Activity::record($task, $me, 'created');
+            CustomFields::saveAll($task, $project->fields, $this->fieldValues);
             if ($task->assignee_id) {
                 $project->members()->syncWithoutDetaching([$task->assignee_id]);
             }
@@ -130,6 +137,7 @@ class CreateTask extends Component
         return view('livewire.create-task', [
             'project' => $project,
             'people' => $project ? $this->workspace()->members()->orderBy('name')->get() : collect(),
+            'fields' => $project ? $project->fields : collect(),
         ]);
     }
 }

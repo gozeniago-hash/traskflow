@@ -5,7 +5,10 @@ namespace App\Livewire;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Activity;
 use App\Models\Attachment;
+use App\Models\ProjectField;
 use App\Models\Task;
+use App\Support\CustomFields;
+use Illuminate\Support\Facades\Validator;
 use App\Models\TimeEntry;
 use App\Support\TimeTracker;
 use Carbon\Carbon;
@@ -44,6 +47,9 @@ class TaskPanel extends Component
     // Files attached to the comment being written
     public array $commentFiles = [];
     public array $newCommentFiles = [];
+
+    /** Custom field inputs: field_id => value */
+    public array $fieldValues = [];
 
     // Manual time entry
     public string $manualDuration = '';
@@ -98,6 +104,45 @@ class TaskPanel extends Component
         $this->priority = $task->priority;
         $this->section_id = (string) $task->section_id;
         $this->client_visible = $task->client_visible;
+        $this->fieldValues = CustomFields::inputsFor($task, $task->project->fields);
+    }
+
+    #[On('fields-updated')]
+    public function onFieldsUpdated(): void
+    {
+        if ($this->taskId && ($task = Task::with('project')->find($this->taskId))) {
+            $this->fieldValues = CustomFields::inputsFor($task, $task->project->fields);
+        }
+    }
+
+    public function updatedFieldValues($value, $key): void
+    {
+        $fieldId = (int) explode('.', (string) $key)[0];
+        $task = $this->task();
+        $field = $task->project->fields()->find($fieldId);
+        if (! $field) {
+            return;
+        }
+
+        $input = $this->fieldValues[$fieldId] ?? null;
+        $validator = Validator::make(['v' => $input], ['v' => $field->rules()], [], ['v' => $field->name]);
+        if ($validator->fails()) {
+            $this->addError('fieldValues.'.$fieldId, $validator->errors()->first('v'));
+            if (! $field->required || $field->normalize($input) !== null) {
+                return;
+            }
+            // Required fields can't be cleared: put the saved value back.
+            $this->fieldValues[$fieldId] = $field->toInput($task->fieldValues()->where('field_id', $fieldId)->value('value'));
+
+            return;
+        }
+        $this->resetErrorBag('fieldValues.'.$fieldId);
+
+        CustomFields::save($task, $field, $input);
+        $stored = $task->fieldValues()->where('field_id', $fieldId)->value('value');
+        $people = $field->type === 'person' ? CustomFields::peopleMap($task->project) : [];
+        Activity::record($task, $this->me(), 'field_changed', ['field' => $field->name, 'to' => $field->display($stored, $people)]);
+        $this->saved();
     }
 
     protected function task(): Task
@@ -396,7 +441,7 @@ class TaskPanel extends Component
         }
 
         $task->load([
-            'project.sections', 'parent', 'assignee', 'creator',
+            'project.sections', 'project.fields', 'fieldValues', 'parent', 'assignee', 'creator',
             'subtasks.assignee', 'ownAttachments.user', 'comments.user', 'comments.attachments.user', 'activities.user',
         ]);
 
@@ -412,6 +457,8 @@ class TaskPanel extends Component
             'timeEntries' => $task->timeEntries()->with('user')->latest('started_at')->limit(50)->get(),
             'trackedTotal' => TimeTracker::totalFor($task),
             'running' => TimeTracker::running($this->me()),
+            'fields' => $task->project->fields,
+            'fieldPeople' => $task->project->fields->contains('type', 'person') ? CustomFields::peopleMap($task->project) : [],
             'clientUserIds' => $this->workspace()->clientUsers()->pluck('users.id')->map(fn ($id) => (int) $id)->all(),
         ]);
     }

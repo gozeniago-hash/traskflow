@@ -163,7 +163,7 @@ class Index extends Component
             ->when(! $this->includeSubtasks, fn ($q) => $q->whereNull('parent_id'))
             ->when($this->person === 'unassigned', fn ($q) => $q->whereNull('assignee_id'))
             ->when($this->person !== '' && $this->person !== 'unassigned', fn ($q) => $q->where('assignee_id', (int) $this->person))
-            ->with(['project:id,key,name,color', 'assignee', 'parent:id,title']);
+            ->with(['project:id,key,name,color', 'assignee', 'parent:id,title', 'fieldValues']);
     }
 
     /** Group tasks by assignee, sorted by name with "Unassigned" last. */
@@ -328,13 +328,21 @@ class Index extends Component
 
     protected function tasksCsv(Collection $rows, bool $completed = false): array
     {
+        // Custom fields from every project in the export, one column per field name.
+        $projectIds = $rows->flatMap(fn ($r) => $r['tasks']->pluck('project_id'))->unique();
+        $fields = \App\Models\ProjectField::whereIn('project_id', $projectIds)->orderBy('position')->get();
+        $fieldNames = $fields->pluck('name')->unique()->values();
+        $fieldsByProject = $fields->groupBy('project_id');
+        $people = $fields->contains('type', 'person') ? $this->workspace()->members()->pluck('name', 'users.id')->all() : [];
+
         $header = ['Resource', 'Ticket', 'Task', 'Parent task', 'Project', 'Priority', 'Due date'];
         $header[] = $completed ? 'Completed on' : 'Status';
+        $header = array_merge($header, $fieldNames->all());
 
         $lines = [];
         foreach ($rows as $row) {
             foreach ($row['tasks'] as $t) {
-                $lines[] = [
+                $line = [
                     $row['user']?->name ?? 'Unassigned',
                     $t->ticket(),
                     $t->title,
@@ -344,6 +352,13 @@ class Index extends Component
                     $t->due_date?->toDateString() ?? '',
                     $completed ? $t->completed_at->toDateString() : ($t->isOverdue() ? 'Overdue' : 'Open'),
                 ];
+                $values = $t->fieldValues->pluck('value', 'field_id');
+                $byName = ($fieldsByProject[$t->project_id] ?? collect())->keyBy('name');
+                foreach ($fieldNames as $name) {
+                    $f = $byName[$name] ?? null;
+                    $line[] = $f ? (string) $f->display($values[$f->id] ?? null, $people) : '';
+                }
+                $lines[] = $line;
             }
         }
 

@@ -34,11 +34,12 @@
                                     <p class="text-sm font-medium leading-snug {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</p>
                                 </div>
                             </div>
-                            @if ($task->priority !== 'none' || $task->approval_status || $task->client_visible)
+                            @if ($task->priority !== 'none' || $task->approval_status || $task->client_visible || ($cardFields->isNotEmpty() && $task->fieldValues->whereIn('field_id', $cardFields->pluck('id'))->isNotEmpty()))
                                 <div class="mt-2 flex flex-wrap gap-1 pl-7">
                                     <x-priority-pill :priority="$task->priority" />
                                     <x-approval-pill :status="$task->approval_status" />
                                     @if ($task->client_visible)<span class="pill bg-emerald-50 text-emerald-700"><x-icon name="eye" class="h-3 w-3" /> Client</span>@endif
+                                    <x-field-chips :task="$task" :fields="$cardFields" :people="$fieldPeople" />
                                 </div>
                             @endif
                             <div class="mt-2.5 flex items-center gap-2 pl-7 text-xs text-ink-500">

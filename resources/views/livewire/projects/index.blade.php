@@ -118,6 +118,40 @@
                         <span><span class="font-medium">Show in the client portal</span> — clients only see tasks and files you mark as shared.</span>
                     </label>
                 @endif
+                <div class="rounded-lg border border-gray-200 p-4 sm:col-span-2">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium">Custom fields for tasks <span class="font-normal text-ink-500">(optional)</span></p>
+                            <p class="text-xs text-ink-500">Extra details your team fills in on every task — e.g. Type, Story points, Budget.</p>
+                        </div>
+                        <button type="button" wire:click="addFieldRow" class="btn-secondary btn text-xs"><x-icon name="plus" /> Field</button>
+                    </div>
+                    @if ($form['fields'])
+                        <ul class="mt-3 space-y-2">
+                            @foreach ($form['fields'] as $i => $row)
+                                <li wire:key="nf-{{ $i }}" class="grid gap-2 rounded-md bg-gray-50 p-2 sm:grid-cols-[minmax(0,1fr)_140px_auto]">
+                                    <input wire:model="form.fields.{{ $i }}.name" placeholder="Field name" class="input input-sm">
+                                    <select wire:model.live="form.fields.{{ $i }}.type" class="input input-sm">
+                                        @foreach (\App\Models\ProjectField::TYPES as $k => $label)<option value="{{ $k }}">{{ $label }}</option>@endforeach
+                                    </select>
+                                    <button type="button" wire:click="removeFieldRow({{ $i }})" class="justify-self-end rounded p-1 text-ink-500 hover:text-red-600" title="Remove"><x-icon name="x" class="h-4 w-4" /></button>
+                                    @if (in_array($row['type'], ['select', 'multiselect'], true))
+                                        <input wire:model="form.fields.{{ $i }}.options" placeholder="Options, separated by commas (e.g. Bug, Feature, Support)" class="input input-sm sm:col-span-3">
+                                    @endif
+                                    @error('form.fields.'.$i.'.name')<p class="error sm:col-span-3">{{ $message }}</p>@enderror
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    <div class="mt-3 flex flex-wrap gap-1.5">
+                        @foreach (\App\Models\ProjectField::PRESETS as $key => $preset)
+                            @continue(collect($form['fields'])->contains('name', $preset['name']))
+                            <button type="button" wire:click="addFieldRow('{{ $key }}')" class="pill bg-gray-100 text-ink-700 hover:bg-gray-200">+ {{ $preset['name'] }}</button>
+                        @endforeach
+                    </div>
+                    <p class="mt-2 text-[11px] text-ink-500">You can add, edit or remove fields later from the project's ⋯ menu → Custom fields.</p>
+                </div>
+
                 <div class="sm:col-span-2">
                     <label class="label">Color</label>
                     <div class="flex flex-wrap gap-2">

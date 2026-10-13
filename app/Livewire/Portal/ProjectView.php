@@ -205,6 +205,7 @@ class ProjectView extends Component
                 'assignee', 'section',
                 'comments' => fn ($q) => $q->where('is_internal', false)->with(['user', 'attachments.user']),
                 'ownAttachments.user',
+                'fieldValues',
                 'subtasks' => fn ($q) => $q->where('client_visible', true),
             ])->find($this->openTaskId);
         }
@@ -220,6 +221,7 @@ class ProjectView extends Component
 
         return view('livewire.portal.project-view', [
             'docs' => $docs,
+            'clientFields' => $project->fields()->where('client_visible', true)->get(),
             'doc' => $doc,
             'p' => $project,
             'progress' => $project->progress(clientOnly: true),

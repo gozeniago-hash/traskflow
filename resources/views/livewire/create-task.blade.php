@@ -42,6 +42,18 @@
                 </div>
             </div>
 
+            @if ($fields->isNotEmpty())
+                <div class="grid gap-3 rounded-lg bg-gray-50 p-3 sm:grid-cols-2">
+                    @foreach ($fields as $f)
+                        <div wire:key="cf-{{ $f->id }}" class="{{ in_array($f->type, ['textarea', 'multiselect'], true) ? 'sm:col-span-2' : '' }}">
+                            <label class="label">{{ $f->name }}@if ($f->required)<span class="text-red-600"> *</span>@endif</label>
+                            <x-field-input :field="$f" model="fieldValues.{{ $f->id }}" :people="$people->pluck('name', 'id')->all()" />
+                            @error('fieldValues.'.$f->id)<p class="error">{{ $message }}</p>@enderror
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
             {{-- Attachments --}}
             <div x-data="{ drag: false }"
                  x-on:dragover.prevent="drag = true" x-on:dragleave.prevent="drag = false"

@@ -4,6 +4,7 @@ namespace App\Livewire\Projects;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Project;
+use App\Models\ProjectField;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
@@ -55,6 +56,7 @@ class Index extends Component
             'layout' => 'board',
             'portal_enabled' => false,
             'due_date' => '',
+            'fields' => [], // [{name, type, options: "A, B, C"}]
         ];
     }
 
@@ -67,6 +69,23 @@ class Index extends Component
             $this->keyEdited = true;
             $this->form['key'] = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', (string) $value));
         }
+    }
+
+    public function addFieldRow(?string $preset = null): void
+    {
+        $p = $preset ? (ProjectField::PRESETS[$preset] ?? null) : null;
+        $this->form['fields'][] = [
+            'name' => $p['name'] ?? '',
+            'type' => $p['type'] ?? 'text',
+            'options' => $p ? implode(', ', array_keys($p['options'])) : '',
+            'preset' => $preset,
+        ];
+    }
+
+    public function removeFieldRow(int $i): void
+    {
+        unset($this->form['fields'][$i]);
+        $this->form['fields'] = array_values($this->form['fields']);
     }
 
     public function openCreate(): void
@@ -93,7 +112,13 @@ class Index extends Component
             'form.layout' => ['required', Rule::in(['board', 'list', 'client'])],
             'form.portal_enabled' => ['boolean'],
             'form.due_date' => ['nullable', 'date'],
+            'form.fields' => ['array', 'max:20'],
+            'form.fields.*.name' => ['required', 'string', 'max:80', 'distinct:ignore_case'],
+            'form.fields.*.type' => ['required', Rule::in(array_keys(ProjectField::TYPES))],
+            'form.fields.*.options' => ['nullable', 'string', 'max:1000'],
         ], [
+            'form.fields.*.name.required' => 'Give each custom field a name (or remove the row).',
+            'form.fields.*.name.distinct' => 'Two custom fields have the same name.',
             'form.key.regex' => 'Use 2–10 letters or numbers, starting with a letter (e.g. WEB, APP2).',
             'form.key.unique' => 'Another project in this workspace already uses that ID.',
         ])['form'];
@@ -121,6 +146,29 @@ class Index extends Component
             };
             foreach ($sections as $i => $name) {
                 $project->sections()->create(['name' => $name, 'position' => $i + 1]);
+            }
+
+            foreach (array_values($data['fields'] ?? []) as $i => $row) {
+                $hasOptions = in_array($row['type'], ['select', 'multiselect'], true);
+                $presetColors = ProjectField::PRESETS[$this->form['fields'][$i]['preset'] ?? '']['options'] ?? [];
+                $labels = array_values(array_unique(array_filter(array_map('trim', preg_split('/[,\n]+/', (string) ($row['options'] ?? ''))))));
+
+                // Keep preset colours where the label matches; other options get automatic colours.
+                $options = [];
+                foreach ($labels as $label) {
+                    if (isset($presetColors[$label])) {
+                        $options[$label] = $presetColors[$label];
+                    } else {
+                        $options[] = $label;
+                    }
+                }
+
+                $project->fields()->create([
+                    'name' => trim($row['name']),
+                    'type' => $hasOptions && ! $labels ? 'text' : $row['type'],
+                    'options' => $hasOptions && $labels ? ProjectField::makeOptions($options) : null,
+                    'position' => $i + 1,
+                ]);
             }
 
             return $project;
