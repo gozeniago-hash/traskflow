@@ -11,6 +11,7 @@ use App\Support\TimeTracker;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -22,6 +23,7 @@ class TaskPanel extends Component
 {
     use InteractsWithWorkspace, WithFileUploads;
 
+    #[Url(as: 'task', except: null)]
     public ?int $taskId = null;
 
     // Editable fields (saved as soon as they change)
@@ -47,6 +49,19 @@ class TaskPanel extends Component
     public string $manualDuration = '';
     public string $manualDate = '';
     public string $manualNote = '';
+
+    /** Opening a page with ?task=ID (e.g. from a ticket link) shows that task straight away. */
+    public function mount(): void
+    {
+        if ($this->taskId) {
+            $task = Task::find($this->taskId);
+            if ($task && $this->me()->can('view', $task)) {
+                $this->open($task->id);
+            } else {
+                $this->taskId = null;
+            }
+        }
+    }
 
     #[On('open-task')]
     public function open(int $id): void

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Project extends Model
 {
@@ -46,7 +47,7 @@ class Project extends Model
     public const VIEWS = ['overview' => 'Overview', 'list' => 'List', 'board' => 'Board', 'calendar' => 'Calendar', 'docs' => 'Docs', 'files' => 'Files'];
 
     protected $fillable = [
-        'workspace_id', 'team_id', 'client_id', 'owner_id', 'name', 'description', 'color', 'status',
+        'workspace_id', 'key', 'team_id', 'client_id', 'owner_id', 'name', 'description', 'color', 'status',
         'privacy', 'default_view', 'portal_enabled', 'start_date', 'due_date', 'archived_at',
     ];
 
@@ -58,6 +59,50 @@ class Project extends Model
             'due_date' => 'date',
             'archived_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Project $project) {
+            $project->key = $project->key
+                ? strtoupper($project->key)
+                : static::generateKey($project->name, (int) $project->workspace_id);
+        });
+    }
+
+    /**
+     * Suggest a short, unique project key from a name: "Website Redesign" -> "WR",
+     * "Marketing" -> "MAR". A number is added if the workspace already uses it.
+     */
+    public static function generateKey(string $name, int $workspaceId, ?int $ignoreId = null): string
+    {
+        $words = preg_split('/[^A-Za-z0-9]+/', strtoupper($name), -1, PREG_SPLIT_NO_EMPTY) ?: ['PRJ'];
+        $base = count($words) === 1 ? substr($words[0], 0, 3) : implode('', array_map(fn ($w) => $w[0], array_slice($words, 0, 4)));
+        $base = substr(preg_replace('/^[0-9]+/', '', $base) ?: 'PRJ', 0, 6);
+        $base = strlen($base) < 2 ? str_pad($base, 2, 'X') : $base;
+
+        $taken = static::query()->where('workspace_id', $workspaceId)
+            ->when($ignoreId, fn ($q) => $q->whereKeyNot($ignoreId))
+            ->where('key', 'like', $base.'%')->pluck('key')->all();
+
+        $key = $base;
+        for ($i = 2; in_array($key, $taken, true); $i++) {
+            $key = $base.$i;
+        }
+
+        return $key;
+    }
+
+    /** Reserve the next ticket number for this project (safe under concurrent requests). */
+    public static function nextTaskNumber(int $projectId): int
+    {
+        return DB::transaction(function () use ($projectId) {
+            $project = static::query()->whereKey($projectId)->lockForUpdate()->firstOrFail(['id', 'task_counter']);
+            $next = (int) $project->task_counter + 1;
+            static::query()->whereKey($projectId)->update(['task_counter' => $next]);
+
+            return $next;
+        });
     }
 
     // ---------------------------------------------------------------- relations

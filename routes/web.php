@@ -4,6 +4,7 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\WorkspaceController;
 use App\Livewire;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [WorkspaceController::class, 'dashboard'])->name('dashboard');
         Route::post('/workspaces/{workspace}/switch', [WorkspaceController::class, 'switch'])->name('workspaces.switch');
         Route::get('/attachments/{attachment}', [AttachmentController::class, 'download'])->name('attachments.download');
+        Route::get('/t/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
 
         // ------------------------------------------------- internal team app
         Route::middleware('member')->group(function () {

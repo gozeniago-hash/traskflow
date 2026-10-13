@@ -29,7 +29,10 @@
                              class="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition hover:border-gray-300 hover:shadow">
                             <div class="flex items-start gap-2">
                                 <button wire:click.stop="toggleComplete({{ $task->id }})" class="check mt-0.5 {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
-                                <p class="text-sm font-medium leading-snug {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</p>
+                                <div class="min-w-0">
+                                    <p class="font-mono text-[11px] text-ink-500">{{ $project->key }}-{{ $task->number }}</p>
+                                    <p class="text-sm font-medium leading-snug {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</p>
+                                </div>
                             </div>
                             @if ($task->priority !== 'none' || $task->approval_status || $task->client_visible)
                                 <div class="mt-2 flex flex-wrap gap-1 pl-7">

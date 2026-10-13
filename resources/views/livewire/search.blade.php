@@ -1,14 +1,22 @@
 <div>
-    <x-page-header title="Search" :subtitle="$q !== '' ? 'Results for “'.$q.'”' : 'Search across tasks and projects you can access'" />
+    <x-page-header title="Search" :subtitle="$q !== '' ? 'Results for “'.$q.'”' : 'Search tasks, projects and docs — or type a ticket number like BWR-12'" />
     <div class="max-w-4xl px-6 py-5">
         <input wire:model.live.debounce.300ms="q" placeholder="Search…" autofocus class="input mb-6">
+
+        @if ($ticket)
+            <button wire:click="$dispatch('open-task', { id: {{ $ticket->id }} })" class="mb-6 flex w-full items-center gap-3 rounded-lg border border-coral-200 bg-coral-50 px-4 py-3 text-left hover:border-coral-400">
+                <span class="rounded bg-white px-2 py-1 font-mono text-sm font-semibold text-coral-700 ring-1 ring-coral-200">{{ $ticket->ticket() }}</span>
+                <span class="min-w-0 flex-1"><span class="block truncate font-medium">{{ $ticket->title }}</span><span class="text-xs text-ink-500">{{ $ticket->project->name }}{{ $ticket->assignee ? ' · '.$ticket->assignee->name : '' }}{{ $ticket->isCompleted() ? ' · Completed' : '' }}</span></span>
+                <span class="text-sm font-medium text-coral-700">Open →</span>
+            </button>
+        @endif
 
         @if ($q !== '')
             <h2 class="mb-2 text-sm font-semibold">Projects <span class="font-normal text-ink-500">{{ $projects->count() }}</span></h2>
             <ul class="mb-8 divide-y divide-gray-100 border-y border-gray-100">
                 @forelse ($projects as $p)
                     <li><a href="{{ route('projects.show', $p) }}" wire:navigate class="flex items-center gap-2 px-2 py-2 text-sm hover:bg-gray-50">
-                        <span class="h-2.5 w-2.5 rounded-[3px]" style="background-color: {{ $p->color }}"></span>{{ $p->name }}
+                        <span class="h-2.5 w-2.5 rounded-[3px]" style="background-color: {{ $p->color }}"></span><span class="font-mono text-[11px] text-ink-500">{{ $p->key }}</span> {{ $p->name }}
                         @if ($p->archived_at)<span class="pill bg-gray-100 text-ink-500">Archived</span>@endif
                         <x-status-pill :status="$p->status" class="ml-auto" />
                     </a></li>
@@ -35,7 +43,7 @@
                 @forelse ($tasks as $t)
                     <li wire:key="s-{{ $t->id }}"><button wire:click="$dispatch('open-task', { id: {{ $t->id }} })" class="flex w-full items-center gap-2.5 px-2 py-2 text-left text-sm hover:bg-gray-50">
                         <span class="check {{ $t->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></span>
-                        <span class="flex-1 truncate {{ $t->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $t->title }}</span>
+                        <span class="flex-1 truncate {{ $t->isCompleted() ? 'text-ink-500 line-through' : '' }}"><span class="mr-1.5 font-mono text-[11px] text-ink-500">{{ $t->ticket() }}</span>{{ $t->title }}</span>
                         <span class="hidden max-w-40 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white sm:inline" style="background-color: {{ $t->project->color }}">{{ $t->project->name }}</span>
                         <x-avatar :user="$t->assignee" size="xs" />
                     </button></li>

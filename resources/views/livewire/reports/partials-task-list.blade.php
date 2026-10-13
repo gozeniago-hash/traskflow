@@ -3,7 +3,7 @@
         @foreach ($tasks as $t)
             <tr wire:key="rt-{{ $t->id }}" class="cursor-pointer hover:bg-white" wire:click="$dispatch('open-task', { id: {{ $t->id }} })">
                 <td class="py-2 pl-14 pr-3">
-                    <span class="block truncate {{ $mode === 'completed' ? 'text-ink-700' : '' }}">{{ $t->title }}</span>
+                    <span class="block truncate {{ $mode === 'completed' ? 'text-ink-700' : '' }}"><span class="mr-1.5 font-mono text-[11px] text-ink-500">{{ $t->ticket() }}</span>{{ $t->title }}</span>
                     @if ($t->parent)<span class="block truncate text-xs text-ink-500">↳ {{ $t->parent->title }}</span>@endif
                 </td>
                 <td class="hidden w-48 px-3 py-2 sm:table-cell">

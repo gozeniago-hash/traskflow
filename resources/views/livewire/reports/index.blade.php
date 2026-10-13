@@ -206,7 +206,7 @@
                                         <tr wire:key="pr-{{ $p->id }}">
                                             <td class="px-4 py-2.5">
                                                 <a href="{{ route('projects.show', [$p, 'overview']) }}" wire:navigate class="flex items-center gap-2 font-medium hover:underline">
-                                                    <span class="h-2.5 w-2.5 shrink-0 rounded-[3px]" style="background-color: {{ $p->color }}"></span>{{ $p->name }}
+                                                    <span class="h-2.5 w-2.5 shrink-0 rounded-[3px]" style="background-color: {{ $p->color }}"></span><span class="font-mono text-[11px] text-ink-500">{{ $p->key }}</span> {{ $p->name }}
                                                     @if ($p->archived_at)<span class="pill bg-gray-100 text-ink-500">Archived</span>@endif
                                                 </a>
                                             </td>

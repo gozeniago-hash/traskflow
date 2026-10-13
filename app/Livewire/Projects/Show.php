@@ -40,6 +40,7 @@ class Show extends Component
         $p = $this->project;
         $this->form = [
             'name' => $p->name,
+            'key' => (string) $p->key,
             'description' => (string) $p->description,
             'color' => $p->color,
             'team_id' => (string) $p->team_id,
@@ -59,9 +60,11 @@ class Show extends Component
     {
         $this->authorize('update', $this->project);
         $ws = $this->workspace();
+        $this->form['key'] = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', (string) ($this->form['key'] ?? '')));
 
         $data = $this->validate([
             'form.name' => ['required', 'string', 'max:150'],
+            'form.key' => ['required', 'regex:/^[A-Z][A-Z0-9]{1,9}$/', Rule::unique('projects', 'key')->where('workspace_id', $ws->id)->ignore($this->project->id)],
             'form.description' => ['nullable', 'string', 'max:5000'],
             'form.color' => ['required', Rule::in(Project::COLORS)],
             'form.team_id' => ['nullable', Rule::exists('teams', 'id')->where('workspace_id', $ws->id)],
@@ -72,6 +75,9 @@ class Show extends Component
             'form.portal_enabled' => ['boolean'],
             'form.start_date' => ['nullable', 'date'],
             'form.due_date' => ['nullable', 'date', 'after_or_equal:form.start_date'],
+        ], [
+            'form.key.regex' => 'Use 2–10 letters or numbers, starting with a letter (e.g. WEB, APP2).',
+            'form.key.unique' => 'Another project in this workspace already uses that ID.',
         ])['form'];
 
         foreach (['team_id', 'client_id', 'owner_id', 'start_date', 'due_date'] as $key) {

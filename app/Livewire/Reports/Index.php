@@ -163,7 +163,7 @@ class Index extends Component
             ->when(! $this->includeSubtasks, fn ($q) => $q->whereNull('parent_id'))
             ->when($this->person === 'unassigned', fn ($q) => $q->whereNull('assignee_id'))
             ->when($this->person !== '' && $this->person !== 'unassigned', fn ($q) => $q->where('assignee_id', (int) $this->person))
-            ->with(['project:id,name,color', 'assignee', 'parent:id,title']);
+            ->with(['project:id,key,name,color', 'assignee', 'parent:id,title']);
     }
 
     /** Group tasks by assignee, sorted by name with "Unassigned" last. */
@@ -328,7 +328,7 @@ class Index extends Component
 
     protected function tasksCsv(Collection $rows, bool $completed = false): array
     {
-        $header = ['Resource', 'Task', 'Parent task', 'Project', 'Priority', 'Due date'];
+        $header = ['Resource', 'Ticket', 'Task', 'Parent task', 'Project', 'Priority', 'Due date'];
         $header[] = $completed ? 'Completed on' : 'Status';
 
         $lines = [];
@@ -336,6 +336,7 @@ class Index extends Component
             foreach ($row['tasks'] as $t) {
                 $lines[] = [
                     $row['user']?->name ?? 'Unassigned',
+                    $t->ticket(),
                     $t->title,
                     $t->parent?->title ?? '',
                     $t->project?->name ?? '',
@@ -355,7 +356,7 @@ class Index extends Component
         foreach ($this->projectsData()['groups'] as $group) {
             foreach ($group['projects'] as $p) {
                 $lines[] = [
-                    $group['label'], $p->name, $p->owner?->name ?? '', $p->team?->name ?? '', $p->client?->name ?? 'Internal',
+                    $group['label'], $p->key, $p->name, $p->owner?->name ?? '', $p->team?->name ?? '', $p->client?->name ?? 'Internal',
                     $p->tasks_total, $p->tasks_done, $p->tasks_overdue,
                     $p->tasks_total ? round($p->tasks_done / $p->tasks_total * 100).'%' : '0%',
                     round(((int) $p->tracked_seconds) / 3600, 2),
@@ -364,7 +365,7 @@ class Index extends Component
             }
         }
 
-        return [['Status', 'Project', 'Owner', 'Team', 'Client', 'Tasks', 'Completed', 'Overdue', 'Progress', 'Hours logged', 'Due date', 'Archived'], $lines];
+        return [['Status', 'Project ID', 'Project', 'Owner', 'Team', 'Client', 'Tasks', 'Completed', 'Overdue', 'Progress', 'Hours logged', 'Due date', 'Archived'], $lines];
     }
 
     // -------------------------------------------------------------- render

@@ -30,7 +30,7 @@ class Task extends Model
     ];
 
     protected $fillable = [
-        'project_id', 'section_id', 'parent_id', 'creator_id', 'assignee_id', 'title', 'description', 'priority',
+        'project_id', 'number', 'section_id', 'parent_id', 'creator_id', 'assignee_id', 'title', 'description', 'priority',
         'start_date', 'due_date', 'completed_at', 'completed_by', 'position', 'client_visible',
         'approval_status', 'approval_by', 'approval_at', 'requested_by_client',
     ];
@@ -45,6 +45,13 @@ class Task extends Model
             'client_visible' => 'boolean',
             'requested_by_client' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Task $task) {
+            $task->number ??= Project::nextTaskNumber((int) $task->project_id);
+        });
     }
 
     // ---------------------------------------------------------------- relations
@@ -119,6 +126,19 @@ class Task extends Model
     }
 
     // ------------------------------------------------------------------ helpers
+
+    /** Ticket number, e.g. "BWR-12". Pass the project key when you already have it to skip a query. */
+    public function ticket(?string $projectKey = null): string
+    {
+        $key = $projectKey ?? $this->project?->key ?? 'T';
+
+        return $key.'-'.$this->number;
+    }
+
+    public function ticketUrl(?string $projectKey = null): string
+    {
+        return route('tickets.show', $this->ticket($projectKey));
+    }
 
     public function isCompleted(): bool
     {

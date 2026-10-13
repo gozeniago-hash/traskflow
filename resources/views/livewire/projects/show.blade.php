@@ -11,6 +11,7 @@
             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white" style="background-color: {{ $project->color }}"><x-icon name="list" class="h-5 w-5" /></span>
             <div class="min-w-0">
                 <div class="flex items-center gap-2">
+                    <span class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs font-semibold text-ink-700" title="Project ID — tickets are numbered {{ $project->key }}-1, {{ $project->key }}-2, …">{{ $project->key }}</span>
                     <h1 class="truncate text-xl font-semibold">{{ $project->name }}</h1>
                     <button wire:click="openEdit" class="rounded p-1 text-ink-500 hover:bg-gray-100" title="Project details"><x-icon name="chevron-down" /></button>
                 </div>
@@ -82,10 +83,18 @@
     @if ($showEdit)
         <x-modal title="Project details" close="showEdit" width="max-w-2xl">
             <form wire:submit="saveEdit" class="grid gap-4 sm:grid-cols-2">
-                <div class="sm:col-span-2">
+                <div>
                     <label class="label">Name</label>
                     <input wire:model="form.name" class="input">
                     @error('form.name')<p class="error">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="label">Project ID</label>
+                    <input wire:model.live.debounce.500ms="form.key" maxlength="10" class="input font-mono uppercase">
+                    @error('form.key')<p class="error">{{ $message }}</p>@enderror
+                    @if (($form['key'] ?? '') !== $project->key)
+                        <p class="mt-1 text-[11px] text-amber-700">All tickets will be renumbered to {{ strtoupper($form['key'] ?: '…') }}-#. Old {{ $project->key }}-# links stop working.</p>
+                    @endif
                 </div>
                 <div class="sm:col-span-2">
                     <label class="label">Description</label>

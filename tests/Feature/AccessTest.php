@@ -142,4 +142,26 @@ class AccessTest extends TestCase
         $this->actingAs($client)->get(route('portal.projects.show', ['project' => $project, 'tab' => 'docs', 'doc' => $shared->id]))
             ->assertOk()->assertSee('Shared spec')->assertDontSee('Secret internal notes');
     }
+
+    public function test_projects_get_ids_and_tasks_get_ticket_numbers(): void
+    {
+        $owner = User::where('email', 'admin@taskflow.test')->first();
+        $web = Project::where('name', 'Brightside Website Redesign')->first();
+
+        $this->assertSame('BWR', $web->key);
+        $this->assertSame(range(1, $web->tasks()->count()), $web->tasks()->orderBy('number')->pluck('number')->all());
+
+        $next = $web->tasks()->create(['title' => 'New one', 'section_id' => $web->sections()->first()->id]);
+        $this->assertSame($web->tasks()->count(), $next->number);
+        $this->assertSame('BWR-'.$next->number, $next->fresh('project')->ticket());
+
+        // A second project with a similar name gets its own key.
+        $other = $web->workspace->projects()->create(['name' => 'Big Web Rebuild']);
+        $this->assertSame('BWR2', $other->key);
+        $this->assertSame(1, $other->tasks()->create(['title' => 'First'])->number);
+
+        // Ticket links resolve to the task.
+        $this->actingAs($owner)->get('/t/bwr-'.$next->number)->assertRedirectContains('task='.$next->id);
+        $this->actingAs($owner)->get('/t/NOPE-1')->assertNotFound();
+    }
 }

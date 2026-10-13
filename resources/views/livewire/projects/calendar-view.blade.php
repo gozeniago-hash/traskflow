@@ -29,7 +29,7 @@
                             <button wire:key="ct-{{ $task->id }}" wire:click="$dispatch('open-task', { id: {{ $task->id }} })"
                                     class="flex w-full items-center gap-1 truncate rounded px-1.5 py-1 text-left text-xs {{ $task->isCompleted() ? 'bg-gray-100 text-ink-500 line-through' : 'text-white' }}"
                                     @unless ($task->isCompleted()) style="background-color: {{ $project->color }}" @endunless>
-                                <span class="truncate">{{ $task->title }}</span>
+                                <span class="truncate" title="{{ $project->key }}-{{ $task->number }} · {{ $task->title }}">{{ $task->title }}</span>
                             </button>
                         @endforeach
                         @if ($addingOn === $key)

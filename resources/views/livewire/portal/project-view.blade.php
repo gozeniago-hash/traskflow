@@ -122,7 +122,7 @@
                                 <button wire:click="openTask({{ $t->id }})" class="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50">
                                     <span class="check {{ $t->isCompleted() ? 'check-done' : '' }} pointer-events-none"><x-icon name="check" class="h-3 w-3" /></span>
                                     <span class="min-w-0 flex-1">
-                                        <span class="block truncate text-sm font-medium {{ $t->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $t->title }}</span>
+                                        <span class="block truncate text-sm font-medium {{ $t->isCompleted() ? 'text-ink-500 line-through' : '' }}"><span class="mr-1.5 font-mono text-[11px] font-normal text-ink-500">{{ $p->key }}-{{ $t->number }}</span>{{ $t->title }}</span>
                                         <span class="text-xs text-ink-500">{{ $t->isCompleted() ? 'Completed '.$t->completed_at->format('M j') : ($t->assignee ? 'With '.$t->assignee->firstName() : 'Not started') }}</span>
                                     </span>
                                     <x-approval-pill :status="$t->approval_status" />
@@ -158,6 +158,7 @@
     @if ($openTask)
         <x-modal :title="$openTask->title" close="openTaskId" close-value="null" width="max-w-2xl">
             <div class="flex flex-wrap items-center gap-2 text-sm">
+                <span class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs font-medium text-ink-700">{{ $p->key }}-{{ $openTask->number }}</span>
                 @if ($openTask->isCompleted())
                     <span class="pill bg-emerald-50 text-emerald-700"><x-icon name="check" class="h-3 w-3" /> Completed {{ $openTask->completed_at->format('M j') }}</span>
                 @else

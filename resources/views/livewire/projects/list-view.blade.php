@@ -38,6 +38,7 @@
                                  wire:click="$dispatch('open-task', { id: {{ $task->id }} })">
                                 <div class="flex min-w-0 items-center gap-2">
                                     <button wire:click.stop="toggleComplete({{ $task->id }})" class="check {{ $task->isCompleted() ? 'check-done' : '' }}" title="Mark complete"><x-icon name="check" class="h-3 w-3" /></button>
+                                    <span class="shrink-0 font-mono text-[11px] text-ink-500">{{ $project->key }}-{{ $task->number }}</span>
                                     <span class="truncate text-sm {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</span>
                                     <span class="flex shrink-0 items-center gap-2 text-xs text-ink-500">
                                         @if ($task->subtasks_count)<span class="flex items-center gap-0.5" title="Subtasks"><x-icon name="subtask" class="h-3.5 w-3.5" />{{ $task->completed_subtasks_count }}/{{ $task->subtasks_count }}</span>@endif

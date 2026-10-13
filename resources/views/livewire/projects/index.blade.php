@@ -31,7 +31,7 @@
                 <div class="flex items-start gap-3">
                     <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white" style="background-color: {{ $p->color }}"><x-icon name="list" class="h-5 w-5" /></span>
                     <div class="min-w-0 flex-1">
-                        <h3 class="truncate font-semibold group-hover:underline">{{ $p->name }}</h3>
+                        <h3 class="truncate font-semibold group-hover:underline"><span class="mr-1 font-mono text-xs font-medium text-ink-500">{{ $p->key }}</span>{{ $p->name }}</h3>
                         <p class="truncate text-xs text-ink-500">{{ $p->team?->name ?? 'No team' }}@if ($p->client) · {{ $p->client->name }}@endif</p>
                     </div>
                     <x-status-pill :status="$p->status" />
@@ -59,10 +59,16 @@
     @if ($new)
         <x-modal title="New project" close="new" width="max-w-2xl">
             <form wire:submit="create" class="grid gap-4 sm:grid-cols-2">
-                <div class="sm:col-span-2">
+                <div>
                     <label class="label">Project name</label>
-                    <input wire:model="form.name" class="input" autofocus placeholder="e.g. Website redesign">
+                    <input wire:model.live.debounce.400ms="form.name" class="input" autofocus placeholder="e.g. Website redesign">
                     @error('form.name')<p class="error">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="label">Project ID</label>
+                    <input wire:model.live.debounce.400ms="form.key" maxlength="10" placeholder="Auto" class="input font-mono uppercase">
+                    @error('form.key')<p class="error">{{ $message }}</p>@enderror
+                    <p class="mt-1 text-[11px] text-ink-500">Tickets will be numbered {{ $form['key'] ?: 'KEY' }}-1, {{ $form['key'] ?: 'KEY' }}-2, …</p>
                 </div>
                 <div class="sm:col-span-2">
                     <label class="label">Description <span class="normal-case text-ink-300">(optional)</span></label>
