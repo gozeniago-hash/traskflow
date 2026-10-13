@@ -244,6 +244,20 @@ class AccessTest extends TestCase
         $overview->dispatch('project-updated')->assertSee('Nov 30, 2026');
     }
 
+    public function test_renaming_the_workspace_refreshes_the_sidebar(): void
+    {
+        $admin = User::where('email', 'admin@taskflow.test')->first();
+        $this->actingAs($admin);
+
+        Livewire::test(\App\Livewire\Admin\Settings::class)
+            ->set('name', 'Appyugo Inc')
+            ->call('save')
+            ->assertDispatched('workspace-updated');
+
+        Livewire::test(\App\Livewire\Sidebar::class, ['route' => 'settings'])
+            ->assertSee('Appyugo Inc');
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);

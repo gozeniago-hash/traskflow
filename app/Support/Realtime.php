@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Events\ProjectChanged;
+use App\Events\WorkspaceChanged;
 use App\Models\Project;
 use Illuminate\Support\Facades\Log;
 
@@ -14,6 +15,9 @@ class Realtime
 {
     /** @var array<int, array<int, true>> projectId => [taskId => true] */
     protected static array $pending = [];
+
+    /** @var array<int, true> workspaces whose own details (name, projects list) changed */
+    protected static array $workspaces = [];
 
     protected static bool $registered = false;
 
@@ -30,6 +34,21 @@ class Realtime
             static::$pending[$projectId][$taskId] = true;
         }
 
+        static::register();
+    }
+
+    /** The workspace itself changed (e.g. renamed, a project removed): refresh sidebars. */
+    public static function touchWorkspace(?int $workspaceId): void
+    {
+        if (! $workspaceId || static::$muted || ! static::enabled()) {
+            return;
+        }
+        static::$workspaces[$workspaceId] = true;
+        static::register();
+    }
+
+    protected static function register(): void
+    {
         if (! static::$registered) {
             static::$registered = true;
             app()->terminating(fn () => static::flush());
@@ -56,25 +75,38 @@ class Realtime
     public static function flush(): void
     {
         $pending = static::$pending;
+        $workspaceOnly = static::$workspaces;
         static::$pending = [];
+        static::$workspaces = [];
         static::$registered = false;
+        $actor = auth()->user()?->name;
+
+        $workspaces = $pending ? Project::query()->whereIn('id', array_keys($pending))->pluck('workspace_id', 'id') : collect();
+        foreach ($workspaces as $workspaceId) {
+            unset($workspaceOnly[(int) $workspaceId]); // already reached by that project's event
+        }
+        foreach (array_keys($workspaceOnly) as $workspaceId) {
+            static::send(new WorkspaceChanged((int) $workspaceId, $actor));
+        }
         if (! $pending) {
             return;
         }
-
-        $workspaces = Project::query()->whereIn('id', array_keys($pending))->pluck('workspace_id', 'id');
-        $actor = auth()->user()?->name;
 
         foreach ($pending as $projectId => $taskIds) {
             if (! isset($workspaces[$projectId])) {
                 continue; // project was deleted
             }
-            try {
-                broadcast(new ProjectChanged($projectId, (int) $workspaces[$projectId], array_keys($taskIds), $actor))->toOthers();
-            } catch (\Throwable $e) {
-                // Live updates are a nice-to-have; never fail a request because the socket server is down.
-                Log::warning('Realtime broadcast failed: '.$e->getMessage());
-            }
+            static::send(new ProjectChanged($projectId, (int) $workspaces[$projectId], array_keys($taskIds), $actor));
+        }
+    }
+
+    protected static function send(object $event): void
+    {
+        try {
+            broadcast($event)->toOthers();
+        } catch (\Throwable $e) {
+            // Live updates are a nice-to-have; never fail a request because the socket server is down.
+            Log::warning('Realtime broadcast failed: '.$e->getMessage());
         }
     }
 }

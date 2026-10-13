@@ -41,6 +41,7 @@ class Profile extends Component
             'avatar_color' => ['required', Rule::in(User::AVATAR_COLORS)],
         ]);
         $this->me()->update($data);
+        $this->dispatch('profile-updated');
         $this->toast('Profile saved.');
     }
 

@@ -26,6 +26,7 @@ class Settings extends Component
         $this->requireAdmin();
         $this->validate(['name' => ['required', 'string', 'max:120']]);
         $this->workspace()->update(['name' => $this->name]);
+        $this->dispatch('workspace-updated');
         $this->toast('Workspace renamed.');
     }
 
@@ -49,6 +50,7 @@ class Settings extends Component
     {
         $this->requireAdmin();
         $this->workspace()->projects()->findOrFail($projectId)->update(['archived_at' => null]);
+        $this->dispatch('project-updated');
         $this->toast('Project restored.');
     }
 }

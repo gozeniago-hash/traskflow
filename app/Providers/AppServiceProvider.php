@@ -61,5 +61,9 @@ class AppServiceProvider extends ServiceProvider
             $model::saved($handler);
             $model::deleted($handler);
         }
+
+        // Workspace renamed, or a project removed: teammates' sidebars refresh.
+        \App\Models\Workspace::saved(fn ($w) => \App\Support\Realtime::touchWorkspace((int) $w->id));
+        \App\Models\Project::deleted(fn ($p) => \App\Support\Realtime::touchWorkspace((int) $p->workspace_id));
     }
 }
