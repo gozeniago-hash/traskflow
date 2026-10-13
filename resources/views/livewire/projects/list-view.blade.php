@@ -2,8 +2,8 @@
     @include('livewire.projects.partials-toolbar')
 
     <div class="px-6 pb-10">
-        <div class="hidden grid-cols-[minmax(0,1fr)_140px_110px_90px_60px] gap-2 border-b border-gray-200 px-2 pb-2 text-xs font-medium text-ink-500 md:grid">
-            <span class="pl-7">Task name</span><span>Assignee</span><span>Due date</span><span>Priority</span><span>Time</span><span class="text-center">Client</span>
+        <div class="hidden items-center gap-2 border-b border-gray-200 px-2 pb-2 text-xs font-medium text-ink-500 md:grid md:grid-cols-[minmax(0,1fr)_140px_110px_90px_104px_60px]">
+            <span class="pl-7">Task name</span><span>Assignee</span><span>Due date</span><span>Priority</span><span>Time</span><span class="text-center" title="Visible in the client portal">Client</span>
         </div>
 
         @foreach ($sections as $section)
