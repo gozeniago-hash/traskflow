@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
                 ->whereIn('view', array_keys(\App\Models\Project::VIEWS))
                 ->name('projects.show');
 
+            Route::livewire('/reports', Livewire\Reports\Index::class)->name('reports');
             Route::livewire('/teams', Livewire\Admin\Teams::class)->name('teams');
             Route::livewire('/clients', Livewire\Admin\Clients::class)->name('clients');
             Route::livewire('/members', Livewire\Admin\Members::class)->name('members');

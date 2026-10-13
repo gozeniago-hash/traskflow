@@ -14,12 +14,12 @@
     <title>{{ isset($title) ? $title.' · ' : '' }}{{ $workspace->name }} · TaskFlow</title>
 </head>
 <body class="h-full" x-data="{ nav: false }">
-<div class="flex h-full">
+<div class="flex h-full print:block">
     {{-- Mobile backdrop --}}
     <div x-cloak x-show="nav" x-on:click="nav = false" class="fixed inset-0 z-30 bg-ink-950/50 lg:hidden"></div>
 
     {{-- Sidebar --}}
-    <aside class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-ink-950 transition-transform lg:static lg:translate-x-0"
+    <aside class="print:hidden fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-ink-950 transition-transform lg:static lg:translate-x-0"
            :class="nav && 'translate-x-0'">
         <div class="flex items-center justify-between px-3 pt-3" x-data="{ open: false }">
             <button type="button" x-on:click="open = !open" class="flex min-w-0 flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-ink-800">
@@ -49,6 +49,7 @@
             <a href="{{ route('home') }}" wire:navigate class="nav-link {{ $route === 'home' ? 'nav-link-active' : '' }}"><x-icon name="home" /> Home</a>
             <a href="{{ route('my-tasks') }}" wire:navigate class="nav-link {{ $route === 'my-tasks' ? 'nav-link-active' : '' }}"><x-icon name="check-circle" /> My tasks</a>
             <a href="{{ route('projects.index') }}" wire:navigate class="nav-link {{ $route === 'projects.index' ? 'nav-link-active' : '' }}"><x-icon name="folder" /> Projects</a>
+            <a href="{{ route('reports') }}" wire:navigate class="nav-link {{ $route === 'reports' ? 'nav-link-active' : '' }}"><x-icon name="chart" /> Reports</a>
 
             <p class="px-2.5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-ink-500">Projects</p>
             @forelse ($sidebarProjects as $p)
@@ -91,7 +92,7 @@
 
     {{-- Main --}}
     <div class="flex min-w-0 flex-1 flex-col">
-        <header class="flex h-12 shrink-0 items-center gap-3 border-b border-gray-200 bg-white px-4">
+        <header class="print:hidden flex h-12 shrink-0 items-center gap-3 border-b border-gray-200 bg-white px-4">
             <button type="button" class="btn-ghost btn px-1.5 lg:hidden" x-on:click="nav = true" aria-label="Open menu"><x-icon name="menu" class="h-5 w-5" /></button>
             <form action="{{ route('search') }}" method="GET" class="relative mx-auto w-full max-w-md">
                 <x-icon name="search" class="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -101,7 +102,7 @@
             <a href="{{ route('projects.index', ['new' => 1]) }}" wire:navigate class="btn-primary btn hidden sm:inline-flex"><x-icon name="plus" /> Create</a>
         </header>
 
-        <main class="flex-1 overflow-y-auto bg-white">
+        <main class="flex-1 overflow-y-auto bg-white print:overflow-visible">
             {{ $slot }}
         </main>
     </div>

@@ -92,4 +92,15 @@ class AccessTest extends TestCase
         $this->assertTrue($client->can('view', $task));
         $this->assertFalse($client->can('update', $task));
     }
+
+    public function test_reports_render_for_members_and_are_blocked_for_clients(): void
+    {
+        $owner = User::where('email', 'admin@taskflow.test')->first();
+        foreach (['incomplete', 'upcoming', 'projects', 'completed'] as $report) {
+            $this->actingAs($owner)->get(route('reports', ['r' => $report]))->assertOk();
+        }
+
+        $client = User::where('email', 'client@brightside.test')->first();
+        $this->actingAs($client)->get(route('reports'))->assertRedirect(route('portal.dashboard'));
+    }
 }
