@@ -40,7 +40,7 @@
                             <h2 class="font-semibold text-violet-900">Needs your approval</h2>
                             <ul class="mt-3 space-y-2">
                                 @foreach ($approvals as $t)
-                                    <li><button wire:click="openTask({{ $t->id }})" class="flex w-full items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-left text-sm shadow-sm hover:shadow">
+                                    <li><button wire:click="openTask({{ $t->id }})" data-peek-title="{{ $t->title }}" data-modal-shell class="flex w-full items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-left text-sm shadow-sm hover:shadow">
                                         <span class="flex-1 truncate font-medium">{{ $t->title }}</span><span class="font-medium text-violet-700">Review →</span>
                                     </button></li>
                                 @endforeach
@@ -74,7 +74,7 @@
                         <h2 class="mb-3 font-semibold">Coming up</h2>
                         <ul class="space-y-2 text-sm">
                             @forelse ($upcoming as $t)
-                                <li><button wire:click="openTask({{ $t->id }})" class="flex w-full items-center gap-2 text-left hover:underline"><span class="flex-1 truncate">{{ $t->title }}</span><span class="text-xs {{ $t->dueClass() }}">{{ $t->dueLabel() }}</span></button></li>
+                                <li><button wire:click="openTask({{ $t->id }})" data-peek-title="{{ $t->title }}" data-modal-shell class="flex w-full items-center gap-2 text-left hover:underline"><span class="flex-1 truncate">{{ $t->title }}</span><span class="text-xs {{ $t->dueClass() }}">{{ $t->dueLabel() }}</span></button></li>
                             @empty
                                 <li class="text-ink-500">Nothing scheduled.</li>
                             @endforelse
@@ -119,7 +119,7 @@
                     <ul class="card divide-y divide-gray-100 bg-white">
                         @foreach ($section->tasks as $t)
                             <li wire:key="pt-{{ $t->id }}">
-                                <button wire:click="openTask({{ $t->id }})" class="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50">
+                                <button wire:click="openTask({{ $t->id }})" data-peek-title="{{ $t->title }}" data-modal-shell class="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50">
                                     <span class="check {{ $t->isCompleted() ? 'check-done' : '' }} pointer-events-none"><x-icon name="check" class="h-3 w-3" /></span>
                                     <span class="min-w-0 flex-1">
                                         <span class="block truncate text-sm font-medium {{ $t->isCompleted() ? 'text-ink-500 line-through' : '' }}"><span class="mr-1.5 font-mono text-[11px] font-normal text-ink-500">{{ $p->key }}-{{ $t->number }}</span>{{ $t->title }}</span>
@@ -152,6 +152,27 @@
                 </div>
             @endif
         @endif
+    </div>
+
+    {{-- Opens instantly on click (fade + task title) while the details load from the server. --}}
+    <div x-data="{ on: false, title: '', timer: null }" x-cloak x-show="on"
+         x-on:tf-modal-shell.window="title = $event.detail.title || ''; on = true; window.tfModalShell = true; clearTimeout(timer); timer = setTimeout(() => { on = false; window.tfModalShell = false }, 5000)"
+         x-on:tf-modal-shell-done.window="on = false; window.tfModalShell = false; clearTimeout(timer)"
+         x-transition:enter="transition-opacity ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         class="fixed inset-0 z-50 overflow-y-auto" aria-hidden="true">
+        <div class="fixed inset-0 bg-ink-950/40"></div>
+        <div class="relative mx-auto mt-[8vh] mb-8 w-[calc(100%-2rem)] max-w-2xl rounded-xl bg-white shadow-2xl">
+            <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3.5">
+                <h2 class="text-base font-semibold" x-text="title"></h2>
+                <span class="btn-ghost btn px-1.5"><x-icon name="x" /></span>
+            </div>
+            <div class="animate-pulse space-y-4 p-5">
+                <div class="flex gap-2"><div class="h-6 w-14 rounded bg-gray-100"></div><div class="h-6 w-20 rounded bg-gray-100"></div><div class="h-6 w-28 rounded bg-gray-100"></div></div>
+                <div class="h-12 rounded-lg bg-gray-50"></div>
+                <div class="h-4 w-16 rounded bg-gray-100"></div>
+                <div class="h-28 w-56 rounded-lg bg-gray-100"></div>
+            </div>
+        </div>
     </div>
 
     {{-- Task detail --}}

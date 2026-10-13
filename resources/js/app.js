@@ -80,6 +80,12 @@ window.taskflowSortable = function (el, wire, method = 'reorder') {
  * otherwise it just shows `base`. Server re-renders replace the element (via wire:key),
  * so the starting value is always fresh.
  */
+// Buttons marked data-modal-shell show a modal frame instantly (see x-modal / portal).
+document.addEventListener('click', (e) => {
+    const el = e.target.closest?.('[data-modal-shell]');
+    if (el) window.dispatchEvent(new CustomEvent('tf-modal-shell', { detail: { title: el.dataset.peekTitle || '' } }));
+}, true);
+
 // Remember which task row/card was pressed (see tfTaskPanel).
 document.addEventListener('pointerdown', (e) => {
     const el = e.target.closest?.('[data-peek-title]');
@@ -87,6 +93,27 @@ document.addEventListener('pointerdown', (e) => {
 }, true);
 
 document.addEventListener('alpine:init', () => {
+    /**
+     * x-modal: fades in when it appears and fades out before telling Livewire to close.
+     * If an instant placeholder frame is already showing, it takes its place without a second fade.
+     */
+    window.Alpine.data('tfModal', (property, closedValue) => ({
+        shown: false,
+        init() {
+            if (window.tfModalShell) {
+                this.shown = true;
+                window.dispatchEvent(new CustomEvent('tf-modal-shell-done'));
+            } else {
+                this.$nextTick(() => (this.shown = true));
+            }
+        },
+        hide() {
+            if (!this.shown) return;
+            this.shown = false;
+            setTimeout(() => this.$wire.set(property, closedValue), 150);
+        },
+    }));
+
     /**
      * Task slide-over: opens instantly on click (before the server answers) and
      * slides out before Livewire clears the task, so both directions animate.
