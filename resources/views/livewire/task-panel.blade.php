@@ -1,8 +1,15 @@
-<div>
+<div x-data="tfTaskPanel(@js((bool) $task))" x-on:open-task.window="show()" x-on:keydown.escape.window="open && hide()">
+    {{-- The panel slides in the moment a task is clicked; its content fills in when the server answers. --}}
+    <div x-cloak x-show="open"
+         x-transition:enter="transition-opacity ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-40 bg-ink-950/20 lg:bg-transparent" x-on:click="hide()"></div>
+    <aside x-cloak x-show="open"
+           x-transition:enter="transform-gpu transition ease-[cubic-bezier(0.22,1,0.36,1)] duration-300 motion-reduce:transition-none" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+           x-transition:leave="transform-gpu transition ease-in duration-200 motion-reduce:transition-none" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"
+           class="fixed inset-y-0 right-0 z-50 flex w-full max-w-xl flex-col border-l border-gray-200 bg-white shadow-2xl">
 @if ($task)
-    <div class="fixed inset-0 z-40 bg-ink-950/20 lg:bg-transparent" wire:click="close"></div>
-    <aside class="fixed inset-y-0 right-0 z-50 flex w-full max-w-xl flex-col border-l border-gray-200 bg-white shadow-2xl"
-           x-data x-on:keydown.escape.window="$wire.close()">
+    <div class="flex min-h-0 flex-1 flex-col transition-opacity duration-150" :class="switching && 'opacity-50'">
         {{-- Toolbar --}}
         <div class="flex items-center gap-2 border-b border-gray-200 px-4 py-2.5">
             @if ($canEdit)
@@ -23,7 +30,7 @@
                 @if ($canEdit)
                     <button wire:click="deleteTask" wire:confirm="Delete this task{{ $task->subtasks->count() ? ' and its subtasks' : '' }}?" class="btn-ghost btn px-1.5 text-red-600" title="Delete task"><x-icon name="trash" /></button>
                 @endif
-                <button wire:click="close" class="btn-ghost btn px-1.5" title="Close"><x-icon name="x" class="h-5 w-5" /></button>
+                <button type="button" x-on:click="hide()" class="btn-ghost btn px-1.5" title="Close"><x-icon name="x" class="h-5 w-5" /></button>
             </div>
         </div>
 
@@ -301,6 +308,25 @@
                 <button class="btn-primary btn" wire:loading.attr="disabled" wire:target="addComment,newCommentFiles">Comment</button>
             </div>
         </form>
-    </aside>
+    </div>
+@else
+    {{-- Placeholder while the task loads --}}
+    <div class="animate-pulse">
+        <div class="flex items-center gap-2 border-b border-gray-200 px-4 py-2.5">
+            <div class="h-8 w-32 rounded-md bg-gray-100"></div>
+            <div class="h-6 w-16 rounded-md bg-gray-100"></div>
+            <button type="button" x-on:click="hide()" class="btn-ghost btn ml-auto px-1.5" title="Close"><x-icon name="x" class="h-5 w-5" /></button>
+        </div>
+        <div class="space-y-4 p-6">
+            <div class="h-7 w-3/4 rounded bg-gray-100"></div>
+            <div class="space-y-3 pt-2">
+                @for ($i = 0; $i < 5; $i++)
+                    <div class="flex gap-6"><div class="h-4 w-24 rounded bg-gray-100"></div><div class="h-4 w-40 rounded bg-gray-100"></div></div>
+                @endfor
+            </div>
+            <div class="h-24 rounded bg-gray-100"></div>
+        </div>
+    </div>
 @endif
+    </aside>
 </div>

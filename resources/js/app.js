@@ -81,6 +81,36 @@ window.taskflowSortable = function (el, wire, method = 'reorder') {
  * so the starting value is always fresh.
  */
 document.addEventListener('alpine:init', () => {
+    /**
+     * Task slide-over: opens instantly on click (before the server answers) and
+     * slides out before Livewire clears the task, so both directions animate.
+     */
+    window.Alpine.data('tfTaskPanel', (initiallyOpen = false) => ({
+        open: initiallyOpen,
+        switching: false,
+        switchTimer: null,
+        init() {
+            this.$watch(() => this.$wire.taskId, (id) => {
+                this.switching = false;
+                if (id && !this.open) this.open = true;
+                if (!id && this.open) this.open = false; // e.g. the task was deleted
+            });
+        },
+        show() {
+            if (this.open) {
+                // Already showing a task: dim it until the next one arrives.
+                this.switching = true;
+                clearTimeout(this.switchTimer);
+                this.switchTimer = setTimeout(() => (this.switching = false), 1500);
+            }
+            this.open = true;
+        },
+        hide() {
+            this.open = false;
+            setTimeout(() => { if (!this.open) this.$wire.close(); }, 220);
+        },
+    }));
+
     window.Alpine.data('tfTimer', (running = false, base = 0) => ({
         seconds: base,
         handle: null,
