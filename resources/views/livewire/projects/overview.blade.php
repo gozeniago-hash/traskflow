@@ -34,6 +34,10 @@
                 @endif
             </div>
 
+            @if ($hasClient && ! $portalOn && $resources->where('client_visible', true)->isNotEmpty())
+                <p class="mb-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">The client portal is off for this project, so your client can't see these yet. Turn on <strong>Show in client portal</strong> in the project's settings (the ▾ next to the name).</p>
+            @endif
+
             @if ($addingResource === 'link')
                 <form wire:submit="addLink" class="mb-3 space-y-2 rounded-lg bg-gray-50 p-3"
                       x-data x-init="$nextTick(() => $refs.url.focus())" x-on:keydown.escape.stop="$wire.set('addingResource', null)">
@@ -48,8 +52,8 @@
                         </div>
                     </div>
                     <div class="flex items-center justify-between gap-2">
-                        @if ($canShare)
-                            <label class="flex items-center gap-2 text-xs text-ink-700"><input type="checkbox" wire:model="resourceShare" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Show in client portal</label>
+                        @if ($hasClient)
+                            <label class="flex items-center gap-2 text-xs text-ink-700"><input type="checkbox" wire:model="resourceInternal" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Internal only (hide from client)</label>
                         @else
                             <span></span>
                         @endif
@@ -72,15 +76,15 @@
             @else
                 <div class="grid gap-2 sm:grid-cols-2">
                     @foreach ($resources as $r)
-                        <x-resource-tile wire:key="res-{{ $r->id }}" :resource="$r" group="resources-{{ $p->id }}" :show-shared="$canShare">
+                        <x-resource-tile wire:key="res-{{ $r->id }}" :resource="$r" group="resources-{{ $p->id }}" :show-visibility="$hasClient">
                             @if ($canEdit)
                                 <div class="relative" x-data="{ menu: false }">
                                     <button type="button" x-on:click="menu = !menu" class="rounded p-1 hover:bg-gray-100 hover:text-ink-900" title="More"><x-icon name="dots" /></button>
                                     <div x-cloak x-show="menu" x-on:click.outside="menu = false" x-on:click="menu = false"
                                          class="absolute right-0 z-20 mt-1 w-48 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
                                         <button type="button" x-on:click="const t = prompt('Rename resource', @js($r->title)); if (t) $wire.renameResource({{ $r->id }}, t)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Rename</button>
-                                        @if ($canShare)
-                                            <button type="button" wire:click="toggleResourceShare({{ $r->id }})" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $r->client_visible ? 'Hide from client portal' : 'Show in client portal' }}</button>
+                                        @if ($hasClient)
+                                            <button type="button" wire:click="toggleResourceShare({{ $r->id }})" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $r->client_visible ? 'Make internal only' : 'Share with client' }}</button>
                                         @endif
                                         @unless ($loop->first)<button type="button" wire:click="moveResource({{ $r->id }}, -1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move earlier</button>@endunless
                                         @unless ($loop->last)<button type="button" wire:click="moveResource({{ $r->id }}, 1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move later</button>@endunless

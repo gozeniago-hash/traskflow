@@ -34,7 +34,7 @@ class Overview extends Component
     public ?string $addingResource = null; // null | link
     public string $resourceUrl = '';
     public string $resourceTitle = '';
-    public bool $resourceShare = false;
+    public bool $resourceInternal = false; // resources are shared with the client portal unless marked internal
     public array $resourceFiles = [];
 
     protected function getListeners(): array
@@ -136,11 +136,11 @@ class Overview extends Component
             'resourceTitle' => ['nullable', 'string', 'max:150'],
         ], [], ['resourceUrl' => 'link', 'resourceTitle' => 'title']);
 
-        $resource = new ProjectResource(['url' => $url, 'client_visible' => $this->canShare() && $this->resourceShare]);
+        $resource = new ProjectResource(['url' => $url, 'client_visible' => ! $this->resourceInternal]);
         $resource->title = trim($this->resourceTitle) ?: ($resource->service() ?? $resource->domain());
         $this->saveResource($resource);
 
-        $this->reset(['resourceUrl', 'resourceTitle', 'resourceShare', 'addingResource']);
+        $this->reset(['resourceUrl', 'resourceTitle', 'resourceInternal', 'addingResource']);
     }
 
     /** Files upload as soon as they're picked. */
@@ -150,9 +150,9 @@ class Overview extends Component
         $this->validate(['resourceFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]], [], ['resourceFiles.*' => 'file']);
 
         foreach ($this->resourceFiles as $file) {
-            $attachment = Attachment::storeUpload($file, $this->project, $this->me(), null, false);
+            $attachment = Attachment::storeUpload($file, $this->project, $this->me(), null, true);
             $title = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) ?: $file->getClientOriginalName();
-            $this->saveResource(new ProjectResource(['title' => \Illuminate\Support\Str::limit($title, 145), 'attachment_id' => $attachment->id]));
+            $this->saveResource(new ProjectResource(['title' => \Illuminate\Support\Str::limit($title, 145), 'attachment_id' => $attachment->id, 'client_visible' => true]));
         }
         $this->resourceFiles = [];
     }
@@ -160,7 +160,6 @@ class Overview extends Component
     public function toggleResourceShare(int $id): void
     {
         $this->authorize('update', $this->project);
-        abort_unless($this->canShare(), 403);
         $resource = $this->resource($id);
         $resource->update(['client_visible' => ! $resource->client_visible]);
         // A shared file must be downloadable from the portal, so the file follows the resource.
@@ -212,11 +211,6 @@ class Overview extends Component
         return $this->project->resources()->findOrFail($id);
     }
 
-    /** Sharing only makes sense when the project is in a client's portal. */
-    protected function canShare(): bool
-    {
-        return (bool) $this->project->portal_enabled && $this->project->client_id;
-    }
 
     public function render()
     {
@@ -233,7 +227,8 @@ class Overview extends Component
                 ->orderBy('due_date')->with('assignee')->limit(6)->get(),
             'resources' => $project->resources()->with('attachment')->get(),
             'canEdit' => $this->me()->can('update', $project),
-            'canShare' => (bool) $project->portal_enabled && $project->client_id,
+            'hasClient' => (bool) $project->client_id,
+            'portalOn' => (bool) $project->portal_enabled && $project->client_id,
             'pendingApprovals' => $project->tasks()->where('approval_status', 'pending')->count(),
             'timeTotal' => (int) TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')->sum('duration_seconds'),
             'timeByPerson' => TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')

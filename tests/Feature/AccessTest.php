@@ -317,13 +317,15 @@ class AccessTest extends TestCase
         $this->assertSame('Figma', $link->title);
         $this->assertSame('Brief', $file->title);
 
-        // Not shared yet: the client can't open the file.
-        $this->actingAs($client)->get($file->attachment->downloadUrl())->assertForbidden();
+        // Shared with the client by default…
+        $this->actingAs($client)->get($file->attachment->downloadUrl())->assertOk();
+        Livewire::test(\App\Livewire\Portal\ProjectView::class, ['project' => $web])->assertSee('Brief')->assertSee('Figma');
 
+        // …until marked internal.
         $this->actingAs($admin);
         Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $web])->call('toggleResourceShare', $file->id);
-        $this->actingAs($client)->get($file->attachment->fresh()->downloadUrl())->assertOk();
-        Livewire::test(\App\Livewire\Portal\ProjectView::class, ['project' => $web])->assertSee('Brief')->assertDontSee('figma.com');
+        $this->actingAs($client)->get($file->attachment->fresh()->downloadUrl())->assertForbidden();
+        Livewire::test(\App\Livewire\Portal\ProjectView::class, ['project' => $web])->assertDontSee('Brief')->assertSee('Figma');
     }
 
     public function test_changes_broadcast_one_live_update_per_project(): void

@@ -2,7 +2,7 @@
     One key resource (link or file). Images open in the image viewer, PDFs and links in a
     new tab, other files download. Extra controls (share, reorder, remove) go in the slot.
 --}}
-@props(['resource', 'group' => 'resources', 'showShared' => false])
+@props(['resource', 'group' => 'resources', 'showVisibility' => false])
 @php
     $r = $resource;
     $a = $r->attachment;
@@ -31,8 +31,8 @@
         <span class="block truncate text-xs text-ink-500">{{ $sub }}</span>
     </a>
 
-    @if ($showShared && $r->client_visible)
-        <span class="relative z-10 shrink-0 text-emerald-600" title="Visible in the client portal"><x-icon name="eye" class="h-4 w-4" /></span>
+    @if ($showVisibility && ! $r->client_visible)
+        <span class="pill relative z-10 shrink-0 bg-gray-100 text-ink-500" title="Hidden from the client portal"><x-icon name="lock" class="h-3 w-3" /> Internal</span>
     @endif
     @if (trim($slot))
         <div class="relative z-10 flex shrink-0 items-center gap-0.5 text-ink-300 group-hover:text-ink-500">{{ $slot }}</div>

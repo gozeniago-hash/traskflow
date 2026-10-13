@@ -64,12 +64,6 @@
                     </section>
                 </div>
                 <div class="space-y-6">
-                    @if ($p->description)
-                        <section class="card bg-white p-5">
-                            <h2 class="mb-2 font-semibold">About</h2>
-                            <p class="whitespace-pre-line text-sm text-ink-700">{{ $p->description }}</p>
-                        </section>
-                    @endif
                     @if ($resources->isNotEmpty())
                         <section class="card bg-white p-5">
                             <h2 class="mb-3 font-semibold">Key resources</h2>
@@ -78,6 +72,12 @@
                                     <x-resource-tile wire:key="pres-{{ $r->id }}" :resource="$r" group="portal-resources-{{ $p->id }}" />
                                 @endforeach
                             </div>
+                        </section>
+                    @endif
+                    @if ($p->description)
+                        <section class="card bg-white p-5">
+                            <h2 class="mb-2 font-semibold">About</h2>
+                            <p class="whitespace-pre-line text-sm text-ink-700">{{ $p->description }}</p>
                         </section>
                     @endif
                     <section class="card bg-white p-5">
