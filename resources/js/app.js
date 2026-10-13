@@ -80,6 +80,12 @@ window.taskflowSortable = function (el, wire, method = 'reorder') {
  * otherwise it just shows `base`. Server re-renders replace the element (via wire:key),
  * so the starting value is always fresh.
  */
+// Remember which task row/card was pressed (see tfTaskPanel).
+document.addEventListener('pointerdown', (e) => {
+    const el = e.target.closest?.('[data-peek-title]');
+    if (el) window.tfLastPeek = { title: el.dataset.peekTitle, at: Date.now() };
+}, true);
+
 document.addEventListener('alpine:init', () => {
     /**
      * Task slide-over: opens instantly on click (before the server answers) and
@@ -87,23 +93,27 @@ document.addEventListener('alpine:init', () => {
      */
     window.Alpine.data('tfTaskPanel', (initiallyOpen = false) => ({
         open: initiallyOpen,
-        switching: false,
-        switchTimer: null,
+        loading: false,
+        peekTitle: '',
+        fallback: null,
         init() {
             this.$watch(() => this.$wire.taskId, (id) => {
-                this.switching = false;
                 if (id && !this.open) this.open = true;
                 if (!id && this.open) this.open = false; // e.g. the task was deleted
             });
         },
         show() {
-            if (this.open) {
-                // Already showing a task: dim it until the next one arrives.
-                this.switching = true;
-                clearTimeout(this.switchTimer);
-                this.switchTimer = setTimeout(() => (this.switching = false), 1500);
-            }
+            // Title of the row/card that was clicked, so the panel shows it before the server answers.
+            const peek = window.tfLastPeek;
+            this.peekTitle = peek && Date.now() - peek.at < 1500 ? peek.title : '';
+            this.loading = true;
             this.open = true;
+            clearTimeout(this.fallback);
+            this.fallback = setTimeout(() => (this.loading = false), 4000);
+        },
+        loaded() {
+            clearTimeout(this.fallback);
+            this.loading = false;
         },
         hide() {
             this.open = false;

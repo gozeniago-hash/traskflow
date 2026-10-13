@@ -7,7 +7,7 @@
                 <x-icon name="stop" class="h-3 w-3" />
             </button>
             <span class="text-sm font-semibold tabular-nums text-coral-700" x-text="clock">{{ \App\Models\TimeEntry::formatClock($elapsed) }}</span>
-            <button wire:click="$dispatch('open-task', { id: {{ $entry->task_id }} })" class="hidden max-w-44 truncate text-sm text-coral-800 hover:underline md:block">{{ $entry->task->title }}</button>
+            <button wire:click="$dispatch('open-task', { id: {{ $entry->task_id }} })" data-peek-title="{{ $entry->task?->title }}" class="hidden max-w-44 truncate text-sm text-coral-800 hover:underline md:block">{{ $entry->task->title }}</button>
         </div>
     @endif
 </div>

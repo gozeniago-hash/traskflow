@@ -124,7 +124,7 @@
             <h2 class="mb-3 font-semibold">Coming up</h2>
             <ul class="space-y-2">
                 @forelse ($upcoming as $t)
-                    <li><button wire:click="$dispatch('open-task', { id: {{ $t->id }} })" class="flex w-full items-center gap-2 text-left text-sm hover:underline">
+                    <li><button wire:click="$dispatch('open-task', { id: {{ $t->id }} })" data-peek-title="{{ $t->title }}" class="flex w-full items-center gap-2 text-left text-sm hover:underline">
                         <x-avatar :user="$t->assignee" size="xs" /><span class="flex-1 truncate">{{ $t->title }}</span><span class="text-xs {{ $t->dueClass() }}">{{ $t->dueLabel() }}</span>
                     </button></li>
                 @empty

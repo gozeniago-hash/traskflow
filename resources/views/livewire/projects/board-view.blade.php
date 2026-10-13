@@ -25,7 +25,7 @@
                 <div x-data x-init="taskflowSortable($el, $wire)" data-section-id="{{ $section->id }}" data-group="board-{{ $project->id }}" class="flex min-h-[3rem] flex-col gap-2">
                     @foreach ($section->tasks as $task)
                         <div wire:key="card-{{ $task->id }}" data-task-id="{{ $task->id }}"
-                             wire:click="$dispatch('open-task', { id: {{ $task->id }} })"
+                             wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}"
                              class="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition hover:border-gray-300 hover:shadow">
                             <div class="flex items-start gap-2">
                                 <button wire:click.stop="toggleComplete({{ $task->id }})" class="check mt-0.5 {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>

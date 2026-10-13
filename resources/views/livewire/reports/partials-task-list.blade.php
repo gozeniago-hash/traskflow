@@ -1,7 +1,7 @@
 <table class="w-full bg-gray-50/60 text-sm">
     <tbody class="divide-y divide-gray-100">
         @foreach ($tasks as $t)
-            <tr wire:key="rt-{{ $t->id }}" class="cursor-pointer hover:bg-white" wire:click="$dispatch('open-task', { id: {{ $t->id }} })">
+            <tr wire:key="rt-{{ $t->id }}" class="cursor-pointer hover:bg-white" wire:click="$dispatch('open-task', { id: {{ $t->id }} })" data-peek-title="{{ $t->title }}">
                 <td class="py-2 pl-14 pr-3">
                     <span class="block truncate {{ $mode === 'completed' ? 'text-ink-700' : '' }}"><span class="mr-1.5 font-mono text-[11px] text-ink-500">{{ $t->ticket() }}</span>{{ $t->title }}</span>
                     @if ($t->parent)<span class="block truncate text-xs text-ink-500">↳ {{ $t->parent->title }}</span>@endif

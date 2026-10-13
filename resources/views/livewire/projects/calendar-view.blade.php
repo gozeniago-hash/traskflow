@@ -26,7 +26,7 @@
                     </div>
                     <div class="space-y-1">
                         @foreach ($tasks[$key] ?? [] as $task)
-                            <button wire:key="ct-{{ $task->id }}" wire:click="$dispatch('open-task', { id: {{ $task->id }} })"
+                            <button wire:key="ct-{{ $task->id }}" wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}"
                                     class="flex w-full items-center gap-1 truncate rounded px-1.5 py-1 text-left text-xs {{ $task->isCompleted() ? 'bg-gray-100 text-ink-500 line-through' : 'text-white' }}"
                                     @unless ($task->isCompleted()) style="background-color: {{ $project->color }}" @endunless>
                                 <span class="truncate" title="{{ $project->key }}-{{ $task->number }} · {{ $task->title }}">{{ $task->title }}</span>

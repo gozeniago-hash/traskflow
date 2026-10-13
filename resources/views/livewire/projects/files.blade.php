@@ -38,7 +38,7 @@
                                 @endif
                             </td>
                             <td class="hidden px-4 py-2.5 md:table-cell">
-                                @if ($f->task)<button wire:click="$dispatch('open-task', { id: {{ $f->task_id }} })" class="truncate text-ink-700 hover:underline">{{ $f->task->title }}</button>@if ($f->comment_id)<span class="ml-1 text-xs text-ink-500">(in a comment)</span>@endif @elseif ($f->doc_id) <span class="text-ink-500">In a doc</span>@else <span class="text-ink-500">Project file</span>@endif
+                                @if ($f->task)<button wire:click="$dispatch('open-task', { id: {{ $f->task_id }} })" data-peek-title="{{ $f->task?->title }}" class="truncate text-ink-700 hover:underline">{{ $f->task->title }}</button>@if ($f->comment_id)<span class="ml-1 text-xs text-ink-500">(in a comment)</span>@endif @elseif ($f->doc_id) <span class="text-ink-500">In a doc</span>@else <span class="text-ink-500">Project file</span>@endif
                             </td>
                             <td class="hidden px-4 py-2.5 text-ink-500 sm:table-cell">{{ $f->user?->name }} · {{ $f->created_at->diffForHumans() }}</td>
                             <td class="px-4 py-2.5">

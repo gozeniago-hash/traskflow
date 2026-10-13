@@ -135,6 +135,7 @@ class TaskPanel extends Component
         $this->manualDate = today()->toDateString();
         $this->commentForClient = false;
         $this->resetValidation();
+        $this->dispatch('task-panel-loaded', id: $task->id);
     }
 
     #[On('timer-changed')]
