@@ -74,6 +74,8 @@
         <livewire:projects.calendar-view :project="$project" :key="'cal-'.$project->id" />
     @elseif ($view === 'docs')
         <livewire:projects.docs :project="$project" :key="'dc-'.$project->id" />
+    @elseif ($view === 'timesheet')
+        <livewire:projects.timesheet :project="$project" :key="'ts-'.$project->id" />
     @elseif ($view === 'files')
         <livewire:projects.files :project="$project" :key="'fl-'.$project->id" />
     @else

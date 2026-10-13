@@ -8,6 +8,9 @@ return [
     // Shown in front of currency custom fields.
     'currency_symbol' => env('TASKFLOW_CURRENCY_SYMBOL', '₱'),
 
+    // Timesheets group and show time in this timezone (times are stored in UTC).
+    'timezone' => env('TASKFLOW_TIMEZONE', 'Asia/Manila'),
+
     // Where browsers connect for live updates (the public address of the Reverb service).
     'realtime' => [
         'host' => env('REVERB_PUBLIC_HOST'),

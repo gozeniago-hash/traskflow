@@ -32,6 +32,7 @@ class Index extends Component
         'upcoming' => 'Upcoming tasks by resource',
         'projects' => 'Projects by status',
         'completed' => 'Completed tasks',
+        'timesheet' => 'Timesheet by resource',
     ];
 
     #[Url(as: 'r')]
@@ -119,7 +120,7 @@ class Index extends Component
 
     protected function applyRange(): void
     {
-        $today = today();
+        $today = today(\App\Support\Timesheet::tz());
         [$from, $to] = match ($this->range) {
             'today' => [$today, $today],
             'this_week' => [$today->copy()->startOfWeek(), $today->copy()->endOfWeek()],
@@ -308,6 +309,62 @@ class Index extends Component
         ];
     }
 
+    // ----------------------------------------------------------- timesheet
+
+    protected function timesheet(): \App\Support\Timesheet
+    {
+        [$from, $to] = $this->dateRange();
+
+        return new \App\Support\Timesheet(
+            $this->me(), $from->toDateString(), $to->toDateString(),
+            $this->project !== '' ? [(int) $this->project] : null,
+            ctype_digit($this->person) ? (int) $this->person : null,
+            $this->team !== '' ? (int) $this->team : null,
+        );
+    }
+
+    protected function timesheetData(): array
+    {
+        $sheet = $this->timesheet();
+        $entries = $sheet->entries();
+        $rows = $sheet->byPerson($entries)->map(function (array $row) {
+            $row['key'] = 'u'.($row['user']?->id ?? 0);
+            $row['byProject'] = $row['entries']->groupBy('project_id')
+                ->map(fn ($g) => ['project' => $g->first()->project, 'seconds' => (int) $g->sum('duration_seconds')])
+                ->sortByDesc('seconds')->values();
+
+            return $row;
+        });
+
+        return [
+            'sheet' => $sheet,
+            'rows' => $rows,
+            'total' => (int) $entries->sum('duration_seconds'),
+            'count' => $entries->count(),
+            'projectCount' => $entries->pluck('project_id')->unique()->count(),
+            'max' => max(1, (int) $rows->max('seconds')),
+        ];
+    }
+
+    public function exportTimesheet(string $format)
+    {
+        $notes = [];
+        if ($this->project !== '' && ($p = Project::query()->visibleTo($this->me())->find((int) $this->project))) {
+            $notes[] = $p->name;
+        }
+        if ($this->team !== '' && ($t = $this->workspace()->teams()->find((int) $this->team))) {
+            $notes[] = $t->name;
+        }
+        if (ctype_digit($this->person) && ($u = $this->workspace()->members()->find((int) $this->person))) {
+            $notes[] = $u->name;
+        }
+        [$contents, $filename, $mime] = $this->timesheet()->export(
+            $format === 'pdf' ? 'pdf' : 'xlsx', 'people', 'Timesheet by resource', $notes ?: ['All projects'],
+        );
+
+        return response()->streamDownload(fn () => print($contents), $filename, ['Content-Type' => $mime]);
+    }
+
     // -------------------------------------------------------------- export
 
     public function export(): StreamedResponse
@@ -399,6 +456,7 @@ class Index extends Component
             'upcoming' => $this->upcomingData(),
             'projects' => $this->projectsData(),
             'completed' => $this->completedData(),
+            'timesheet' => $this->timesheetData(),
             default => $this->incompleteData(),
         };
 

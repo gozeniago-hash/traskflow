@@ -328,6 +328,43 @@ class AccessTest extends TestCase
         Livewire::test(\App\Livewire\Portal\ProjectView::class, ['project' => $web])->assertDontSee('Brief')->assertSee('Figma');
     }
 
+    public function test_timesheets_show_and_export_recorded_time(): void
+    {
+        $admin = User::where('email', 'admin@taskflow.test')->first();
+        $client = User::where('email', 'client@brightside.test')->first();
+        $web = Project::where('name', 'Brightside Website Redesign')->first();
+        $task = $web->tasks()->whereNull('parent_id')->first();
+        $this->actingAs($admin);
+
+        $day = now(config('taskflow.timezone'))->startOfMonth()->addDays(2)->setTime(9, 0);
+        \App\Models\TimeEntry::create([
+            'project_id' => $web->id, 'task_id' => $task->id, 'user_id' => $admin->id,
+            'started_at' => $day->copy()->utc(), 'ended_at' => $day->copy()->addMinutes(90)->utc(),
+            'duration_seconds' => 5400, 'note' => 'Timesheet test entry', 'is_manual' => false,
+        ]);
+
+        $tab = Livewire::test(\App\Livewire\Projects\Timesheet::class, ['project' => $web])
+            ->set('range', 'this_month')
+            ->assertSee('Timesheet test entry');
+        $tab->call('export', 'xlsx')->assertFileDownloaded();
+        $tab->call('export', 'pdf')->assertFileDownloaded();
+
+        $sheet = new \App\Support\Timesheet($admin, $day->copy()->startOfMonth()->toDateString(), $day->copy()->endOfMonth()->toDateString(), [$web->id]);
+        [$pdf, $name, $mime] = $sheet->export('pdf', 'project', 'Test');
+        $this->assertStringStartsWith('%PDF-1.4', $pdf);
+        $this->assertSame('application/pdf', $mime);
+        [$xlsx] = $sheet->export('xlsx', 'people', 'Test');
+        $this->assertStringStartsWith("PK\x03\x04", $xlsx);
+
+        Livewire::test(\App\Livewire\Reports\Index::class)
+            ->set('report', 'timesheet')->set('range', 'this_month')
+            ->assertSee($admin->name)
+            ->call('exportTimesheet', 'xlsx')->assertFileDownloaded();
+
+        // Clients never reach the timesheet tab.
+        $this->actingAs($client)->get(route('projects.show', [$web, 'timesheet']))->assertRedirect();
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);
