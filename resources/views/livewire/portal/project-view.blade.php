@@ -21,9 +21,10 @@
             <x-progress-bar :percent="$progress['percent']" :color="$p->color" class="h-2" />
         </div>
         <nav class="-mb-5 mt-5 flex gap-5 border-t border-gray-100 pt-3">
-            @foreach (['overview' => 'Overview', 'tasks' => 'Tasks', 'files' => 'Files'] as $key => $label)
+            @foreach (['overview' => 'Overview', 'tasks' => 'Tasks', 'docs' => 'Docs', 'files' => 'Files'] as $key => $label)
                 <button wire:click="$set('tab', '{{ $key }}')" class="tab {{ $tab === $key ? 'tab-active' : '' }}">
                     {{ $label }}
+                    @if ($key === 'docs' && $docs->count())<span class="ml-1 rounded-full bg-gray-100 px-1.5 text-[11px] text-ink-500">{{ $docs->count() }}</span>@endif
                     @if ($key === 'tasks' && $approvals->count())<span class="ml-1 rounded-full bg-violet-100 px-1.5 text-[11px] text-violet-700">{{ $approvals->count() }}</span>@endif
                 </button>
             @endforeach
@@ -89,6 +90,28 @@
                     </section>
                 </div>
             </div>
+        @elseif ($tab === 'docs')
+            @if ($docs->isEmpty())
+                <x-empty class="bg-white" icon="list" title="No documents shared yet" text="Requirements and specs the team shares with you will appear here." />
+            @else
+                <div class="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
+                    <nav class="flex gap-1 overflow-x-auto lg:flex-col">
+                        @foreach ($docs as $d)
+                            <button wire:key="pd-{{ $d->id }}" wire:click="openDoc({{ $d->id }})" class="shrink-0 rounded-md px-3 py-2 text-left text-sm {{ $doc && $doc->id === $d->id ? 'bg-white font-medium shadow-sm ring-1 ring-gray-200' : 'text-ink-700 hover:bg-white' }}">
+                                <span class="block max-w-52 truncate">{{ $d->title }}</span>
+                                <span class="hidden text-[11px] font-normal text-ink-500 lg:block">Updated {{ $d->updated_at?->format('M j') }}</span>
+                            </button>
+                        @endforeach
+                    </nav>
+                    @if ($doc)
+                        <article class="card bg-white px-6 py-6 sm:px-10">
+                            <h1 class="text-2xl font-semibold">{{ $doc->title }}</h1>
+                            <p class="mb-6 mt-1 text-xs text-ink-500">Last updated {{ $doc->updated_at?->format('F j, Y') }}@if ($doc->editor) by {{ $doc->editor->name }}@endif</p>
+                            <div wire:key="pdc-{{ $doc->id }}-{{ $doc->updated_at?->timestamp }}" class="doc-content trix-content" x-data x-init="tfDocImages($el, 'portal-doc-{{ $doc->id }}')">{!! \App\Support\HtmlSanitizer::clean($doc->content) !!}</div>
+                        </article>
+                    @endif
+                </div>
+            @endif
         @elseif ($tab === 'tasks')
             @forelse ($sections as $section)
                 <section wire:key="ps-{{ $section->id }}" class="mb-6">

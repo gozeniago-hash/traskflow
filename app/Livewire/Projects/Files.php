@@ -44,7 +44,7 @@ class Files extends Component
     public function toggleShare(int $id): void
     {
         $this->authorize('update', $this->project);
-        $attachment = $this->project->attachments()->whereNull('task_id')->findOrFail($id);
+        $attachment = $this->project->attachments()->whereNull('task_id')->whereNull('doc_id')->findOrFail($id);
         $attachment->update(['client_visible' => ! $attachment->client_visible]);
     }
 
@@ -59,7 +59,7 @@ class Files extends Component
     public function render()
     {
         return view('livewire.projects.files', [
-            'files' => $this->project->attachments()->with(['user', 'task', 'comment'])->latest()->get(),
+            'files' => $this->project->attachments()->with(['user', 'task', 'comment', 'doc'])->latest()->get(),
         ]);
     }
 }

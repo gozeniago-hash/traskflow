@@ -43,7 +43,7 @@ class Project extends Model
 
     public const COLORS = ['#f06a5a', '#fd9a00', '#eec300', '#62d26f', '#37c5ab', '#20aaea', '#4573d2', '#8d84e8', '#aa62e3', '#e362e3', '#ea4e9d', '#6d6e6f'];
 
-    public const VIEWS = ['overview' => 'Overview', 'list' => 'List', 'board' => 'Board', 'calendar' => 'Calendar', 'files' => 'Files'];
+    public const VIEWS = ['overview' => 'Overview', 'list' => 'List', 'board' => 'Board', 'calendar' => 'Calendar', 'docs' => 'Docs', 'files' => 'Files'];
 
     protected $fillable = [
         'workspace_id', 'team_id', 'client_id', 'owner_id', 'name', 'description', 'color', 'status',
@@ -110,6 +110,11 @@ class Project extends Model
     public function timeEntries(): HasMany
     {
         return $this->hasMany(TimeEntry::class);
+    }
+
+    public function docs(): HasMany
+    {
+        return $this->hasMany(ProjectDoc::class)->orderBy('position')->orderBy('id');
     }
 
     public function statusUpdates(): HasMany

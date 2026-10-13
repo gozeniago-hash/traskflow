@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Attachment;
 use App\Models\Project;
+use App\Models\ProjectDoc;
 use App\Models\Task;
 use App\Models\User;
 use Database\Seeders\DemoSeeder;
@@ -122,5 +123,23 @@ class AccessTest extends TestCase
         $this->actingAs($client)->get(route('attachments.download', $hidden))->assertForbidden();
         $this->actingAs($client)->get(route('attachments.download', $shared))->assertOk();
         $this->actingAs($owner)->get(route('attachments.download', [$hidden, 'inline' => 1]))->assertOk()->assertHeader('Content-Type', 'application/pdf');
+    }
+
+    public function test_docs_are_sanitized_and_only_shared_docs_reach_the_portal(): void
+    {
+        $owner = User::where('email', 'admin@taskflow.test')->first();
+        $client = User::where('email', 'client@brightside.test')->first();
+        $project = Project::where('name', 'Brightside Website Redesign')->first();
+
+        $shared = $project->docs()->create(['title' => 'Shared spec', 'client_visible' => true, 'content' => '<div>Hello<script>alert(1)</script><img src="x" onerror="alert(1)"></div>']);
+        $project->docs()->create(['title' => 'Secret internal notes', 'client_visible' => false, 'content' => '<div>internal</div>']);
+
+        $this->assertStringNotContainsString('<script', $shared->fresh()->content);
+        $this->assertStringNotContainsString('onerror', $shared->fresh()->content);
+
+        $this->actingAs($owner)->get(route('projects.show', [$project, 'docs']))->assertOk()->assertSee('Shared spec');
+
+        $this->actingAs($client)->get(route('portal.projects.show', ['project' => $project, 'tab' => 'docs', 'doc' => $shared->id]))
+            ->assertOk()->assertSee('Shared spec')->assertDontSee('Secret internal notes');
     }
 }

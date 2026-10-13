@@ -1,4 +1,6 @@
 import Sortable from 'sortablejs';
+import 'trix';
+import 'trix/dist/trix.css';
 
 window.Sortable = Sortable;
 
@@ -132,3 +134,118 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 });
+
+
+/**
+ * Project doc editor (Trix). Autosaves 1.5s after typing stops, uploads images/files dropped
+ * or pasted into the doc, and warns before overwriting someone else's newer changes.
+ */
+document.addEventListener('alpine:init', () => {
+    window.Alpine.data('tfDocEditor', (savedAt = '') => ({
+        status: savedAt ? 'Saved ' + savedAt : '',
+        conflict: null,
+        dirty: false,
+        uploading: 0,
+        timer: null,
+        init() {
+            this.onChange = () => {
+                this.dirty = true;
+                this.status = 'Editing…';
+                this.schedule();
+            };
+            this.$refs.trix.addEventListener('trix-change', this.onChange);
+            this.$refs.title.addEventListener('input', this.onChange);
+            this.$refs.trix.addEventListener('trix-attachment-add', (e) => this.upload(e.attachment));
+            this.beforeUnload = (e) => {
+                if (this.dirty || this.uploading) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            };
+            window.addEventListener('beforeunload', this.beforeUnload);
+            // wire:navigate page changes don't fire beforeunload.
+            this.onNavigate = (e) => {
+                if ((this.dirty || this.uploading) && !confirm('You have unsaved changes in this doc. Leave anyway?')) e.preventDefault();
+            };
+            document.addEventListener('livewire:navigate', this.onNavigate);
+            this.$nextTick(() => this.$refs.trix.focus());
+        },
+        destroy() {
+            clearTimeout(this.timer);
+            window.removeEventListener('beforeunload', this.beforeUnload);
+            document.removeEventListener('livewire:navigate', this.onNavigate);
+        },
+        schedule() {
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => this.save(), 1500);
+        },
+        async save(force = false) {
+            clearTimeout(this.timer);
+            if (this.uploading > 0) {
+                this.schedule();
+                return false;
+            }
+            this.status = 'Saving…';
+            try {
+                const res = await this.$wire.autosave(this.$refs.input.value, this.$refs.title.value, force);
+                if (res && res.conflict) {
+                    this.conflict = res.by;
+                    this.status = 'Not saved';
+                    return false;
+                }
+                this.conflict = null;
+                this.dirty = false;
+                this.status = 'Saved ' + (res?.savedAt || '');
+                return true;
+            } catch (err) {
+                this.status = 'Could not save — check your connection';
+                this.schedule();
+                return false;
+            }
+        },
+        async done() {
+            if (this.dirty || this.uploading) {
+                const ok = await this.save();
+                if (!ok) return;
+            }
+            this.dirty = false;
+            await this.$wire.finishEdit();
+        },
+        upload(attachment) {
+            if (!attachment.file) return;
+            this.uploading++;
+            this.status = 'Uploading…';
+            this.$wire.upload(
+                'docUpload',
+                attachment.file,
+                async () => {
+                    try {
+                        const r = await this.$wire.storeDocUpload();
+                        attachment.setAttributes({ url: r.url, href: r.href });
+                    } catch (e) {
+                        attachment.remove();
+                    }
+                    this.uploading--;
+                    this.onChange();
+                },
+                () => {
+                    attachment.remove();
+                    this.uploading--;
+                    window.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Upload failed. Files must be under the size limit.', type: 'error' } }));
+                },
+                (e) => attachment.setUploadProgress(e.detail.progress),
+            );
+        },
+    }));
+});
+
+/** Make images inside rendered docs open in the image viewer. */
+window.tfDocImages = function (root, group) {
+    root.querySelectorAll('img').forEach((img) => {
+        img.dataset.lightbox = group;
+        img.dataset.src = img.getAttribute('src');
+        img.dataset.download = img.getAttribute('src').replace('?inline=1', '');
+        img.dataset.name = img.getAttribute('alt') || img.closest('figure')?.querySelector('figcaption')?.textContent?.trim() || 'Image';
+        img.classList.add('cursor-zoom-in');
+    });
+};

@@ -12,7 +12,7 @@ class Attachment extends Model
     /** Image types shown in the in-app viewer. SVG is excluded on purpose: it can carry scripts. */
     public const VIEWABLE_IMAGES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp', 'image/avif'];
 
-    protected $fillable = ['project_id', 'task_id', 'comment_id', 'user_id', 'disk', 'path', 'original_name', 'mime_type', 'size', 'client_visible'];
+    protected $fillable = ['project_id', 'task_id', 'comment_id', 'doc_id', 'user_id', 'disk', 'path', 'original_name', 'mime_type', 'size', 'client_visible'];
 
     protected function casts(): array
     {
@@ -26,7 +26,7 @@ class Attachment extends Model
         });
     }
 
-    public static function storeUpload(UploadedFile $file, Project $project, User $user, ?Task $task = null, bool $clientVisible = false, ?Comment $comment = null): self
+    public static function storeUpload(UploadedFile $file, Project $project, User $user, ?Task $task = null, bool $clientVisible = false, ?Comment $comment = null, ?ProjectDoc $doc = null): self
     {
         $path = $file->store('attachments/'.$project->id, 'local');
 
@@ -34,6 +34,7 @@ class Attachment extends Model
             'project_id' => $project->id,
             'task_id' => $task?->id,
             'comment_id' => $comment?->id,
+            'doc_id' => $doc?->id,
             'user_id' => $user->id,
             'disk' => 'local',
             'path' => $path,
@@ -54,6 +55,11 @@ class Attachment extends Model
         return $this->belongsTo(Task::class);
     }
 
+    public function doc(): BelongsTo
+    {
+        return $this->belongsTo(ProjectDoc::class, 'doc_id');
+    }
+
     public function comment(): BelongsTo
     {
         return $this->belongsTo(Comment::class);
@@ -66,6 +72,9 @@ class Attachment extends Model
 
     public function isVisibleToClient(): bool
     {
+        if ($this->doc_id) {
+            return (bool) $this->doc?->client_visible;
+        }
         if ($this->comment_id) {
             return $this->comment && ! $this->comment->is_internal && (bool) $this->task?->client_visible;
         }

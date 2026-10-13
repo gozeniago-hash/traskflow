@@ -38,12 +38,12 @@
                                 @endif
                             </td>
                             <td class="hidden px-4 py-2.5 md:table-cell">
-                                @if ($f->task)<button wire:click="$dispatch('open-task', { id: {{ $f->task_id }} })" class="truncate text-ink-700 hover:underline">{{ $f->task->title }}</button>@if ($f->comment_id)<span class="ml-1 text-xs text-ink-500">(in a comment)</span>@endif @else <span class="text-ink-500">Project file</span>@endif
+                                @if ($f->task)<button wire:click="$dispatch('open-task', { id: {{ $f->task_id }} })" class="truncate text-ink-700 hover:underline">{{ $f->task->title }}</button>@if ($f->comment_id)<span class="ml-1 text-xs text-ink-500">(in a comment)</span>@endif @elseif ($f->doc_id) <span class="text-ink-500">In a doc</span>@else <span class="text-ink-500">Project file</span>@endif
                             </td>
                             <td class="hidden px-4 py-2.5 text-ink-500 sm:table-cell">{{ $f->user?->name }} · {{ $f->created_at->diffForHumans() }}</td>
                             <td class="px-4 py-2.5">
-                                @if ($f->task_id)
-                                    @if ($f->isVisibleToClient())<span class="pill bg-emerald-50 text-emerald-700">via task</span>@else<span class="text-xs text-ink-500">Hidden</span>@endif
+                                @if ($f->task_id || $f->doc_id)
+                                    @if ($f->isVisibleToClient())<span class="pill bg-emerald-50 text-emerald-700">{{ $f->doc_id ? 'via doc' : 'via task' }}</span>@else<span class="text-xs text-ink-500">Hidden</span>@endif
                                 @elseif ($project->portal_enabled)
                                     <button wire:click="toggleShare({{ $f->id }})" class="pill {{ $f->client_visible ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-ink-500' }}">
                                         <x-icon :name="$f->client_visible ? 'eye' : 'eye-off'" class="h-3 w-3" /> {{ $f->client_visible ? 'Shared' : 'Hidden' }}

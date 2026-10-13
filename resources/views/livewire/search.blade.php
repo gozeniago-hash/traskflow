@@ -17,6 +17,19 @@
                 @endforelse
             </ul>
 
+            @if ($docs->isNotEmpty())
+                <h2 class="mb-2 text-sm font-semibold">Docs <span class="font-normal text-ink-500">{{ $docs->count() }}</span></h2>
+                <ul class="mb-8 divide-y divide-gray-100 border-y border-gray-100">
+                    @foreach ($docs as $d)
+                        <li wire:key="sd-{{ $d->id }}"><a href="{{ route('projects.show', [$d->project_id, 'docs']) }}?doc={{ $d->id }}" wire:navigate class="block px-2 py-2 hover:bg-gray-50">
+                            <span class="flex items-center gap-2 text-sm font-medium"><x-icon name="list" class="h-4 w-4 text-ink-300" />{{ $d->title }}
+                                <span class="ml-auto max-w-40 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white" style="background-color: {{ $d->project->color }}">{{ $d->project->name }}</span></span>
+                            <span class="mt-0.5 block truncate pl-6 text-xs text-ink-500">{{ $d->excerpt(160) }}</span>
+                        </a></li>
+                    @endforeach
+                </ul>
+            @endif
+
             <h2 class="mb-2 text-sm font-semibold">Tasks <span class="font-normal text-ink-500">{{ $tasks->count() }}</span></h2>
             <ul class="divide-y divide-gray-100 border-y border-gray-100">
                 @forelse ($tasks as $t)

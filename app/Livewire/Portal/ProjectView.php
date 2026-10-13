@@ -29,6 +29,9 @@ class ProjectView extends Component
     #[Url(as: 'task', except: null)]
     public ?int $openTaskId = null;
 
+    #[Url(as: 'doc', except: null)]
+    public ?int $docId = null;
+
     public string $comment = '';
     public string $feedback = '';
     public array $uploads = [];
@@ -45,7 +48,7 @@ class ProjectView extends Component
     {
         $this->authorize('view', $project);
         $this->project = $project;
-        if (! in_array($this->tab, ['overview', 'tasks', 'files'], true)) {
+        if (! in_array($this->tab, ['overview', 'tasks', 'docs', 'files'], true)) {
             $this->tab = 'overview';
         }
     }
@@ -65,6 +68,13 @@ class ProjectView extends Component
         $this->openTaskId = $id;
         $this->reset(['comment', 'feedback', 'uploads', 'commentFiles', 'newCommentFiles']);
         $this->resetValidation();
+    }
+
+    public function openDoc(int $id): void
+    {
+        $this->project->docs()->where('client_visible', true)->findOrFail($id);
+        $this->docId = $id;
+        $this->tab = 'docs';
     }
 
     public function closeTask(): void
@@ -203,9 +213,14 @@ class ProjectView extends Component
             ->whereHas('task', fn ($q) => $q->where('client_visible', true))
             ->where(fn ($q) => $q->whereNull('comment_id')->orWhereHas('comment', fn ($c) => $c->where('is_internal', false)))
             ->with(['task', 'user'])->latest()->get();
-        $projectFiles = $project->attachments()->whereNull('task_id')->where('client_visible', true)->with('user')->latest()->get();
+        $projectFiles = $project->attachments()->whereNull('task_id')->whereNull('doc_id')->where('client_visible', true)->with('user')->latest()->get();
+
+        $docs = $project->docs()->where('client_visible', true)->with('editor')->get();
+        $doc = $this->tab === 'docs' ? ($docs->firstWhere('id', $this->docId) ?? $docs->first()) : null;
 
         return view('livewire.portal.project-view', [
+            'docs' => $docs,
+            'doc' => $doc,
             'p' => $project,
             'progress' => $project->progress(clientOnly: true),
             'updates' => $project->statusUpdates()->where('client_visible', true)->with('user')->limit(20)->get(),
