@@ -25,13 +25,20 @@
                     @foreach ($files as $f)
                         <tr wire:key="f-{{ $f->id }}">
                             <td class="px-4 py-2.5">
-                                <a href="{{ route('attachments.download', [$f, 'inline' => 1]) }}" target="_blank" class="flex items-center gap-2.5 hover:underline">
-                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 text-[10px] font-bold text-ink-500">{{ \Illuminate\Support\Str::limit($f->extension(), 4, '') }}</span>
-                                    <span class="min-w-0"><span class="block truncate font-medium">{{ $f->original_name }}</span><span class="text-xs text-ink-500">{{ $f->humanSize() }}</span></span>
-                                </a>
+                                @if ($f->isImage())
+                                    <a href="{{ $f->viewUrl() }}" data-lightbox="project-files" data-src="{{ $f->viewUrl() }}" data-download="{{ $f->downloadUrl() }}" data-name="{{ $f->original_name }}" data-meta="{{ $f->humanSize() }} · {{ $f->user?->name }}" class="flex cursor-zoom-in items-center gap-2.5 hover:underline">
+                                        <img src="{{ $f->viewUrl() }}" alt="" loading="lazy" class="h-9 w-9 shrink-0 rounded object-cover ring-1 ring-gray-200">
+                                        <span class="min-w-0"><span class="block truncate font-medium">{{ $f->original_name }}</span><span class="text-xs text-ink-500">{{ $f->humanSize() }}</span></span>
+                                    </a>
+                                @else
+                                    <a href="{{ $f->isPdf() ? $f->viewUrl() : $f->downloadUrl() }}" @if ($f->isPdf()) target="_blank" rel="noopener" @endif class="flex items-center gap-2.5 hover:underline">
+                                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded text-[10px] font-bold {{ $f->isPdf() ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-ink-500' }}">{{ \Illuminate\Support\Str::limit($f->extension(), 4, '') }}</span>
+                                        <span class="min-w-0"><span class="block truncate font-medium">{{ $f->original_name }}</span><span class="text-xs text-ink-500">{{ $f->humanSize() }}</span></span>
+                                    </a>
+                                @endif
                             </td>
                             <td class="hidden px-4 py-2.5 md:table-cell">
-                                @if ($f->task)<button wire:click="$dispatch('open-task', { id: {{ $f->task_id }} })" class="truncate text-ink-700 hover:underline">{{ $f->task->title }}</button>@else <span class="text-ink-500">Project file</span>@endif
+                                @if ($f->task)<button wire:click="$dispatch('open-task', { id: {{ $f->task_id }} })" class="truncate text-ink-700 hover:underline">{{ $f->task->title }}</button>@if ($f->comment_id)<span class="ml-1 text-xs text-ink-500">(in a comment)</span>@endif @else <span class="text-ink-500">Project file</span>@endif
                             </td>
                             <td class="hidden px-4 py-2.5 text-ink-500 sm:table-cell">{{ $f->user?->name }} · {{ $f->created_at->diffForHumans() }}</td>
                             <td class="px-4 py-2.5">

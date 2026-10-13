@@ -19,7 +19,10 @@
                 <div wire:key="day-{{ $key }}" class="group min-h-28 border-b border-r border-gray-100 p-1.5 {{ $day->month !== $start->month ? 'bg-gray-50/70' : '' }}">
                     <div class="mb-1 flex items-center justify-between">
                         <span class="flex h-6 w-6 items-center justify-center rounded-full text-xs {{ $day->isToday() ? 'bg-coral-500 font-semibold text-white' : ($day->month !== $start->month ? 'text-ink-300' : 'text-ink-700') }}">{{ $day->day }}</span>
-                        <button wire:click="startAdding('{{ $key }}')" class="invisible rounded p-0.5 text-ink-500 hover:bg-gray-100 group-hover:visible" title="Add task"><x-icon name="plus" class="h-3.5 w-3.5" /></button>
+                        <span class="invisible flex gap-0.5 group-hover:visible">
+                            <button wire:click="startAdding('{{ $key }}')" class="rounded p-0.5 text-ink-500 hover:bg-gray-100" title="Quick add"><x-icon name="plus" class="h-3.5 w-3.5" /></button>
+                            <button wire:click="$dispatch('create-task', { projectId: {{ $project->id }}, dueDate: '{{ $key }}' })" class="rounded p-0.5 text-ink-500 hover:bg-gray-100" title="Add with details and attachments"><x-icon name="paperclip" class="h-3.5 w-3.5" /></button>
+                        </span>
                     </div>
                     <div class="space-y-1">
                         @foreach ($tasks[$key] ?? [] as $task)

@@ -17,11 +17,17 @@ class AttachmentController extends Controller
         $disk = Storage::disk($attachment->disk);
         abort_unless($disk->exists($attachment->path), 404);
 
-        // Images and PDFs open inline; everything else downloads.
-        $inline = $request->boolean('inline') && str($attachment->mime_type)->startsWith(['image/', 'application/pdf']);
+        // Safe images and PDFs display in the browser; everything else downloads.
+        $inline = $request->boolean('inline') && ($attachment->isImage() || $attachment->isPdf());
 
-        return $inline
-            ? $disk->response($attachment->path, $attachment->original_name)
-            : $disk->download($attachment->path, $attachment->original_name);
+        $headers = ['X-Content-Type-Options' => 'nosniff'];
+        if (! $inline) {
+            return $disk->download($attachment->path, $attachment->original_name, $headers);
+        }
+
+        return $disk->response($attachment->path, $attachment->original_name, $headers + [
+            'Content-Type' => $attachment->displayMimeType(),
+            'Cache-Control' => 'private, max-age=86400',
+        ], 'inline');
     }
 }

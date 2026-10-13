@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Models\Attachment;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AccessTest extends TestCase
@@ -102,5 +105,22 @@ class AccessTest extends TestCase
 
         $client = User::where('email', 'client@brightside.test')->first();
         $this->actingAs($client)->get(route('reports'))->assertRedirect(route('portal.dashboard'));
+    }
+
+    public function test_clients_cannot_open_files_from_internal_comments(): void
+    {
+        Storage::fake('local');
+        $owner = User::where('email', 'admin@taskflow.test')->first();
+        $client = User::where('email', 'client@brightside.test')->first();
+        $task = Task::where('title', 'Visual design: homepage and pricing')->first(); // shared with client
+
+        $internal = $task->comments()->create(['user_id' => $owner->id, 'body' => 'internal', 'is_internal' => true]);
+        $public = $task->comments()->create(['user_id' => $owner->id, 'body' => 'public', 'is_internal' => false]);
+        $hidden = Attachment::storeUpload(UploadedFile::fake()->create('notes.pdf', 10, 'application/pdf'), $task->project, $owner, $task, false, $internal);
+        $shared = Attachment::storeUpload(UploadedFile::fake()->create('mockup.pdf', 10, 'application/pdf'), $task->project, $owner, $task, false, $public);
+
+        $this->actingAs($client)->get(route('attachments.download', $hidden))->assertForbidden();
+        $this->actingAs($client)->get(route('attachments.download', $shared))->assertOk();
+        $this->actingAs($owner)->get(route('attachments.download', [$hidden, 'inline' => 1]))->assertOk()->assertHeader('Content-Type', 'application/pdf');
     }
 }

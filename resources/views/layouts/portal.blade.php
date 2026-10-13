@@ -41,6 +41,7 @@
     {{ $slot }}
 </main>
 @include('layouts.toasts')
+@include('layouts.lightbox')
 @livewireScripts
 </body>
 </html>

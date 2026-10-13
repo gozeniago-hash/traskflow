@@ -138,16 +138,14 @@
                     </div>
                     <span wire:loading wire:target="uploads" class="text-xs text-ink-500">Uploading…</span>
                     @error('uploads.*')<p class="error">{{ $message }}</p>@enderror
-                    <div class="grid gap-2 sm:grid-cols-2">
-                        @foreach ($task->attachments as $a)
-                            <div wire:key="att-{{ $a->id }}" class="group flex items-center gap-2 rounded-md border border-gray-200 p-2">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 text-[10px] font-bold text-ink-500">{{ \Illuminate\Support\Str::limit($a->extension(), 4, '') }}</span>
-                                <a href="{{ route('attachments.download', [$a, 'inline' => 1]) }}" target="_blank" class="min-w-0 flex-1">
-                                    <span class="block truncate text-sm hover:underline">{{ $a->original_name }}</span>
-                                    <span class="text-xs text-ink-500">{{ $a->humanSize() }} · {{ $a->user?->firstName() }}</span>
-                                </a>
-                                @if ($canEdit)<button wire:click="deleteAttachment({{ $a->id }})" wire:confirm="Delete this file?" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="trash" class="h-3.5 w-3.5" /></button>@endif
-                            </div>
+                    @if ($task->ownAttachments->isEmpty())
+                        <p class="text-xs text-ink-500">No files yet.@if ($canEdit) Use Attach, or drop files into a comment.@endif</p>
+                    @endif
+                    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        @foreach ($task->ownAttachments as $a)
+                            <x-attachment-tile wire:key="att-{{ $a->id }}" :attachment="$a" group="task-{{ $task->id }}">
+                                @if ($canEdit)<button wire:click="deleteAttachment({{ $a->id }})" wire:confirm="Delete this file?" class="shrink-0 text-ink-500 opacity-0 hover:text-red-600 group-hover:opacity-100" title="Delete"><x-icon name="trash" class="h-3.5 w-3.5" /></button>@endif
+                            </x-attachment-tile>
                         @endforeach
                     </div>
                 </div>
@@ -227,7 +225,14 @@
                                             <button wire:click="deleteComment({{ $c->id }})" wire:confirm="Delete this comment?" class="invisible ml-auto text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="trash" class="h-3 w-3" /></button>
                                         @endif
                                     </div>
-                                    <p class="mt-1 whitespace-pre-line break-words text-sm text-ink-800">{{ $c->body }}</p>
+                                    @if ($c->body !== '')<p class="mt-1 whitespace-pre-line break-words text-sm text-ink-800">{{ $c->body }}</p>@endif
+                                    @if ($c->attachments->isNotEmpty())
+                                        <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                            @foreach ($c->attachments as $ca)
+                                                <x-attachment-tile wire:key="ca-{{ $ca->id }}" :attachment="$ca" group="task-{{ $task->id }}" size="sm" />
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </div>
                             </li>
                         @else
@@ -243,9 +248,25 @@
         </div>
 
         {{-- Comment box --}}
-        <form wire:submit="addComment" class="border-t border-gray-200 bg-white p-4">
-            <textarea wire:model="comment" rows="2" placeholder="Ask a question or post an update…" class="input" x-on:keydown.meta.enter="$wire.addComment()" x-on:keydown.ctrl.enter="$wire.addComment()"></textarea>
+        <form wire:submit="addComment" class="border-t border-gray-200 bg-white p-4"
+              x-data="{ drag: false }"
+              x-on:dragover.prevent="drag = true" x-on:dragleave.prevent="drag = false"
+              x-on:drop.prevent="drag = false; $refs.cpicker.files = $event.dataTransfer.files; $refs.cpicker.dispatchEvent(new Event('change'))"
+              x-on:paste="if ($event.clipboardData.files.length) { $refs.cpicker.files = $event.clipboardData.files; $refs.cpicker.dispatchEvent(new Event('change')) }">
+            <div class="rounded-md border transition" :class="drag ? 'border-coral-400 ring-2 ring-coral-100' : 'border-gray-300'">
+                <textarea wire:model="comment" rows="2" placeholder="Ask a question or post an update… (drop or paste images here)" class="block w-full resize-none rounded-t-md border-0 px-3 py-2 text-sm focus:ring-0 focus:outline-none" x-on:keydown.meta.enter="$wire.addComment()" x-on:keydown.ctrl.enter="$wire.addComment()"></textarea>
+                <x-upload-queue :files="$commentFiles" remove="removeCommentFile" class="px-3 pb-2" />
+                <div class="flex items-center gap-2 border-t border-gray-100 px-2 py-1">
+                    <label class="flex cursor-pointer items-center gap-1 rounded px-1.5 py-1 text-xs text-ink-500 hover:bg-gray-100 hover:text-ink-900" title="Attach files or images">
+                        <x-icon name="paperclip" class="h-4 w-4" /> Attach
+                        <input type="file" x-ref="cpicker" wire:model="newCommentFiles" multiple class="hidden">
+                    </label>
+                    <span wire:loading wire:target="newCommentFiles" class="text-xs text-ink-500">Uploading…</span>
+                </div>
+            </div>
             @error('comment')<p class="error">{{ $message }}</p>@enderror
+            @error('newCommentFiles.*')<p class="error">{{ $message }}</p>@enderror
+            @error('commentFiles.*')<p class="error">{{ $message }}</p>@enderror
             <div class="mt-2 flex items-center justify-between gap-2">
                 @if ($task->client_visible)
                     <label class="flex items-center gap-2 text-xs text-ink-700">
@@ -254,7 +275,7 @@
                 @else
                     <span class="text-xs text-ink-500">Internal comment</span>
                 @endif
-                <button class="btn-primary btn">Comment</button>
+                <button class="btn-primary btn" wire:loading.attr="disabled" wire:target="addComment,newCommentFiles">Comment</button>
             </div>
         </form>
     </aside>

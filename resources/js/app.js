@@ -68,3 +68,67 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 });
+
+/**
+ * Image viewer. Any element with data-lightbox="<group>" and data-src opens the viewer
+ * on click; every image in the same group on the page becomes part of the gallery.
+ */
+document.addEventListener(
+    'click',
+    (e) => {
+        const el = e.target.closest('[data-lightbox]');
+        if (!el || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        const group = el.dataset.lightbox;
+        const nodes = [...document.querySelectorAll('[data-lightbox]')].filter((n) => n.dataset.lightbox === group);
+        const seen = new Set();
+        const images = [];
+        nodes.forEach((n) => {
+            if (seen.has(n.dataset.src)) return;
+            seen.add(n.dataset.src);
+            images.push({ src: n.dataset.src, name: n.dataset.name || '', download: n.dataset.download || n.dataset.src, meta: n.dataset.meta || '' });
+        });
+        const index = Math.max(0, images.findIndex((i) => i.src === el.dataset.src));
+        window.dispatchEvent(new CustomEvent('lightbox', { detail: { images, index } }));
+    },
+    true,
+);
+
+document.addEventListener('alpine:init', () => {
+    window.Alpine.data('tfLightbox', () => ({
+        open: false,
+        images: [],
+        index: 0,
+        zoomed: false,
+        loading: false,
+        get current() {
+            return this.images[this.index] || {};
+        },
+        show(detail) {
+            this.images = detail.images || [];
+            this.index = detail.index || 0;
+            this.zoomed = false;
+            this.loading = true;
+            this.open = this.images.length > 0;
+            document.documentElement.classList.add('overflow-hidden');
+        },
+        close() {
+            this.open = false;
+            document.documentElement.classList.remove('overflow-hidden');
+        },
+        go(step) {
+            if (this.images.length < 2) return;
+            this.index = (this.index + step + this.images.length) % this.images.length;
+            this.zoomed = false;
+            this.loading = true;
+        },
+        key(e) {
+            if (!this.open) return;
+            if (e.key === 'Escape') { e.stopPropagation(); this.close(); }
+            if (e.key === 'ArrowRight') this.go(1);
+            if (e.key === 'ArrowLeft') this.go(-1);
+        },
+    }));
+});

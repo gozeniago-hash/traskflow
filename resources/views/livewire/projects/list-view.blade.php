@@ -63,6 +63,7 @@
                     <div class="flex items-center gap-2 border-b border-gray-100 px-2 py-1.5">
                         <x-icon name="plus" class="ml-0.5 h-4 w-4 text-ink-300" />
                         <input wire:model="newTask.{{ $section->id }}" wire:keydown.enter="addTask({{ $section->id }})" placeholder="Add task…" class="w-full border-0 bg-transparent p-0 text-sm placeholder:text-ink-500 focus:ring-0 focus:outline-none">
+                        <button type="button" wire:click="$dispatch('create-task', { projectId: {{ $project->id }}, sectionId: {{ $section->id }} })" class="shrink-0 rounded p-1 text-ink-500 hover:bg-gray-100 hover:text-ink-900" title="Add task with details and attachments"><x-icon name="paperclip" class="h-4 w-4" /></button>
                     </div>
                 @endunless
             </section>

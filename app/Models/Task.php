@@ -84,9 +84,16 @@ class Task extends Model
         return $this->hasMany(Comment::class)->oldest();
     }
 
+    /** All files on the task, including ones posted in comments. */
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class)->latest();
+    }
+
+    /** Files attached to the task itself (not inside a comment). */
+    public function ownAttachments(): HasMany
+    {
+        return $this->hasMany(Attachment::class)->whereNull('comment_id')->latest();
     }
 
     public function timeEntries(): HasMany

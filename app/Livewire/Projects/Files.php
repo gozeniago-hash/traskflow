@@ -59,7 +59,7 @@ class Files extends Component
     public function render()
     {
         return view('livewire.projects.files', [
-            'files' => $this->project->attachments()->with(['user', 'task'])->latest()->get(),
+            'files' => $this->project->attachments()->with(['user', 'task', 'comment'])->latest()->get(),
         ]);
     }
 }

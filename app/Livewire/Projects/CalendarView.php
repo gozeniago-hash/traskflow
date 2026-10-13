@@ -32,6 +32,7 @@ class CalendarView extends Component
     }
 
     #[On('task-saved')]
+    #[On('timer-changed')]
     public function onTaskSaved(): void
     {
     }

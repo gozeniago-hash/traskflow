@@ -32,6 +32,8 @@ class ProjectView extends Component
     public string $comment = '';
     public string $feedback = '';
     public array $uploads = [];
+    public array $commentFiles = [];
+    public array $newCommentFiles = [];
 
     public bool $showRequest = false;
     public string $requestTitle = '';
@@ -61,7 +63,7 @@ class ProjectView extends Component
     {
         $this->sharedTask($id);
         $this->openTaskId = $id;
-        $this->reset(['comment', 'feedback', 'uploads']);
+        $this->reset(['comment', 'feedback', 'uploads', 'commentFiles', 'newCommentFiles']);
         $this->resetValidation();
     }
 
@@ -70,14 +72,41 @@ class ProjectView extends Component
         $this->openTaskId = null;
     }
 
+    public function updatedNewCommentFiles(): void
+    {
+        $this->validate(['newCommentFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]], [], ['newCommentFiles.*' => 'file']);
+        $this->commentFiles = array_merge($this->commentFiles, $this->newCommentFiles);
+        $this->newCommentFiles = [];
+    }
+
+    public function removeCommentFile(int $index): void
+    {
+        unset($this->commentFiles[$index]);
+        $this->commentFiles = array_values($this->commentFiles);
+    }
+
     public function addComment(): void
     {
         $task = $this->sharedTask($this->openTaskId);
         $this->authorize('comment', $task);
-        $this->validate(['comment' => ['required', 'string', 'max:5000']]);
-        $task->comments()->create(['user_id' => $this->me()->id, 'body' => trim($this->comment), 'is_internal' => false]);
-        $this->comment = '';
-        $this->toast('Comment sent to the team.');
+        $this->validate([
+            'comment' => ['nullable', 'string', 'max:5000'],
+            'commentFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')],
+        ], [], ['commentFiles.*' => 'file']);
+
+        if (trim($this->comment) === '' && ! $this->commentFiles) {
+            $this->addError('comment', 'Write a message or attach a file.');
+
+            return;
+        }
+
+        $comment = $task->comments()->create(['user_id' => $this->me()->id, 'body' => trim($this->comment), 'is_internal' => false]);
+        foreach ($this->commentFiles as $file) {
+            Attachment::storeUpload($file, $this->project, $this->me(), $task, false, $comment);
+        }
+
+        $this->reset(['comment', 'commentFiles', 'newCommentFiles']);
+        $this->toast('Message sent to the team.');
     }
 
     public function approve(): void
@@ -164,14 +193,16 @@ class ProjectView extends Component
         if ($this->openTaskId) {
             $openTask = $project->tasks()->where('client_visible', true)->with([
                 'assignee', 'section',
-                'comments' => fn ($q) => $q->where('is_internal', false)->with('user'),
-                'attachments.user',
+                'comments' => fn ($q) => $q->where('is_internal', false)->with(['user', 'attachments.user']),
+                'ownAttachments.user',
                 'subtasks' => fn ($q) => $q->where('client_visible', true),
             ])->find($this->openTaskId);
         }
 
         $taskFiles = Attachment::query()->where('project_id', $project->id)->whereNotNull('task_id')
-            ->whereHas('task', fn ($q) => $q->where('client_visible', true))->with(['task', 'user'])->latest()->get();
+            ->whereHas('task', fn ($q) => $q->where('client_visible', true))
+            ->where(fn ($q) => $q->whereNull('comment_id')->orWhereHas('comment', fn ($c) => $c->where('is_internal', false)))
+            ->with(['task', 'user'])->latest()->get();
         $projectFiles = $project->attachments()->whereNull('task_id')->where('client_visible', true)->with('user')->latest()->get();
 
         return view('livewire.portal.project-view', [

@@ -53,7 +53,10 @@
                 </div>
 
                 <div class="mt-2" x-data="{ adding: false }">
-                    <button x-show="!adding" x-on:click="adding = true; $nextTick(() => $refs.input.focus())" class="flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-ink-500 hover:bg-gray-200/60"><x-icon name="plus" /> Add task</button>
+                    <div x-show="!adding" class="flex items-center gap-1">
+                        <button x-on:click="adding = true; $nextTick(() => $refs.input.focus())" class="flex flex-1 items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-ink-500 hover:bg-gray-200/60"><x-icon name="plus" /> Add task</button>
+                        <button type="button" wire:click="$dispatch('create-task', { projectId: {{ $project->id }}, sectionId: {{ $section->id }} })" class="rounded-md p-1.5 text-ink-500 hover:bg-gray-200/60 hover:text-ink-900" title="Add task with details and attachments"><x-icon name="paperclip" class="h-4 w-4" /></button>
+                    </div>
                     <input x-cloak x-show="adding" x-ref="input" wire:model="newTask.{{ $section->id }}" wire:keydown.enter="addTask({{ $section->id }})" x-on:keydown.escape="adding = false" x-on:blur="adding = false" placeholder="Task name, then Enter" class="input input-sm">
                 </div>
             </div>

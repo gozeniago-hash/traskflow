@@ -39,6 +39,10 @@ class TaskPanel extends Component
     public bool $commentForClient = false;
     public array $uploads = [];
 
+    // Files attached to the comment being written
+    public array $commentFiles = [];
+    public array $newCommentFiles = [];
+
     // Manual time entry
     public string $manualDuration = '';
     public string $manualDate = '';
@@ -52,7 +56,7 @@ class TaskPanel extends Component
 
         $this->taskId = $task->id;
         $this->fillFrom($task);
-        $this->reset(['newSubtask', 'comment', 'uploads', 'manualDuration', 'manualNote']);
+        $this->reset(['newSubtask', 'comment', 'uploads', 'manualDuration', 'manualNote', 'commentFiles', 'newCommentFiles']);
         $this->manualDate = today()->toDateString();
         $this->commentForClient = false;
         $this->resetValidation();
@@ -214,18 +218,45 @@ class TaskPanel extends Component
         $this->saved();
     }
 
+    public function updatedNewCommentFiles(): void
+    {
+        $this->validate(['newCommentFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]], [], ['newCommentFiles.*' => 'file']);
+        $this->commentFiles = array_merge($this->commentFiles, $this->newCommentFiles);
+        $this->newCommentFiles = [];
+    }
+
+    public function removeCommentFile(int $index): void
+    {
+        unset($this->commentFiles[$index]);
+        $this->commentFiles = array_values($this->commentFiles);
+    }
+
     public function addComment(): void
     {
         $task = Task::with('project')->findOrFail($this->taskId);
         $this->authorize('comment', $task);
-        $this->validate(['comment' => ['required', 'string', 'max:10000']]);
+        $this->validate([
+            'comment' => ['nullable', 'string', 'max:10000'],
+            'commentFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')],
+        ], [], ['commentFiles.*' => 'file']);
 
-        $task->comments()->create([
+        if (trim($this->comment) === '' && ! $this->commentFiles) {
+            $this->addError('comment', 'Write a comment or attach a file.');
+
+            return;
+        }
+
+        $comment = $task->comments()->create([
             'user_id' => $this->me()->id,
             'body' => trim($this->comment),
             'is_internal' => ! ($this->commentForClient && $task->client_visible),
         ]);
-        $this->comment = '';
+
+        foreach ($this->commentFiles as $file) {
+            Attachment::storeUpload($file, $task->project, $this->me(), $task, false, $comment);
+        }
+
+        $this->reset(['comment', 'commentFiles', 'newCommentFiles']);
         $this->commentForClient = false;
         $this->saved();
     }
@@ -235,7 +266,8 @@ class TaskPanel extends Component
         $task = $this->task();
         $comment = $task->comments()->findOrFail($id);
         abort_unless($comment->user_id === $this->me()->id || $this->me()->isAdmin(), 403);
-        $comment->delete();
+        $comment->deleteWithFiles();
+        $this->saved();
     }
 
     public function updatedUploads(): void
@@ -251,7 +283,7 @@ class TaskPanel extends Component
 
     public function deleteAttachment(int $id): void
     {
-        $attachment = $this->task()->attachments()->findOrFail($id);
+        $attachment = $this->task()->ownAttachments()->findOrFail($id);
         $this->authorize('delete', $attachment);
         $attachment->delete();
         $this->saved();
@@ -350,7 +382,7 @@ class TaskPanel extends Component
 
         $task->load([
             'project.sections', 'parent', 'assignee', 'creator',
-            'subtasks.assignee', 'attachments.user', 'comments.user', 'activities.user',
+            'subtasks.assignee', 'ownAttachments.user', 'comments.user', 'comments.attachments.user', 'activities.user',
         ]);
 
         $timeline = $task->comments->map(fn ($c) => ['type' => 'comment', 'at' => $c->created_at, 'item' => $c])

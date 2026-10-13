@@ -117,15 +117,13 @@
             @if ($files->isEmpty())
                 <x-empty class="bg-white" icon="paperclip" title="No files shared yet" />
             @else
-                <div class="card divide-y divide-gray-100 bg-white">
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                     @foreach ($files as $f)
-                        <div wire:key="pf-{{ $f->id }}" class="flex items-center gap-3 px-4 py-3">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-gray-100 text-[10px] font-bold text-ink-500">{{ \Illuminate\Support\Str::limit($f->extension(), 4, '') }}</span>
-                            <div class="min-w-0 flex-1">
-                                <a href="{{ route('attachments.download', [$f, 'inline' => 1]) }}" target="_blank" class="block truncate text-sm font-medium hover:underline">{{ $f->original_name }}</a>
-                                <p class="text-xs text-ink-500">{{ $f->humanSize() }} · {{ $f->user?->name }} · {{ $f->created_at->format('M j, Y') }}@if ($f->task) · {{ $f->task->title }}@endif</p>
-                            </div>
-                            <a href="{{ route('attachments.download', $f) }}" class="btn-ghost btn px-1.5" title="Download"><x-icon name="download" /></a>
+                        <div wire:key="pf-{{ $f->id }}">
+                            <x-attachment-tile :attachment="$f" group="portal-files" class="bg-white">
+                                <a href="{{ $f->downloadUrl() }}" class="shrink-0 text-ink-500 hover:text-ink-900" title="Download"><x-icon name="download" class="h-3.5 w-3.5" /></a>
+                            </x-attachment-tile>
+                            @if ($f->task)<p class="mt-1 truncate px-0.5 text-[11px] text-ink-500">{{ $f->task->title }}</p>@endif
                         </div>
                     @endforeach
                 </div>
@@ -178,14 +176,11 @@
                 </div>
                 <span wire:loading wire:target="uploads" class="text-xs text-ink-500">Uploading…</span>
                 @error('uploads.*')<p class="error">{{ $message }}</p>@enderror
-                <div class="grid gap-2 sm:grid-cols-2">
-                    @forelse ($openTask->attachments as $a)
-                        <a href="{{ route('attachments.download', [$a, 'inline' => 1]) }}" target="_blank" class="flex items-center gap-2 rounded-md border border-gray-200 p-2 hover:bg-gray-50">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 text-[10px] font-bold text-ink-500">{{ \Illuminate\Support\Str::limit($a->extension(), 4, '') }}</span>
-                            <span class="min-w-0"><span class="block truncate text-sm">{{ $a->original_name }}</span><span class="text-xs text-ink-500">{{ $a->humanSize() }}</span></span>
-                        </a>
+                <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    @forelse ($openTask->ownAttachments as $a)
+                        <x-attachment-tile wire:key="pa-{{ $a->id }}" :attachment="$a" group="portal-task-{{ $openTask->id }}" />
                     @empty
-                        <p class="text-sm text-ink-500">No files.</p>
+                        <p class="col-span-full text-sm text-ink-500">No files.</p>
                     @endforelse
                 </div>
             </div>
@@ -198,17 +193,39 @@
                             <x-avatar :user="$c->user" size="sm" />
                             <div class="min-w-0 flex-1 rounded-lg bg-gray-50 px-3 py-2">
                                 <p class="text-xs"><span class="font-semibold">{{ $c->user?->name ?? 'Deleted user' }}</span> <span class="text-ink-500">{{ $c->created_at->diffForHumans() }}</span></p>
-                                <p class="mt-0.5 whitespace-pre-line break-words text-sm">{{ $c->body }}</p>
+                                @if ($c->body !== '')<p class="mt-0.5 whitespace-pre-line break-words text-sm">{{ $c->body }}</p>@endif
+                                @if ($c->attachments->isNotEmpty())
+                                    <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                        @foreach ($c->attachments as $ca)
+                                            <x-attachment-tile wire:key="pca-{{ $ca->id }}" :attachment="$ca" group="portal-task-{{ $openTask->id }}" size="sm" />
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
                         </li>
                     @empty
                         <li class="text-sm text-ink-500">No messages yet. Ask a question below.</li>
                     @endforelse
                 </ul>
-                <form wire:submit="addComment" class="mt-3">
-                    <textarea wire:model="comment" rows="2" placeholder="Write a message to the team…" class="input"></textarea>
+                <form wire:submit="addComment" class="mt-3"
+                      x-data="{ drag: false }"
+                      x-on:dragover.prevent="drag = true" x-on:dragleave.prevent="drag = false"
+                      x-on:drop.prevent="drag = false; $refs.pcpicker.files = $event.dataTransfer.files; $refs.pcpicker.dispatchEvent(new Event('change'))"
+                      x-on:paste="if ($event.clipboardData.files.length) { $refs.pcpicker.files = $event.clipboardData.files; $refs.pcpicker.dispatchEvent(new Event('change')) }">
+                    <div class="rounded-md border transition" :class="drag ? 'border-coral-400 ring-2 ring-coral-100' : 'border-gray-300'">
+                        <textarea wire:model="comment" rows="2" placeholder="Write a message to the team… (drop or paste images here)" class="block w-full resize-none rounded-t-md border-0 px-3 py-2 text-sm focus:ring-0 focus:outline-none"></textarea>
+                        <x-upload-queue :files="$commentFiles" remove="removeCommentFile" class="px-3 pb-2" />
+                        <div class="flex items-center gap-2 border-t border-gray-100 px-2 py-1">
+                            <label class="flex cursor-pointer items-center gap-1 rounded px-1.5 py-1 text-xs text-ink-500 hover:bg-gray-100 hover:text-ink-900">
+                                <x-icon name="paperclip" class="h-4 w-4" /> Attach
+                                <input type="file" x-ref="pcpicker" wire:model="newCommentFiles" multiple class="hidden">
+                            </label>
+                            <span wire:loading wire:target="newCommentFiles" class="text-xs text-ink-500">Uploading…</span>
+                        </div>
+                    </div>
                     @error('comment')<p class="error">{{ $message }}</p>@enderror
-                    <div class="mt-2 flex justify-end"><button class="btn-primary btn">Send</button></div>
+                    @error('newCommentFiles.*')<p class="error">{{ $message }}</p>@enderror
+                    <div class="mt-2 flex justify-end"><button class="btn-primary btn" wire:loading.attr="disabled" wire:target="addComment,newCommentFiles">Send</button></div>
                 </form>
             </div>
         </x-modal>

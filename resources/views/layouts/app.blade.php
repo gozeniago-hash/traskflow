@@ -109,7 +109,9 @@
 </div>
 
 <livewire:task-panel />
+<livewire:create-task />
 @include('layouts.toasts')
+@include('layouts.lightbox')
 @livewireScripts
 </body>
 </html>
