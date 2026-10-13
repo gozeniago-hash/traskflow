@@ -3,6 +3,7 @@
 namespace App\Livewire\Projects;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
@@ -11,7 +12,7 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class Show extends Component
 {
-    use InteractsWithWorkspace;
+    use InteractsWithWorkspace, LiveUpdates;
 
     public Project $project;
     public string $view = 'list';
@@ -19,6 +20,11 @@ class Show extends Component
     public bool $showEdit = false;
     public bool $showFields = false;
     public array $form = [];
+
+    protected function getListeners(): array
+    {
+        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+    }
 
     public function mount(Project $project, ?string $view = null): void
     {

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Activity;
 use App\Models\Project;
 use App\Models\Task;
@@ -19,7 +20,7 @@ use Livewire\Component;
 #[Title('My tasks')]
 class MyTasks extends Component
 {
-    use InteractsWithWorkspace;
+    use InteractsWithWorkspace, LiveUpdates;
 
     #[Url(except: 'incomplete')]
     public string $show = 'incomplete'; // incomplete | completed
@@ -30,6 +31,11 @@ class MyTasks extends Component
 
     #[On('task-saved')]
     #[On('timer-changed')]
+    protected function getListeners(): array
+    {
+        return [$this->workspaceChannel() => 'onRemoteChange'];
+    }
+
     public function onTaskSaved(): void
     {
     }

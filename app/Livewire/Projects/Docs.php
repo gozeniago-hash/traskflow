@@ -3,6 +3,7 @@
 namespace App\Livewire\Projects;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Attachment;
 use App\Models\DocRevision;
 use App\Models\Project;
@@ -21,7 +22,7 @@ use Livewire\WithFileUploads;
  */
 class Docs extends Component
 {
-    use InteractsWithWorkspace, WithFileUploads;
+    use InteractsWithWorkspace, LiveUpdates, WithFileUploads;
 
     public Project $project;
 
@@ -44,6 +45,11 @@ class Docs extends Component
 
     /** Image/file dropped into the editor (uploaded via $wire.upload). */
     public $docUpload;
+
+    protected function getListeners(): array
+    {
+        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+    }
 
     public function mount(Project $project): void
     {

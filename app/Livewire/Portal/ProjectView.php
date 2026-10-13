@@ -3,6 +3,7 @@
 namespace App\Livewire\Portal;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Activity;
 use App\Models\Attachment;
 use App\Models\Project;
@@ -19,7 +20,7 @@ use Livewire\WithFileUploads;
 #[Layout('layouts.portal')]
 class ProjectView extends Component
 {
-    use InteractsWithWorkspace, WithFileUploads;
+    use InteractsWithWorkspace, LiveUpdates, WithFileUploads;
 
     public Project $project;
 
@@ -43,6 +44,11 @@ class ProjectView extends Component
     public string $requestDetails = '';
     public string $requestDue = '';
     public array $requestFiles = [];
+
+    protected function getListeners(): array
+    {
+        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+    }
 
     public function mount(Project $project): void
     {

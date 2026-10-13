@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Activity;
 use App\Models\Attachment;
 use App\Models\ProjectField;
@@ -24,7 +25,7 @@ use Livewire\WithFileUploads;
  */
 class TaskPanel extends Component
 {
-    use InteractsWithWorkspace, WithFileUploads;
+    use InteractsWithWorkspace, LiveUpdates, WithFileUploads;
 
     #[Url(as: 'task', except: null)]
     public ?int $taskId = null;
@@ -48,6 +49,9 @@ class TaskPanel extends Component
     public array $commentFiles = [];
     public array $newCommentFiles = [];
 
+    /** Set when someone else changes the open task, so we can offer to reload its fields. */
+    public ?string $remoteChangeBy = null;
+
     /** Custom field inputs: field_id => value */
     public array $fieldValues = [];
 
@@ -55,6 +59,55 @@ class TaskPanel extends Component
     public string $manualDuration = '';
     public string $manualDate = '';
     public string $manualNote = '';
+
+    protected function getListeners(): array
+    {
+        return [$this->workspaceChannel() => 'onWorkspaceChange'];
+    }
+
+    /**
+     * Another person changed something in the workspace. Comments, subtasks, files and
+     * activity refresh on re-render; edited fields only reload when you choose to,
+     * so nothing you're typing gets overwritten.
+     */
+    public function onWorkspaceChange($event = null): void
+    {
+        if (! $this->taskId) {
+            $this->skipRender();
+
+            return;
+        }
+        $ids = array_map('intval', (array) ($event['taskIds'] ?? []));
+        $task = Task::find($this->taskId);
+        if (! $task) {
+            $this->taskId = null;
+
+            return;
+        }
+        if (! in_array($task->id, $ids, true) && ! in_array((int) $task->parent_id, $ids, true)) {
+            $this->skipRender();
+
+            return;
+        }
+
+        $fieldsChanged = $task->title !== $this->title
+            || (string) $task->description !== $this->description
+            || (string) $task->assignee_id !== $this->assignee_id
+            || ($task->due_date?->toDateString() ?? '') !== $this->due_date
+            || $task->priority !== $this->priority
+            || (string) $task->section_id !== $this->section_id;
+
+        if ($fieldsChanged) {
+            $this->remoteChangeBy = $event['actor'] ?? 'Someone';
+        }
+    }
+
+    public function reloadTask(): void
+    {
+        if ($this->taskId) {
+            $this->open($this->taskId);
+        }
+    }
 
     /** Opening a page with ?task=ID (e.g. from a ticket link) shows that task straight away. */
     public function mount(): void
@@ -76,6 +129,7 @@ class TaskPanel extends Component
         $this->authorize('view', $task);
 
         $this->taskId = $task->id;
+        $this->remoteChangeBy = null;
         $this->fillFrom($task);
         $this->reset(['newSubtask', 'comment', 'uploads', 'manualDuration', 'manualNote', 'commentFiles', 'newCommentFiles']);
         $this->manualDate = today()->toDateString();

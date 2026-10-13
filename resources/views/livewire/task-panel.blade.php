@@ -29,6 +29,13 @@
 
         <div class="flex-1 overflow-y-auto">
             <div class="px-6 py-5">
+                @if ($remoteChangeBy)
+                    <div class="mb-3 flex items-center gap-2 rounded-md bg-sky-50 px-3 py-2 text-sm text-sky-900 ring-1 ring-sky-200">
+                        <x-icon name="refresh" class="h-4 w-4 text-sky-600" />
+                        <span class="flex-1">{{ $remoteChangeBy }} just updated this task.</span>
+                        <button wire:click="reloadTask" class="font-medium underline">Show changes</button>
+                    </div>
+                @endif
                 @if ($task->parent)
                     <button wire:click="open({{ $task->parent->id }})" class="mb-2 flex items-center gap-1 text-xs text-ink-500 hover:text-ink-900">
                         <x-icon name="chevron-left" class="h-3 w-3" /> {{ $task->parent->title }}

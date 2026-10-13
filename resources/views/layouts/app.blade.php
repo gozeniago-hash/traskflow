@@ -98,6 +98,11 @@
                 <x-icon name="search" class="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <input name="q" value="{{ request('q') }}" placeholder="Search, or jump to a ticket (e.g. BWR-12)" class="h-8 w-full rounded-full border border-gray-200 bg-gray-50 pl-8 pr-3 text-sm focus:border-coral-400 focus:bg-white focus:ring-2 focus:ring-coral-100 focus:outline-none">
             </form>
+            @if (\App\Support\Realtime::enabled())
+                <span data-live-indicator data-state="connecting" class="live-indicator hidden items-center gap-1.5 text-xs text-ink-500 sm:inline-flex" title="Live updates">
+                    <span class="live-dot h-2 w-2 rounded-full"></span><span class="live-label"></span>
+                </span>
+            @endif
             <livewire:timer-bar />
             <a href="{{ route('projects.index', ['new' => 1]) }}" wire:navigate class="btn-primary btn hidden sm:inline-flex"><x-icon name="plus" /> Create</a>
         </header>

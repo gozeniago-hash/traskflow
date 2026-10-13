@@ -3,6 +3,7 @@
 namespace App\Livewire\Projects;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Activity;
 use App\Models\Project;
 use Carbon\CarbonImmutable;
@@ -12,7 +13,7 @@ use Livewire\Component;
 
 class CalendarView extends Component
 {
-    use InteractsWithWorkspace;
+    use InteractsWithWorkspace, LiveUpdates;
 
     public Project $project;
 
@@ -21,6 +22,11 @@ class CalendarView extends Component
 
     public ?string $addingOn = null;
     public string $newTitle = '';
+
+    protected function getListeners(): array
+    {
+        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+    }
 
     public function mount(Project $project): void
     {

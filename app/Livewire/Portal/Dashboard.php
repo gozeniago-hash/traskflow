@@ -3,6 +3,7 @@
 namespace App\Livewire\Portal;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\Task;
@@ -14,7 +15,13 @@ use Livewire\Component;
 #[Title('Your projects')]
 class Dashboard extends Component
 {
-    use InteractsWithWorkspace;
+    use InteractsWithWorkspace, LiveUpdates;
+
+    protected function getListeners(): array
+    {
+        return Project::query()->visibleTo($this->me())->active()->pluck('projects.id')
+            ->mapWithKeys(fn ($id) => [$this->projectChannel((int) $id) => 'onRemoteChange'])->all();
+    }
 
     public function render()
     {

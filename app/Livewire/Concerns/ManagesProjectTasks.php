@@ -19,7 +19,12 @@ use Livewire\Attributes\On;
  */
 trait ManagesProjectTasks
 {
-    use InteractsWithWorkspace;
+    use InteractsWithWorkspace, LiveUpdates;
+
+    protected function getListeners(): array
+    {
+        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+    }
 
     public string $filter = 'incomplete';   // incomplete | all | completed
     public string $assigneeFilter = '';     // '' | me | unassigned

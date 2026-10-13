@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
 use App\Models\StatusUpdate;
 use App\Models\Task;
@@ -15,9 +16,14 @@ use Livewire\Component;
 #[Title('Home')]
 class Home extends Component
 {
-    use InteractsWithWorkspace;
+    use InteractsWithWorkspace, LiveUpdates;
 
     #[On('task-saved')]
+    protected function getListeners(): array
+    {
+        return [$this->workspaceChannel() => 'onRemoteChange'];
+    }
+
     public function onTaskSaved(): void
     {
     }

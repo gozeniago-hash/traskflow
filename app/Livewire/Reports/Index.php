@@ -3,6 +3,7 @@
 namespace App\Livewire\Reports;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\TimeEntry;
@@ -24,7 +25,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 #[Title('Reports')]
 class Index extends Component
 {
-    use InteractsWithWorkspace;
+    use InteractsWithWorkspace, LiveUpdates;
 
     public const REPORTS = [
         'incomplete' => 'Incomplete tasks by resource',
@@ -69,6 +70,11 @@ class Index extends Component
 
     /** Which resource rows are expanded to show their tasks. */
     public array $open = [];
+
+    protected function getListeners(): array
+    {
+        return [$this->workspaceChannel() => 'onRemoteChange'];
+    }
 
     public function mount(): void
     {

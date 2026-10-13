@@ -3,6 +3,7 @@
 namespace App\Livewire\Projects;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\TimeEntry;
@@ -12,7 +13,7 @@ use Livewire\Component;
 
 class Overview extends Component
 {
-    use InteractsWithWorkspace;
+    use InteractsWithWorkspace, LiveUpdates;
 
     public Project $project;
 
@@ -25,6 +26,11 @@ class Overview extends Component
     public bool $updateShare = true;
 
     public string $addMember = '';
+
+    protected function getListeners(): array
+    {
+        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+    }
 
     public function mount(Project $project): void
     {

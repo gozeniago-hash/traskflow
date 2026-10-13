@@ -17,7 +17,7 @@ return new class extends Migration
             return;
         }
 
-        DB::transaction(fn () => (new DemoSeeder)->run());
+        \App\Support\Realtime::muted(fn () => DB::transaction(fn () => (new DemoSeeder)->run()));
     }
 
     public function down(): void

@@ -1,8 +1,41 @@
 import Sortable from 'sortablejs';
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
 import 'trix';
 import 'trix/dist/trix.css';
 
 window.Sortable = Sortable;
+
+/**
+ * Live updates (Laravel Reverb). Settings come from <meta name="realtime">, rendered by the server,
+ * so the same build works in every environment. Livewire components subscribe through
+ * their "echo-private:…" listeners and re-render when data changes elsewhere.
+ */
+const realtimeMeta = document.querySelector('meta[name="realtime"]');
+if (realtimeMeta) {
+    try {
+        const cfg = JSON.parse(realtimeMeta.content);
+        window.Pusher = Pusher;
+        window.Echo = new Echo({
+            broadcaster: 'reverb',
+            key: cfg.key,
+            wsHost: cfg.host,
+            wsPort: cfg.port,
+            wssPort: cfg.port,
+            forceTLS: cfg.scheme === 'https',
+            enabledTransports: ['ws', 'wss'],
+            authEndpoint: '/broadcasting/auth',
+        });
+
+        // Small "Live" indicator in the top bar.
+        const setState = (state) => document.querySelectorAll('[data-live-indicator]').forEach((el) => (el.dataset.state = state));
+        const conn = window.Echo.connector.pusher.connection;
+        conn.bind('state_change', ({ current }) => setState(current));
+        document.addEventListener('livewire:navigated', () => setState(conn.state));
+    } catch (e) {
+        console.warn('Live updates unavailable', e);
+    }
+}
 
 /**
  * Drag-and-drop helper shared by the List and Board views.

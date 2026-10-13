@@ -3,6 +3,7 @@
 namespace App\Livewire\Projects;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
 use App\Models\ProjectField;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ use Livewire\Component;
 #[Title('Projects')]
 class Index extends Component
 {
-    use InteractsWithWorkspace;
+    use InteractsWithWorkspace, LiveUpdates;
 
     #[Url]
     public bool $new = false;
@@ -37,6 +38,11 @@ class Index extends Component
 
     /** Once someone types their own key we stop suggesting one from the name. */
     public bool $keyEdited = false;
+
+    protected function getListeners(): array
+    {
+        return [$this->workspaceChannel() => 'onRemoteChange'];
+    }
 
     public function mount(): void
     {

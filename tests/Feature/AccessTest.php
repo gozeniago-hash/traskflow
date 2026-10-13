@@ -224,4 +224,25 @@ class AccessTest extends TestCase
             ->call('addPreset', 'effort')->call('save')->assertHasNoErrors();
         $this->assertTrue($web->fields()->where('name', 'Effort')->exists());
     }
+
+    public function test_changes_broadcast_one_live_update_per_project(): void
+    {
+        config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);
+        \Illuminate\Support\Facades\Event::fake([\App\Events\ProjectChanged::class]);
+
+        $web = Project::where('name', 'Brightside Website Redesign')->first();
+        $task = $web->tasks()->create(['title' => 'Live one', 'section_id' => $web->sections()->first()->id]);
+        $task->comments()->create(['body' => 'hi', 'is_internal' => true]);
+        \App\Support\Realtime::flush();
+
+        \Illuminate\Support\Facades\Event::assertDispatchedTimes(\App\Events\ProjectChanged::class, 1);
+        \Illuminate\Support\Facades\Event::assertDispatched(\App\Events\ProjectChanged::class, function ($e) use ($web, $task) {
+            $channels = array_map(fn ($c) => $c->name, $e->broadcastOn());
+
+            return $e->projectId === $web->id
+                && in_array($task->id, $e->broadcastWith()['taskIds'], true)
+                && $channels === ['private-project.'.$web->id, 'private-workspace.'.$web->workspace_id]
+                && ! array_key_exists('title', $e->broadcastWith()); // no task content in the payload
+        });
+    }
 }

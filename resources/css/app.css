@@ -65,3 +65,14 @@
 trix-editor.doc-content { min-height: 55vh; border: 0; padding: 0; outline: none; }
 trix-toolbar { position: sticky; top: 0; z-index: 10; background: #fff; padding: 6px 0; border-bottom: 1px solid #eee; margin-bottom: 1rem; }
 trix-toolbar .trix-button-group { margin-bottom: 0; }
+
+/* ---- Live updates indicator ---- */
+.live-indicator .live-dot { background: #d1d5db; }
+.live-indicator .live-label::after { content: 'Connecting…'; }
+.live-indicator[data-state="connected"] .live-dot { background: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, .15); }
+.live-indicator[data-state="connected"] .live-label::after { content: 'Live'; }
+.live-indicator[data-state="unavailable"] .live-label::after,
+.live-indicator[data-state="failed"] .live-label::after,
+.live-indicator[data-state="disconnected"] .live-label::after { content: 'Offline'; }
+.live-indicator[data-state="unavailable"] .live-dot,
+.live-indicator[data-state="failed"] .live-dot { background: #f59e0b; }

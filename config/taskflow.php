@@ -8,5 +8,12 @@ return [
     // Shown in front of currency custom fields.
     'currency_symbol' => env('TASKFLOW_CURRENCY_SYMBOL', '₱'),
 
+    // Where browsers connect for live updates (the public address of the Reverb service).
+    'realtime' => [
+        'host' => env('REVERB_PUBLIC_HOST'),
+        'port' => env('REVERB_PUBLIC_PORT', 443),
+        'scheme' => env('REVERB_PUBLIC_SCHEME', 'https'),
+    ],
+
     'seed_demo_data' => (bool) env('SEED_DEMO_DATA', false),
 ];
