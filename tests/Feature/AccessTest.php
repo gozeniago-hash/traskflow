@@ -12,6 +12,7 @@ use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class AccessTest extends TestCase
@@ -188,5 +189,39 @@ class AccessTest extends TestCase
 
         $owner = User::where('email', 'admin@taskflow.test')->first();
         $this->actingAs($owner)->get(route('projects.show', [$web, 'board']))->assertOk()->assertSee('Story points');
+    }
+
+    public function test_adding_a_dropdown_custom_field_saves_its_options(): void
+    {
+        $owner = User::where('email', 'admin@taskflow.test')->first();
+        $web = Project::where('name', 'Brightside Website Redesign')->first();
+        $this->actingAs($owner);
+
+        Livewire::test(\App\Livewire\Projects\Fields::class, ['project' => $web])
+            ->call('create')
+            ->set('form.name', 'Severity')
+            ->set('form.type', 'select')
+            ->set('newOption', 'High')->call('addOption')
+            ->set('newOption', 'Low')->call('addOption')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $field = $web->fields()->where('name', 'Severity')->firstOrFail();
+        $this->assertSame(['High', 'Low'], array_column($field->optionList(), 'label'));
+        $this->assertNotEmpty($field->optionList()[0]['id']);
+
+        // Editing and renaming an option keeps its id.
+        $id = $field->optionList()[0]['id'];
+        Livewire::test(\App\Livewire\Projects\Fields::class, ['project' => $web])
+            ->call('edit', $field->id)
+            ->set('form.options.0.label', 'Critical')
+            ->call('save')
+            ->assertHasNoErrors();
+        $this->assertSame(['id' => $id, 'label' => 'Critical'], array_intersect_key($field->fresh()->optionList()[0], ['id' => 1, 'label' => 1]));
+
+        // Presets work too.
+        Livewire::test(\App\Livewire\Projects\Fields::class, ['project' => $web])
+            ->call('addPreset', 'effort')->call('save')->assertHasNoErrors();
+        $this->assertTrue($web->fields()->where('name', 'Effort')->exists());
     }
 }

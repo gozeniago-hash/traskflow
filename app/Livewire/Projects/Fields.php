@@ -138,7 +138,7 @@ class Fields extends Component
         ])['form'];
 
         $type = $editing ? $editing->type : $data['type']; // type is fixed once created
-        if (in_array($type, ['select', 'multiselect'], true) && empty($data['options'])) {
+        if (in_array($type, ['select', 'multiselect'], true) && ! $this->cleanOptions($this->form['options'] ?? [])) {
             $this->addError('newOption', 'Add at least one option.');
 
             return;
@@ -151,9 +151,8 @@ class Fields extends Component
             'required' => (bool) $data['required'],
             'show_on_card' => (bool) $data['show_on_card'],
             'client_visible' => (bool) $data['client_visible'] && $this->project->portal_enabled,
-            'options' => in_array($type, ['select', 'multiselect'], true)
-                ? array_map(fn ($o) => ['id' => $o['id'], 'label' => trim($o['label']), 'color' => $o['color'] ?? 'gray'], array_values($data['options']))
-                : null,
+            // Use the full option rows from the form: validated data only keeps the validated keys (label).
+            'options' => in_array($type, ['select', 'multiselect'], true) ? $this->cleanOptions($this->form['options'] ?? []) : null,
         ];
 
         if ($editing) {
@@ -167,6 +166,28 @@ class Fields extends Component
         $this->showForm = false;
         $this->editingId = null;
         $this->dispatch('fields-updated');
+    }
+
+    /** Keep only well-formed options; give any option without an id/colour a fresh one. */
+    protected function cleanOptions(array $options): array
+    {
+        $out = [];
+        $seen = [];
+        foreach (array_values($options) as $o) {
+            $label = trim((string) ($o['label'] ?? ''));
+            if ($label === '') {
+                continue;
+            }
+            $id = (string) ($o['id'] ?? '');
+            if ($id === '' || isset($seen[$id])) {
+                $id = ProjectField::makeOptions([$label])[0]['id'];
+            }
+            $seen[$id] = true;
+            $color = (string) ($o['color'] ?? 'gray');
+            $out[] = ['id' => $id, 'label' => mb_substr($label, 0, 60), 'color' => array_key_exists($color, ProjectField::COLORS) ? $color : 'gray'];
+        }
+
+        return $out;
     }
 
     public function delete(int $id): void
