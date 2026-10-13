@@ -23,7 +23,7 @@ trait ManagesProjectTasks
 
     protected function getListeners(): array
     {
-        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+        return $this->projectListeners($this->project->id);
     }
 
     public string $filter = 'incomplete';   // incomplete | all | completed

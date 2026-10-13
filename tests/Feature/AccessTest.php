@@ -225,6 +225,25 @@ class AccessTest extends TestCase
         $this->assertTrue($web->fields()->where('name', 'Effort')->exists());
     }
 
+    public function test_editing_the_project_refreshes_the_overview_on_the_same_page(): void
+    {
+        $admin = User::where('email', 'admin@taskflow.test')->first();
+        $this->actingAs($admin);
+        $project = Project::where('workspace_id', $admin->current_workspace_id)->firstOrFail();
+
+        $overview = Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $project]);
+
+        Livewire::test(\App\Livewire\Projects\Show::class, ['project' => $project, 'view' => 'overview'])
+            ->call('openEdit')
+            ->set('form.start_date', '')
+            ->set('form.due_date', '2026-11-30')
+            ->call('saveEdit')
+            ->assertHasNoErrors()
+            ->assertDispatched('project-updated');
+
+        $overview->dispatch('project-updated')->assertSee('Nov 30, 2026');
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);

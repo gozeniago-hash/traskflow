@@ -23,7 +23,7 @@ class Show extends Component
 
     protected function getListeners(): array
     {
-        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+        return $this->projectListeners($this->project->id);
     }
 
     public function mount(Project $project, ?string $view = null): void
@@ -45,6 +45,7 @@ class Show extends Component
         $this->authorize('update', $this->project);
         abort_unless(array_key_exists($status, Project::STATUSES), 422);
         $this->project->update(['status' => $status]);
+        $this->dispatch('project-updated');
         $this->toast('Status set to '.Project::STATUSES[$status].'. Post an update on the Overview tab to explain why.');
     }
 
@@ -103,6 +104,7 @@ class Show extends Component
 
         $this->project->update($data);
         $this->showEdit = false;
+        $this->dispatch('project-updated');
         $this->toast('Project updated.');
     }
 
@@ -110,6 +112,7 @@ class Show extends Component
     {
         $this->authorize('delete', $this->project);
         $this->project->update(['archived_at' => $this->project->archived_at ? null : now()]);
+        $this->dispatch('project-updated');
         $this->toast($this->project->archived_at ? 'Project archived.' : 'Project restored.');
     }
 

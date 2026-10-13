@@ -20,7 +20,7 @@ class Files extends Component
 
     protected function getListeners(): array
     {
-        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+        return $this->projectListeners($this->project->id);
     }
 
     public function mount(Project $project): void

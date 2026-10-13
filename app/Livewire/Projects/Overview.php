@@ -29,7 +29,7 @@ class Overview extends Component
 
     protected function getListeners(): array
     {
-        return [$this->projectChannel($this->project->id) => 'onRemoteChange'];
+        return $this->projectListeners($this->project->id);
     }
 
     public function mount(Project $project): void
@@ -46,12 +46,22 @@ class Overview extends Component
     {
     }
 
+    /** The header edited the project: pick up a new description unless one is being typed. */
+    public function onProjectUpdated(): void
+    {
+        $this->project->refresh();
+        if (! $this->editingDescription) {
+            $this->description = (string) $this->project->description;
+        }
+    }
+
     public function saveDescription(): void
     {
         $this->authorize('update', $this->project);
         $this->validate(['description' => ['nullable', 'string', 'max:5000']]);
         $this->project->update(['description' => $this->description ?: null]);
         $this->editingDescription = false;
+        $this->dispatch('project-updated');
     }
 
     public function postUpdate(): void
@@ -72,6 +82,7 @@ class Overview extends Component
             'client_visible' => $data['updateShare'] && $this->project->portal_enabled,
         ]);
         $this->project->update(['status' => $data['updateStatus']]);
+        $this->dispatch('project-updated');
         $this->reset(['updateTitle', 'updateBody']);
         $this->toast('Status update posted.');
     }
