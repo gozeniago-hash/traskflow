@@ -1,5 +1,5 @@
 @component('layouts.guest', ['title' => 'Reset password'])
-    <h1 class="text-2xl font-semibold">Reset your password</h1>
+    <h1 class="text-2xl font-semibold tracking-tight">Reset your password</h1>
     <p class="mt-1 text-sm text-ink-500">Enter your email and we'll send you a reset link.</p>
     <form method="POST" action="{{ route('password.email') }}" class="mt-6 space-y-4">
         @csrf
@@ -10,5 +10,7 @@
         </div>
         <button class="btn-primary btn w-full py-2">Send reset link</button>
     </form>
-    <p class="mt-6 text-center text-sm"><a href="{{ route('login') }}" class="text-coral-600 hover:underline">Back to sign in</a></p>
+    @slot('footer')
+        <a href="{{ route('login') }}" class="font-medium text-coral-600 hover:underline">← Back to sign in</a>
+    @endslot
 @endcomponent

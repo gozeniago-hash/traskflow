@@ -23,7 +23,7 @@
                 <p class="rounded-md bg-gray-100 px-3 py-2 text-sm">You already have a TaskFlow account. Enter your password to join.</p>
                 <div>
                     <label class="label" for="password">Password</label>
-                    <input id="password" name="password" type="password" required autofocus class="input">
+                    <x-password-input :autofocus="true" />
                     @error('password')<p class="error">{{ $message }}</p>@enderror
                 </div>
                 <button class="btn-primary btn w-full py-2">Join workspace</button>
@@ -35,12 +35,12 @@
                 </div>
                 <div>
                     <label class="label" for="password">Create a password</label>
-                    <input id="password" name="password" type="password" required autocomplete="new-password" class="input">
+                    <x-password-input autocomplete="new-password" />
                     @error('password')<p class="error">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label class="label" for="password_confirmation">Confirm password</label>
-                    <input id="password_confirmation" name="password_confirmation" type="password" required class="input">
+                    <x-password-input name="password_confirmation" autocomplete="new-password" />
                 </div>
                 <button class="btn-primary btn w-full py-2">Accept invitation</button>
             @endif

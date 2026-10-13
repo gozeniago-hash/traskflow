@@ -10,12 +10,12 @@
         </div>
         <div>
             <label class="label" for="password">New password</label>
-            <input id="password" name="password" type="password" required autocomplete="new-password" class="input">
+            <x-password-input autocomplete="new-password" />
             @error('password')<p class="error">{{ $message }}</p>@enderror
         </div>
         <div>
             <label class="label" for="password_confirmation">Confirm password</label>
-            <input id="password_confirmation" name="password_confirmation" type="password" required class="input">
+            <x-password-input name="password_confirmation" autocomplete="new-password" />
         </div>
         <button class="btn-primary btn w-full py-2">Reset password</button>
     </form>
