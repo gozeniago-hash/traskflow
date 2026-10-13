@@ -296,6 +296,36 @@ class AccessTest extends TestCase
         $this->assertSame('merged', $other->pullRequests()->first()->status());
     }
 
+    public function test_key_resources_links_files_and_client_sharing(): void
+    {
+        Storage::fake('local');
+        $admin = User::where('email', 'admin@taskflow.test')->first();
+        $client = User::where('email', 'client@brightside.test')->first();
+        $web = Project::where('name', 'Brightside Website Redesign')->first();
+        $this->actingAs($admin);
+
+        Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $web])
+            ->set('resourceUrl', 'figma.com/file/abc')
+            ->call('addLink')
+            ->assertHasNoErrors()
+            ->set('resourceFiles', [UploadedFile::fake()->create('Brief.pdf', 20, 'application/pdf')])
+            ->assertHasNoErrors();
+
+        $link = $web->resources()->whereNotNull('url')->first();
+        $file = $web->resources()->whereNotNull('attachment_id')->first();
+        $this->assertSame('https://figma.com/file/abc', $link->url);
+        $this->assertSame('Figma', $link->title);
+        $this->assertSame('Brief', $file->title);
+
+        // Not shared yet: the client can't open the file.
+        $this->actingAs($client)->get($file->attachment->downloadUrl())->assertForbidden();
+
+        $this->actingAs($admin);
+        Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $web])->call('toggleResourceShare', $file->id);
+        $this->actingAs($client)->get($file->attachment->fresh()->downloadUrl())->assertOk();
+        Livewire::test(\App\Livewire\Portal\ProjectView::class, ['project' => $web])->assertSee('Brief')->assertDontSee('figma.com');
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);

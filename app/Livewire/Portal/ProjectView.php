@@ -238,6 +238,7 @@ class ProjectView extends Component
             'openTask' => $openTask,
             'files' => $projectFiles->concat($taskFiles)->sortByDesc('created_at')->values(),
             'team' => $project->members()->orderBy('name')->get(),
+            'resources' => $project->resources()->where('client_visible', true)->with('attachment')->get(),
         ])->title($project->name);
     }
 }

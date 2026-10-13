@@ -17,6 +17,83 @@
             @endif
         </section>
 
+        {{-- Key resources --}}
+        <section class="card p-5" x-data="{ dragging: false }"
+                 @if ($canEdit) x-on:dragover.prevent="dragging = true" x-on:dragleave.prevent="dragging = false"
+                 x-on:drop.prevent="dragging = false; if ($event.dataTransfer.files.length) $wire.uploadMultiple('resourceFiles', $event.dataTransfer.files)" @endif
+                 :class="dragging && 'ring-2 ring-coral-300 ring-offset-2'">
+            <div class="mb-3 flex items-center justify-between gap-2">
+                <h2 class="font-semibold">Key resources</h2>
+                @if ($canEdit)
+                    <div class="flex items-center gap-1">
+                        <button type="button" wire:click="$set('addingResource', 'link')" class="btn-ghost btn text-xs"><x-icon name="link" /> Add link</button>
+                        <label class="btn-ghost btn cursor-pointer text-xs"><x-icon name="paperclip" /> Add file
+                            <input type="file" wire:model="resourceFiles" multiple class="hidden">
+                        </label>
+                    </div>
+                @endif
+            </div>
+
+            @if ($addingResource === 'link')
+                <form wire:submit="addLink" class="mb-3 space-y-2 rounded-lg bg-gray-50 p-3"
+                      x-data x-init="$nextTick(() => $refs.url.focus())" x-on:keydown.escape.stop="$wire.set('addingResource', null)">
+                    <div class="grid gap-2 sm:grid-cols-2">
+                        <div>
+                            <input x-ref="url" wire:model="resourceUrl" placeholder="Paste a link (Figma, Google Drive, website…)" class="input input-sm">
+                            @error('resourceUrl')<p class="error">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
+                            <input wire:model="resourceTitle" placeholder="Title (optional)" class="input input-sm">
+                            @error('resourceTitle')<p class="error">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        @if ($canShare)
+                            <label class="flex items-center gap-2 text-xs text-ink-700"><input type="checkbox" wire:model="resourceShare" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Show in client portal</label>
+                        @else
+                            <span></span>
+                        @endif
+                        <div class="flex gap-2">
+                            <button type="button" wire:click="$set('addingResource', null)" class="btn-secondary btn py-1 text-xs">Cancel</button>
+                            <button class="btn-primary btn py-1 text-xs">Add link</button>
+                        </div>
+                    </div>
+                </form>
+            @endif
+
+            <span wire:loading wire:target="resourceFiles" class="mb-2 block text-xs text-ink-500">Uploading…</span>
+            @error('resourceFiles.*')<p class="error mb-2">{{ $message }}</p>@enderror
+
+            @if ($resources->isEmpty())
+                <p class="rounded-lg border border-dashed border-gray-200 px-4 py-5 text-center text-sm text-ink-500">
+                    Pin the links and files everyone keeps asking for: the brief, designs, contracts, the staging site.
+                    @if ($canEdit)<br><span class="text-xs">Use Add link or Add file, or drop files here.</span>@endif
+                </p>
+            @else
+                <div class="grid gap-2 sm:grid-cols-2">
+                    @foreach ($resources as $r)
+                        <x-resource-tile wire:key="res-{{ $r->id }}" :resource="$r" group="resources-{{ $p->id }}" :show-shared="$canShare">
+                            @if ($canEdit)
+                                <div class="relative" x-data="{ menu: false }">
+                                    <button type="button" x-on:click="menu = !menu" class="rounded p-1 hover:bg-gray-100 hover:text-ink-900" title="More"><x-icon name="dots" /></button>
+                                    <div x-cloak x-show="menu" x-on:click.outside="menu = false" x-on:click="menu = false"
+                                         class="absolute right-0 z-20 mt-1 w-48 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
+                                        <button type="button" x-on:click="const t = prompt('Rename resource', @js($r->title)); if (t) $wire.renameResource({{ $r->id }}, t)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Rename</button>
+                                        @if ($canShare)
+                                            <button type="button" wire:click="toggleResourceShare({{ $r->id }})" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $r->client_visible ? 'Hide from client portal' : 'Show in client portal' }}</button>
+                                        @endif
+                                        @unless ($loop->first)<button type="button" wire:click="moveResource({{ $r->id }}, -1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move earlier</button>@endunless
+                                        @unless ($loop->last)<button type="button" wire:click="moveResource({{ $r->id }}, 1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move later</button>@endunless
+                                        <button type="button" wire:click="removeResource({{ $r->id }})" wire:confirm="Remove “{{ $r->title }}”?{{ $r->isFile() ? ' The file will be deleted.' : '' }}" class="block w-full rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">Remove</button>
+                                    </div>
+                                </div>
+                            @endif
+                        </x-resource-tile>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+
         {{-- Progress --}}
         <section class="grid grid-cols-2 gap-3 sm:grid-cols-3 2xl:grid-cols-5">
             @foreach ([

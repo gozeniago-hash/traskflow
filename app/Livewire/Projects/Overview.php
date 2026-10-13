@@ -4,16 +4,19 @@ namespace App\Livewire\Projects;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
+use App\Models\Attachment;
 use App\Models\Project;
+use App\Models\ProjectResource;
 use App\Models\Task;
 use App\Models\TimeEntry;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Overview extends Component
 {
-    use InteractsWithWorkspace, LiveUpdates;
+    use InteractsWithWorkspace, LiveUpdates, WithFileUploads;
 
     public Project $project;
 
@@ -26,6 +29,13 @@ class Overview extends Component
     public bool $updateShare = true;
 
     public string $addMember = '';
+
+    // Key resources
+    public ?string $addingResource = null; // null | link
+    public string $resourceUrl = '';
+    public string $resourceTitle = '';
+    public bool $resourceShare = false;
+    public array $resourceFiles = [];
 
     protected function getListeners(): array
     {
@@ -111,6 +121,103 @@ class Overview extends Component
         $this->project->members()->detach($userId);
     }
 
+    // ---- Key resources ----------------------------------------------------
+
+    public function addLink(): void
+    {
+        $this->authorize('update', $this->project);
+        $url = trim($this->resourceUrl);
+        if ($url !== '' && ! preg_match('#^[a-z][a-z0-9+.-]*://#i', $url)) {
+            $url = 'https://'.$url; // "figma.com/file/…" works too
+        }
+        $this->resourceUrl = $url;
+        $this->validate([
+            'resourceUrl' => ['required', 'url:http,https', 'max:2000'],
+            'resourceTitle' => ['nullable', 'string', 'max:150'],
+        ], [], ['resourceUrl' => 'link', 'resourceTitle' => 'title']);
+
+        $resource = new ProjectResource(['url' => $url, 'client_visible' => $this->canShare() && $this->resourceShare]);
+        $resource->title = trim($this->resourceTitle) ?: ($resource->service() ?? $resource->domain());
+        $this->saveResource($resource);
+
+        $this->reset(['resourceUrl', 'resourceTitle', 'resourceShare', 'addingResource']);
+    }
+
+    /** Files upload as soon as they're picked. */
+    public function updatedResourceFiles(): void
+    {
+        $this->authorize('update', $this->project);
+        $this->validate(['resourceFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]], [], ['resourceFiles.*' => 'file']);
+
+        foreach ($this->resourceFiles as $file) {
+            $attachment = Attachment::storeUpload($file, $this->project, $this->me(), null, false);
+            $title = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) ?: $file->getClientOriginalName();
+            $this->saveResource(new ProjectResource(['title' => \Illuminate\Support\Str::limit($title, 145), 'attachment_id' => $attachment->id]));
+        }
+        $this->resourceFiles = [];
+    }
+
+    public function toggleResourceShare(int $id): void
+    {
+        $this->authorize('update', $this->project);
+        abort_unless($this->canShare(), 403);
+        $resource = $this->resource($id);
+        $resource->update(['client_visible' => ! $resource->client_visible]);
+        // A shared file must be downloadable from the portal, so the file follows the resource.
+        $resource->attachment?->update(['client_visible' => $resource->client_visible]);
+    }
+
+    public function renameResource(int $id, string $title): void
+    {
+        $this->authorize('update', $this->project);
+        $title = trim(\Illuminate\Support\Str::limit($title, 150, ''));
+        if ($title !== '') {
+            $this->resource($id)->update(['title' => $title]);
+        }
+    }
+
+    public function moveResource(int $id, int $direction): void
+    {
+        $this->authorize('update', $this->project);
+        $items = $this->project->resources()->get()->values();
+        $from = $items->search(fn ($r) => $r->id === $id);
+        $to = $from + ($direction < 0 ? -1 : 1);
+        if ($from === false || ! isset($items[$to])) {
+            return;
+        }
+        $order = $items->pluck('id')->all();
+        [$order[$from], $order[$to]] = [$order[$to], $order[$from]];
+        foreach ($order as $pos => $rid) {
+            ProjectResource::whereKey($rid)->update(['position' => $pos + 1]);
+        }
+        \App\Support\Realtime::touch($this->project->id);
+    }
+
+    public function removeResource(int $id): void
+    {
+        $this->authorize('update', $this->project);
+        $this->resource($id)->delete();
+    }
+
+    protected function saveResource(ProjectResource $resource): void
+    {
+        $resource->project_id = $this->project->id;
+        $resource->user_id = $this->me()->id;
+        $resource->position = (int) $this->project->resources()->max('position') + 1;
+        $resource->save();
+    }
+
+    protected function resource(int $id): ProjectResource
+    {
+        return $this->project->resources()->findOrFail($id);
+    }
+
+    /** Sharing only makes sense when the project is in a client's portal. */
+    protected function canShare(): bool
+    {
+        return (bool) $this->project->portal_enabled && $this->project->client_id;
+    }
+
     public function render()
     {
         $project = $this->project->fresh(['owner', 'team', 'client']);
@@ -124,6 +231,9 @@ class Overview extends Component
             'available' => $this->workspace()->members()->whereNotIn('users.id', $members->pluck('id'))->orderBy('name')->get(),
             'upcoming' => $project->tasks()->whereNull('parent_id')->open()->whereNotNull('due_date')
                 ->orderBy('due_date')->with('assignee')->limit(6)->get(),
+            'resources' => $project->resources()->with('attachment')->get(),
+            'canEdit' => $this->me()->can('update', $project),
+            'canShare' => (bool) $project->portal_enabled && $project->client_id,
             'pendingApprovals' => $project->tasks()->where('approval_status', 'pending')->count(),
             'timeTotal' => (int) TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')->sum('duration_seconds'),
             'timeByPerson' => TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')

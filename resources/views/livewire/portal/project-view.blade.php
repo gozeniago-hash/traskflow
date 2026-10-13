@@ -70,6 +70,16 @@
                             <p class="whitespace-pre-line text-sm text-ink-700">{{ $p->description }}</p>
                         </section>
                     @endif
+                    @if ($resources->isNotEmpty())
+                        <section class="card bg-white p-5">
+                            <h2 class="mb-3 font-semibold">Key resources</h2>
+                            <div class="space-y-2">
+                                @foreach ($resources as $r)
+                                    <x-resource-tile wire:key="pres-{{ $r->id }}" :resource="$r" group="portal-resources-{{ $p->id }}" />
+                                @endforeach
+                            </div>
+                        </section>
+                    @endif
                     <section class="card bg-white p-5">
                         <h2 class="mb-3 font-semibold">Coming up</h2>
                         <ul class="space-y-2 text-sm">

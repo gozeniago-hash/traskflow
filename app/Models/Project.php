@@ -162,6 +162,11 @@ class Project extends Model
         return $this->hasMany(ProjectField::class)->orderBy('position')->orderBy('id');
     }
 
+    public function resources(): HasMany
+    {
+        return $this->hasMany(ProjectResource::class)->orderBy('position')->orderBy('id');
+    }
+
     public function docs(): HasMany
     {
         return $this->hasMany(ProjectDoc::class)->orderBy('position')->orderBy('id');

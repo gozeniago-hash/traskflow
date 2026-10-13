@@ -47,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
             \App\Models\ProjectDoc::class => fn ($m) => [$m->project_id, null],
             \App\Models\StatusUpdate::class => fn ($m) => [$m->project_id, null],
             \App\Models\ProjectField::class => fn ($m) => [$m->project_id, null],
+            \App\Models\ProjectResource::class => fn ($m) => [$m->project_id, null],
             \App\Models\Activity::class => fn ($m) => [$m->project_id, $m->task_id],
             \App\Models\Project::class => fn ($m) => [$m->id, null],
             \App\Models\Comment::class => fn ($m) => [\App\Models\Task::whereKey($m->task_id)->value('project_id'), $m->task_id],
