@@ -20,8 +20,14 @@ class Teams extends Component
     public string $description = '';
     public array $addUser = [];
 
+    /*
+     * Team membership decides who can see team projects, so every change to teams
+     * is admin-only. Members can view teams but not create, edit or join them.
+     */
+
     public function create(): void
     {
+        $this->requireAdmin();
         $this->reset(['editingId', 'name', 'description']);
         $this->resetValidation();
         $this->showForm = true;
@@ -29,6 +35,7 @@ class Teams extends Component
 
     public function edit(int $id): void
     {
+        $this->requireAdmin();
         $team = $this->team($id);
         $this->editingId = $team->id;
         $this->name = $team->name;
@@ -38,6 +45,7 @@ class Teams extends Component
 
     public function save(): void
     {
+        $this->requireAdmin();
         $data = $this->validate([
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:500'],
@@ -57,6 +65,7 @@ class Teams extends Component
 
     public function addMember(int $teamId): void
     {
+        $this->requireAdmin();
         $userId = (int) ($this->addUser[$teamId] ?? 0);
         if (! $userId || ! $this->workspace()->members()->whereKey($userId)->exists()) {
             return;
@@ -67,6 +76,7 @@ class Teams extends Component
 
     public function removeMember(int $teamId, int $userId): void
     {
+        $this->requireAdmin();
         $this->team($teamId)->users()->detach($userId);
     }
 

@@ -394,6 +394,35 @@ class AccessTest extends TestCase
         Livewire::test(\App\Livewire\TaskPanel::class)->call('open', $secret->id)->assertForbidden();
     }
 
+    public function test_only_admins_can_change_teams(): void
+    {
+        $leo = User::where('email', 'leo@taskflow.test')->first();
+        $ws = $leo->currentWorkspace;
+        $private = $ws->teams()->create(['name' => 'Leadership']);
+        $project = Project::create(['workspace_id' => $ws->id, 'name' => 'Leadership Salaries', 'owner_id' => $ws->owner_id, 'team_id' => $private->id, 'privacy' => 'team', 'color' => '#e8384f', 'status' => 'on_track']);
+        $anyTeam = $ws->teams()->whereHas('users', fn ($q) => $q->whereKey($leo->id))->first() ?? $private;
+
+        $this->actingAs($leo);
+        $teams = fn () => Livewire::test(\App\Livewire\Admin\Teams::class);
+        $teams()->assertDontSee('New team')->assertDontSee('Add a member');
+
+        // A member can't add themselves (or anyone) to a team, or change teams in any other way.
+        $teams()->set('addUser.'.$private->id, (string) $leo->id)->call('addMember', $private->id)->assertForbidden();
+        $teams()->call('removeMember', $anyTeam->id, $leo->id)->assertForbidden();
+        $teams()->call('create')->assertForbidden();
+        $teams()->call('edit', $private->id)->assertForbidden();
+        $teams()->set('name', 'Renamed')->call('save')->assertForbidden();
+        $this->assertFalse($private->users()->whereKey($leo->id)->exists());
+        $this->assertFalse($project->isVisibleTo($leo->fresh()));
+        $this->get(route('projects.show', $project))->assertForbidden();
+
+        // Admins still can.
+        $this->actingAs(User::where('email', 'admin@taskflow.test')->first());
+        Livewire::test(\App\Livewire\Admin\Teams::class)
+            ->set('addUser.'.$private->id, (string) $leo->id)->call('addMember', $private->id)->assertHasNoErrors();
+        $this->assertTrue($private->users()->whereKey($leo->id)->exists());
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);

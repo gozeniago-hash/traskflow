@@ -1,8 +1,10 @@
 <div>
-    <x-page-header title="Teams" subtitle="Group people so projects can be shared with the right crew.">
-        <x-slot:actions>
-            <button wire:click="create" class="btn-primary btn"><x-icon name="plus" /> New team</button>
-        </x-slot:actions>
+    <x-page-header title="Teams" :subtitle="$isAdmin ? 'Group people so projects can be shared with the right crew.' : 'Teams decide who sees team projects. Ask a workspace admin to change them.'">
+        @if ($isAdmin)
+            <x-slot:actions>
+                <button wire:click="create" class="btn-primary btn"><x-icon name="plus" /> New team</button>
+            </x-slot:actions>
+        @endif
     </x-page-header>
 
     <div class="grid gap-4 p-6 md:grid-cols-2 xl:grid-cols-3">
@@ -13,12 +15,12 @@
                         <h3 class="font-semibold">{{ $team->name }}</h3>
                         <p class="text-xs text-ink-500">{{ $team->users->count() }} {{ \Illuminate\Support\Str::plural('member', $team->users->count()) }} · {{ $team->projects_count }} {{ \Illuminate\Support\Str::plural('project', $team->projects_count) }}</p>
                     </div>
-                    <div class="flex gap-1">
-                        <button wire:click="edit({{ $team->id }})" class="btn-ghost btn px-2 text-xs">Edit</button>
-                        @if ($isAdmin)
-                            <button wire:click="delete({{ $team->id }})" wire:confirm="Delete the {{ $team->name }} team? Projects stay in the workspace." class="btn-ghost btn px-1.5 text-red-600"><x-icon name="trash" /></button>
-                        @endif
-                    </div>
+                    @if ($isAdmin)
+                        <div class="flex gap-1">
+                            <button wire:click="edit({{ $team->id }})" class="btn-ghost btn px-2 text-xs">Edit</button>
+                            <button wire:click="delete({{ $team->id }})" wire:confirm="Delete the {{ $team->name }} team? Projects stay in the workspace." class="btn-ghost btn px-1.5 text-red-600" aria-label="Delete team"><x-icon name="trash" /></button>
+                        </div>
+                    @endif
                 </div>
                 @if ($team->description)<p class="mt-2 text-sm text-ink-700">{{ $team->description }}</p>@endif
 
@@ -26,13 +28,15 @@
                     @foreach ($team->users as $u)
                         <li wire:key="t{{ $team->id }}-u{{ $u->id }}" class="group flex items-center gap-2 text-sm">
                             <x-avatar :user="$u" size="sm" /> <span class="flex-1 truncate">{{ $u->name }}</span>
-                            <button wire:click="removeMember({{ $team->id }}, {{ $u->id }})" class="invisible text-ink-500 hover:text-red-600 group-hover:visible" title="Remove"><x-icon name="x" class="h-3.5 w-3.5" /></button>
+                            @if ($isAdmin)
+                                <button wire:click="removeMember({{ $team->id }}, {{ $u->id }})" class="invisible text-ink-500 hover:text-red-600 group-hover:visible" title="Remove" aria-label="Remove {{ $u->name }}"><x-icon name="x" class="h-3.5 w-3.5" /></button>
+                            @endif
                         </li>
                     @endforeach
                 </ul>
 
                 @php($available = $members->whereNotIn('id', $team->users->pluck('id')))
-                @if ($available->isNotEmpty())
+                @if ($isAdmin && $available->isNotEmpty())
                     <div class="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                         <select wire:model="addUser.{{ $team->id }}" class="input input-sm">
                             <option value="">Add a member…</option>
@@ -43,7 +47,7 @@
                 @endif
             </div>
         @empty
-            <x-empty class="md:col-span-2 xl:col-span-3" icon="users" title="No teams yet" text="Create a team for each department or squad." />
+            <x-empty class="md:col-span-2 xl:col-span-3" icon="users" title="No teams yet" :text="$isAdmin ? 'Create a team for each department or squad.' : 'An admin hasn’t set up any teams yet.'" />
         @endforelse
     </div>
 
