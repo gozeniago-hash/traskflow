@@ -15,6 +15,7 @@ use App\Support\TimeTracker;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -27,6 +28,11 @@ class TaskPanel extends Component
 {
     use InteractsWithWorkspace, LiveUpdates, WithFileUploads;
 
+    /**
+     * Locked: the browser can't change which task is open. Tasks are opened only
+     * through open() (which checks access) or a ?task= link (checked in mount()).
+     */
+    #[Locked]
     #[Url(as: 'task', except: null)]
     public ?int $taskId = null;
 
@@ -79,7 +85,7 @@ class TaskPanel extends Component
         }
         $ids = array_map('intval', (array) ($event['taskIds'] ?? []));
         $task = Task::find($this->taskId);
-        if (! $task) {
+        if (! $task || ! $this->me()->can('view', $task)) {
             $this->taskId = null;
 
             return;
@@ -491,7 +497,12 @@ class TaskPanel extends Component
 
     public function render()
     {
-        if (! $this->taskId || ! ($task = Task::find($this->taskId))) {
+        $task = $this->taskId ? Task::find($this->taskId) : null;
+        // Re-check access on every render, not just when the panel opened: access can be
+        // revoked while it's open, and nothing from a task you can't see may be sent back.
+        if (! $task || ! $this->me()->can('view', $task)) {
+            $this->taskId = null;
+
             return view('livewire.task-panel', ['task' => null]);
         }
 

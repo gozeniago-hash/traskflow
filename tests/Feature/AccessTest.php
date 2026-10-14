@@ -365,6 +365,35 @@ class AccessTest extends TestCase
         $this->actingAs($client)->get(route('projects.show', [$web, 'timesheet']))->assertRedirect();
     }
 
+    public function test_task_panel_never_shows_a_task_from_another_workspace(): void
+    {
+        $outsider = User::create(['name' => 'Other Owner', 'email' => 'owner@othercorp.test', 'password' => 'Secret123!']);
+        $other = \App\Models\Workspace::create(['name' => 'OtherCorp', 'owner_id' => $outsider->id]);
+        $other->users()->attach($outsider->id, ['role' => 'owner']);
+        $project = Project::create(['workspace_id' => $other->id, 'name' => 'Secret Merger', 'owner_id' => $outsider->id, 'privacy' => 'workspace', 'color' => '#4573d2', 'status' => 'on_track']);
+        $section = $project->sections()->create(['name' => 'Todo', 'position' => 1]);
+        $secret = $project->tasks()->create(['title' => 'Confidential price', 'section_id' => $section->id, 'creator_id' => $outsider->id, 'position' => 1]);
+        $secret->comments()->create(['user_id' => $outsider->id, 'body' => 'Board-only comment', 'is_internal' => true]);
+
+        $this->actingAs(User::where('email', 'leo@taskflow.test')->first());
+
+        // The browser can't point the panel at another task…
+        try {
+            Livewire::test(\App\Livewire\TaskPanel::class)->set('taskId', $secret->id);
+            $this->fail('taskId should be locked');
+        } catch (\Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException) {
+            $this->addToAssertionCount(1);
+        }
+
+        // …a crafted ?task= link opens nothing…
+        Livewire::withQueryParams(['task' => $secret->id])->test(\App\Livewire\TaskPanel::class)
+            ->assertSet('taskId', null)
+            ->assertDontSee('Secret Merger')->assertDontSee('Board-only comment');
+
+        // …and opening it directly is refused.
+        Livewire::test(\App\Livewire\TaskPanel::class)->call('open', $secret->id)->assertForbidden();
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);

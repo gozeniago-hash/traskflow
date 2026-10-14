@@ -67,7 +67,7 @@
                     </button>
                 @endif
 
-                <textarea wire:model.live.blur="title" rows="1" x-data x-init="$el.style.height = $el.scrollHeight + 'px'" x-on:input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
+                <textarea wire:model.live.blur="title" rows="1" x-data x-init="const fit = () => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }; new ResizeObserver(fit).observe($el); fit()" x-on:input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
                           @disabled(! $canEdit)
                           class="w-full resize-none rounded-md border border-transparent px-1 py-0.5 text-xl font-semibold hover:border-gray-200 focus:border-coral-400 focus:outline-none {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}"></textarea>
 
