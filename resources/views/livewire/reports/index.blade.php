@@ -21,7 +21,7 @@
 
     {{-- Report tabs --}}
     <nav class="flex gap-5 overflow-x-auto border-b border-gray-200 px-6 pt-3 print:hidden">
-        @foreach (\App\Livewire\Reports\Index::REPORTS as $key => $label)
+        @foreach ($reports as $key => $label)
             <button wire:click="$set('report', '{{ $key }}')" class="tab whitespace-nowrap {{ $report === $key ? 'tab-active' : '' }}">{{ $label }}</button>
         @endforeach
     </nav>
@@ -32,11 +32,13 @@
             <option value="">All projects</option>
             @foreach ($projects as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach
         </select>
+        @unless ($onlyMine)
         <select wire:model.live="team" class="input input-sm w-auto text-xs" aria-label="Team">
             <option value="">All teams</option>
             @foreach ($teams as $t)<option value="{{ $t->id }}">{{ $t->name }}</option>@endforeach
         </select>
-        @if ($report !== 'projects')
+        @endunless
+        @if ($report !== 'projects' && ! $onlyMine)
             <select wire:model.live="person" class="input input-sm w-auto text-xs" aria-label="Resource">
                 <option value="">Everyone</option>
                 @foreach ($people as $u)<option value="{{ $u->id }}">{{ $u->name }}</option>@endforeach

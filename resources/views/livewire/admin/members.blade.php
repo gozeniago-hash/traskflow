@@ -22,6 +22,7 @@
                                 @if ($isAdmin && $m->pivot->role !== 'owner' && $m->id !== auth()->id())
                                     <select wire:change="changeRole({{ $m->id }}, $event.target.value)" class="input input-sm w-28">
                                         <option value="admin" @selected($m->pivot->role === 'admin')>Admin</option>
+                                        <option value="manager" @selected($m->pivot->role === 'manager')>Manager</option>
                                         <option value="member" @selected($m->pivot->role === 'member')>Member</option>
                                     </select>
                                 @else
@@ -72,11 +73,13 @@
                 <div>
                     <label class="label">Role</label>
                     <select wire:model.live="role" class="input">
-                        <option value="member">Member — sees only projects shared with them</option>
-                        <option value="admin">Admin — sees and manages everything</option>
+                        <option value="member">Member</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Admin</option>
                     </select>
+                    <p class="mt-1 text-xs text-ink-500">{{ \App\Models\Workspace::ROLE_DESCRIPTIONS[$role] ?? '' }}</p>
                 </div>
-                @if ($role === 'member' && $allTeams->isNotEmpty())
+                @if (in_array($role, ['member', 'manager'], true) && $allTeams->isNotEmpty())
                     <div>
                         <label class="label">Teams <span class="font-normal normal-case text-ink-500">(optional)</span></label>
                         <div class="space-y-1.5 rounded-md border border-gray-200 p-3">

@@ -1,3 +1,4 @@
+@php($canManage = auth()->user()->can('update', $project))
 <div>
     @include('livewire.projects.partials-toolbar')
 
@@ -16,9 +17,10 @@
                     @if ($editingSection === $section->id)
                         <input wire:model="sectionName" wire:keydown.enter="renameSection" wire:keydown.escape="$set('editingSection', null)" x-init="$el.focus(); $el.select()" x-on:blur="$wire.renameSection()" class="input input-sm max-w-xs font-semibold">
                     @else
-                        <h3 wire:dblclick="editSection({{ $section->id }})" class="cursor-default font-semibold">{{ $section->name }}</h3>
+                        <h3 @if ($canManage) wire:dblclick="editSection({{ $section->id }})" @endif class="cursor-default font-semibold">{{ $section->name }}</h3>
                     @endif
                     <span class="text-xs text-ink-500">{{ $section->tasks->count() }}</span>
+                    @if ($canManage)
                     <div class="relative ml-1">
                         <button x-on:click="menu = !menu" class="invisible rounded p-0.5 text-ink-500 hover:bg-gray-100 group-hover:visible"><x-icon name="dots" /></button>
                         <div x-cloak x-show="menu" x-on:click.outside="menu = false" x-on:click="menu = false" class="absolute left-0 z-20 mt-1 w-44 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
@@ -28,6 +30,7 @@
                             <button wire:click="deleteSection({{ $section->id }})" wire:confirm="Delete “{{ $section->name }}”? Its tasks move to another section." class="block w-full rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">Delete section</button>
                         </div>
                     </div>
+                    @endif
                 </div>
 
                 @unless ($isCollapsed)
@@ -71,9 +74,11 @@
             </section>
         @endforeach
 
+        @if ($canManage)
         <form wire:submit="addSection" class="mt-6 flex max-w-sm items-center gap-2">
             <input wire:model="newSection" placeholder="Add section…" class="input input-sm">
             <button class="btn-secondary btn"><x-icon name="plus" /> Section</button>
         </form>
+        @endif
     </div>
 </div>

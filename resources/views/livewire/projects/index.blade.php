@@ -1,7 +1,7 @@
 <div>
     <x-page-header title="Projects" :subtitle="$projects->count().' active '.\Illuminate\Support\Str::plural('project', $projects->count())">
         <x-slot:actions>
-            <button wire:click="openCreate" class="btn-primary btn"><x-icon name="plus" /> New project</button>
+            @if (auth()->user()->canCreateProjects())<button wire:click="openCreate" class="btn-primary btn"><x-icon name="plus" /> New project</button>@endif
         </x-slot:actions>
     </x-page-header>
 
@@ -51,7 +51,7 @@
             </a>
         @empty
             <x-empty class="sm:col-span-2 xl:col-span-3" icon="folder" title="No projects match" text="Create a project to start planning work with your team.">
-                <button wire:click="openCreate" class="btn-primary btn"><x-icon name="plus" /> New project</button>
+                @if (auth()->user()->canCreateProjects())<button wire:click="openCreate" class="btn-primary btn"><x-icon name="plus" /> New project</button>@endif
             </x-empty>
         @endforelse
     </div>

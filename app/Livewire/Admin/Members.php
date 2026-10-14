@@ -33,7 +33,7 @@ class Members extends Component
         $this->requireAdmin();
         $this->validate([
             'emails' => ['required', 'string'],
-            'role' => ['required', 'in:admin,member'],
+            'role' => ['required', 'in:admin,manager,member'],
             'inviteTeams' => ['array'],
             'inviteTeams.*' => [\Illuminate\Validation\Rule::exists('teams', 'id')->where('workspace_id', $this->workspace()->id)],
         ]);
@@ -60,7 +60,7 @@ class Members extends Component
     public function changeRole(int $userId, string $role): void
     {
         $this->requireAdmin();
-        abort_unless(in_array($role, ['admin', 'member'], true), 422);
+        abort_unless(in_array($role, ['admin', 'manager', 'member'], true), 422);
 
         $target = $this->workspace()->members()->findOrFail($userId);
         if ($target->pivot->role === 'owner') {

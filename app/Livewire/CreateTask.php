@@ -45,7 +45,7 @@ class CreateTask extends Component
     public function open(int $projectId, ?int $sectionId = null, ?string $dueDate = null): void
     {
         $project = Project::findOrFail($projectId);
-        $this->authorize('update', $project);
+        $this->authorize('contribute', $project);
 
         $this->reset(['title', 'description', 'assignee_id', 'due_date', 'priority', 'client_visible', 'files', 'newFiles', 'openAfter', 'fieldValues']);
         $this->resetValidation();
@@ -72,7 +72,7 @@ class CreateTask extends Component
     protected function project(): Project
     {
         $project = Project::findOrFail($this->projectId);
-        $this->authorize('update', $project);
+        $this->authorize('contribute', $project);
 
         return $project;
     }

@@ -36,11 +36,12 @@ class Files extends Component
 
     public function updatedUploads(): void
     {
-        $this->authorize('update', $this->project);
+        $this->authorize('contribute', $this->project);
         $this->validate(['uploads.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]]);
 
         foreach ($this->uploads as $file) {
-            Attachment::storeUpload($file, $this->project, $this->me(), null, $this->shareWithClient && $this->project->portal_enabled);
+            $share = $this->shareWithClient && $this->project->portal_enabled && $this->me()->can('update', $this->project);
+            Attachment::storeUpload($file, $this->project, $this->me(), null, $share);
         }
         $count = count($this->uploads);
         $this->uploads = [];
@@ -66,6 +67,7 @@ class Files extends Component
     {
         return view('livewire.projects.files', [
             'files' => $this->project->attachments()->with(['user', 'task', 'comment', 'doc'])->latest()->get(),
+            'canManage' => $this->me()->can('update', $this->project),
         ]);
     }
 }

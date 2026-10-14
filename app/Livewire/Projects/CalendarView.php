@@ -70,7 +70,7 @@ class CalendarView extends Component
 
     public function createOnDay(): void
     {
-        $this->authorize('update', $this->project);
+        $this->authorize('contribute', $this->project);
         $title = trim($this->newTitle);
         if ($title === '' || ! $this->addingOn) {
             $this->addingOn = null;

@@ -156,9 +156,33 @@ class Index extends Component
 
     // ------------------------------------------------------------- queries
 
+    /**
+     * Report scope by role:
+     * - admin: every project in the workspace, everyone's data
+     * - manager: the projects they belong to, everyone's data
+     * - member: projects shared with them, only their own tasks and time
+     */
+    protected function onlyMine(): bool
+    {
+        return ! $this->me()->isAdmin() && ! $this->me()->isManager();
+    }
+
+    /** The person filter actually applied ('' = everyone). Members are always filtered to themselves. */
+    protected function personFilter(): string
+    {
+        return $this->onlyMine() ? (string) $this->me()->id : $this->person;
+    }
+
+    protected function scopedProjects(): Builder
+    {
+        $me = $this->me();
+
+        return $me->isManager() ? Project::query()->managedBy($me) : Project::query()->visibleTo($me);
+    }
+
     protected function visibleProjects(): Builder
     {
-        return Project::query()->visibleTo($this->me())
+        return $this->scopedProjects()
             ->when($this->project !== '', fn ($q) => $q->where('projects.id', (int) $this->project))
             ->when($this->team !== '', fn ($q) => $q->where('team_id', (int) $this->team));
     }
@@ -168,8 +192,8 @@ class Index extends Component
         return Task::query()
             ->whereIn('project_id', $this->visibleProjects()->active()->select('projects.id'))
             ->when(! $this->includeSubtasks, fn ($q) => $q->whereNull('parent_id'))
-            ->when($this->person === 'unassigned', fn ($q) => $q->whereNull('assignee_id'))
-            ->when($this->person !== '' && $this->person !== 'unassigned', fn ($q) => $q->where('assignee_id', (int) $this->person))
+            ->when($this->personFilter() === 'unassigned', fn ($q) => $q->whereNull('assignee_id'))
+            ->when($this->personFilter() !== '' && $this->personFilter() !== 'unassigned', fn ($q) => $q->where('assignee_id', (int) $this->personFilter()))
             ->with(['project:id,key,name,color', 'assignee', 'parent:id,title', 'fieldValues']);
     }
 
@@ -292,7 +316,7 @@ class Index extends Component
         $timeLogged = (int) TimeEntry::query()
             ->whereIn('project_id', $this->visibleProjects()->select('projects.id'))
             ->whereNotNull('ended_at')->whereBetween('started_at', [$from, $to])
-            ->when($this->person !== '' && $this->person !== 'unassigned', fn ($q) => $q->where('user_id', (int) $this->person))
+            ->when($this->personFilter() !== '' && $this->personFilter() !== 'unassigned', fn ($q) => $q->where('user_id', (int) $this->personFilter()))
             ->sum('duration_seconds');
 
         $withDue = $rows->sum('on_time') + $rows->sum('late');
@@ -317,8 +341,8 @@ class Index extends Component
 
         return new \App\Support\Timesheet(
             $this->me(), $from->toDateString(), $to->toDateString(),
-            $this->project !== '' ? [(int) $this->project] : null,
-            ctype_digit($this->person) ? (int) $this->person : null,
+            $this->project !== '' ? [(int) $this->project] : ($this->me()->isManager() ? $this->scopedProjects()->pluck('projects.id')->all() : null),
+            ctype_digit($this->personFilter()) ? (int) $this->personFilter() : null,
             $this->team !== '' ? (int) $this->team : null,
         );
     }
@@ -355,7 +379,7 @@ class Index extends Component
         if ($this->team !== '' && ($t = $this->workspace()->teams()->find((int) $this->team))) {
             $notes[] = $t->name;
         }
-        if (ctype_digit($this->person) && ($u = $this->workspace()->members()->find((int) $this->person))) {
+        if (ctype_digit($this->personFilter()) && ($u = $this->workspace()->members()->find((int) $this->personFilter()))) {
             $notes[] = $u->name;
         }
         [$contents, $filename, $mime] = $this->timesheet()->export(
@@ -369,6 +393,7 @@ class Index extends Component
 
     public function export(): StreamedResponse
     {
+        abort_if($this->onlyMine() && $this->report === 'projects', 403);
         $filename = 'taskflow-'.$this->report.'-'.now()->format('Y-m-d').'.csv';
 
         [$header, $lines] = match ($this->report) {
@@ -450,6 +475,9 @@ class Index extends Component
 
     public function render()
     {
+        if ($this->onlyMine() && $this->report === 'projects') {
+            $this->report = 'incomplete'; // the portfolio report covers everyone's work
+        }
         $ws = $this->workspace();
 
         $data = match ($this->report) {
@@ -462,10 +490,16 @@ class Index extends Component
 
         return view('livewire.reports.index', [
             'data' => $data,
-            'projects' => Project::query()->visibleTo($this->me())->active()->orderBy('name')->get(['projects.id', 'name']),
+            'projects' => $this->scopedProjects()->active()->orderBy('name')->get(['projects.id', 'name']),
             'teams' => $ws->teams()->orderBy('name')->get(['id', 'name']),
             'people' => $ws->members()->orderBy('name')->get(),
-            'scopeNote' => $this->me()->isAdmin() ? 'All projects in the workspace' : 'Projects you can access',
+            'scopeNote' => match (true) {
+                $this->me()->isAdmin() => 'All projects in the workspace',
+                $this->me()->isManager() => 'Projects you belong to',
+                default => 'Your own tasks and time',
+            },
+            'onlyMine' => $this->onlyMine(),
+            'reports' => $this->onlyMine() ? array_diff_key(self::REPORTS, ['projects' => true]) : self::REPORTS,
         ]);
     }
 }

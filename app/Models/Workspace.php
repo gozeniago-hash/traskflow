@@ -12,8 +12,16 @@ class Workspace extends Model
     public const ROLES = [
         'owner' => 'Owner',
         'admin' => 'Admin',
+        'manager' => 'Manager',
         'member' => 'Member',
         'client' => 'Client',
+    ];
+
+    /** What each internal role can do — shown when inviting people and changing roles. */
+    public const ROLE_DESCRIPTIONS = [
+        'admin' => 'Sees and manages everything, including workspace settings, people, teams and clients.',
+        'manager' => 'Sees shared projects and fully manages the projects they belong to: details, members, fields, everyone\'s time and reports.',
+        'member' => 'Works on projects shared with them. Can\'t change project settings or open workspace pages; sees only their own time and reports.',
     ];
 
     protected $fillable = ['name', 'owner_id'];

@@ -70,7 +70,7 @@
                     </p>
                     <div class="ml-auto flex items-center gap-1.5">
                         @if ($project->client_id)
-                            <button @if ($canEdit) wire:click="toggleShare" @endif class="pill {{ $doc->client_visible ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-gray-100 text-ink-500' }}" title="{{ $canEdit ? 'Click to change' : '' }}">
+                            <button @if ($canManage) wire:click="toggleShare" @endif class="pill {{ $doc->client_visible ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-gray-100 text-ink-500' }}" title="{{ $canManage ? 'Click to change' : '' }}">
                                 <x-icon :name="$doc->client_visible ? 'eye' : 'eye-off'" class="h-3 w-3" /> {{ $doc->client_visible ? 'Shared with client' : 'Internal' }}
                             </button>
                         @endif

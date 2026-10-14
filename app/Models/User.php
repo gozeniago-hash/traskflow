@@ -100,6 +100,17 @@ class User extends Authenticatable
         return in_array($this->role(), ['owner', 'admin'], true);
     }
 
+    public function isManager(): bool
+    {
+        return $this->role() === 'manager';
+    }
+
+    /** Owners, admins and managers can create projects; members and clients can't. */
+    public function canCreateProjects(): bool
+    {
+        return $this->isAdmin() || $this->isManager();
+    }
+
     public function isOwner(): bool
     {
         return $this->role() === 'owner';

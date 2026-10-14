@@ -4,7 +4,7 @@
             <x-icon name="upload" /> Upload files
             <input type="file" wire:model="uploads" multiple class="hidden">
         </label>
-        @if ($project->portal_enabled)
+        @if ($project->portal_enabled && $canManage)
             <label class="flex items-center gap-2 text-sm text-ink-700">
                 <input type="checkbox" wire:model="shareWithClient" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Share new uploads with the client
             </label>
@@ -44,6 +44,8 @@
                             <td class="px-4 py-2.5">
                                 @if ($f->task_id || $f->doc_id)
                                     @if ($f->isVisibleToClient())<span class="pill bg-emerald-50 text-emerald-700">{{ $f->doc_id ? 'via doc' : 'via task' }}</span>@else<span class="text-xs text-ink-500">Hidden</span>@endif
+                                @elseif ($project->portal_enabled && ! $canManage)
+                                    <span class="pill {{ $f->client_visible ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-ink-500' }}"><x-icon :name="$f->client_visible ? 'eye' : 'eye-off'" class="h-3 w-3" /> {{ $f->client_visible ? 'Shared' : 'Hidden' }}</span>
                                 @elseif ($project->portal_enabled)
                                     <button wire:click="toggleShare({{ $f->id }})" class="pill {{ $f->client_visible ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-ink-500' }}">
                                         <x-icon :name="$f->client_visible ? 'eye' : 'eye-off'" class="h-3 w-3" /> {{ $f->client_visible ? 'Shared' : 'Hidden' }}

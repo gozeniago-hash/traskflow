@@ -4,7 +4,7 @@
         <section class="card p-5">
             <div class="mb-2 flex items-center justify-between">
                 <h2 class="font-semibold">About this project</h2>
-                @unless ($editingDescription)<button wire:click="$set('editingDescription', true)" class="btn-ghost btn text-xs">Edit</button>@endunless
+                @if ($canEdit && ! $editingDescription)<button wire:click="$set('editingDescription', true)" class="btn-ghost btn text-xs">Edit</button>@endif
             </div>
             @if ($editingDescription)
                 <textarea wire:model="description" rows="5" class="input" placeholder="What's this project about? Goals, scope, links…"></textarea>
@@ -105,7 +105,7 @@
                 ['Completed', $progress['completed'], 'text-emerald-600'],
                 ['Overdue', $progress['overdue'], $progress['overdue'] ? 'text-red-600' : 'text-ink-900'],
                 ['Awaiting client', $pendingApprovals, $pendingApprovals ? 'text-violet-600' : 'text-ink-900'],
-                ['Time logged', \App\Models\TimeEntry::formatShort($timeTotal), 'text-ink-900'],
+                [$canSeeTeam ? 'Time logged' : 'Your time', \App\Models\TimeEntry::formatShort($timeTotal), 'text-ink-900'],
             ] as [$label, $value, $color])
                 <div class="card p-4">
                     <p class="text-xs text-ink-500">{{ $label }}</p>
@@ -121,6 +121,7 @@
         {{-- Status updates --}}
         <section class="card p-5">
             <h2 class="font-semibold">Status updates</h2>
+            @if ($canEdit)
             <form wire:submit="postUpdate" class="mt-3 space-y-3 rounded-lg bg-gray-50 p-4">
                 <div class="flex flex-wrap gap-2">
                     @foreach (\App\Models\Project::STATUSES as $key => $label)
@@ -144,6 +145,7 @@
                     <button class="btn-primary btn">Post update</button>
                 </div>
             </form>
+            @endif
 
             <div class="mt-5 space-y-5">
                 @forelse ($updates as $u)
@@ -152,7 +154,7 @@
                             <x-status-pill :status="$u->status" />
                             <h3 class="font-medium">{{ $u->title }}</h3>
                             @if ($u->client_visible)<span class="pill bg-emerald-50 text-emerald-700"><x-icon name="eye" class="h-3 w-3" /> Shared</span>@endif
-                            <button wire:click="deleteUpdate({{ $u->id }})" wire:confirm="Delete this update?" class="invisible ml-auto text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="trash" class="h-3.5 w-3.5" /></button>
+                            @if ($canEdit)<button wire:click="deleteUpdate({{ $u->id }})" wire:confirm="Delete this update?" class="invisible ml-auto text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="trash" class="h-3.5 w-3.5" /></button>@endif
                         </div>
                         @if ($u->body)<p class="mt-1.5 whitespace-pre-line text-sm text-ink-700">{{ $u->body }}</p>@endif
                         <p class="mt-1.5 text-xs text-ink-500">{{ $u->user?->name }} · {{ $u->created_at->diffForHumans() }}</p>
@@ -184,13 +186,13 @@
                 @foreach ($members as $m)
                     <li wire:key="pm-{{ $m->id }}" class="group flex items-center gap-2 text-sm">
                         <x-avatar :user="$m" size="sm" /><span class="flex-1 truncate">{{ $m->name }}</span>
-                        @if ($m->id === $p->owner_id)<span class="text-xs text-ink-500">Owner</span>@else
+                        @if ($m->id === $p->owner_id)<span class="text-xs text-ink-500">Owner</span>@elseif ($canEdit)
                             <button wire:click="removeProjectMember({{ $m->id }})" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>
                         @endif
                     </li>
                 @endforeach
             </ul>
-            @if ($available->isNotEmpty())
+            @if ($canEdit && $available->isNotEmpty())
                 <div class="mt-3 flex gap-2">
                     <select wire:model="addMember" class="input input-sm">
                         <option value="">Add member…</option>
@@ -215,7 +217,7 @@
         </section>
 
         <section class="card p-5">
-            <h2 class="mb-3 font-semibold">Time logged by person</h2>
+            <h2 class="mb-3 font-semibold">{{ $canSeeTeam ? 'Time logged by person' : 'Your time on this project' }}</h2>
             <ul class="space-y-2 text-sm">
                 @forelse ($timeByPerson as $row)
                     <li class="flex items-center gap-2"><x-avatar :user="$row->user" size="xs" /><span class="flex-1 truncate">{{ $row->user?->name ?? 'Former member' }}</span><span class="font-medium tabular-nums">{{ \App\Models\TimeEntry::formatShort((int) $row->seconds) }}</span></li>

@@ -53,16 +53,26 @@ class Timesheet extends Component
     {
     }
 
+    /** Managers of this project and admins see everyone's time; members see only their own. */
+    protected function canSeeTeam(): bool
+    {
+        return $this->me()->can('viewTeamData', $this->project);
+    }
+
     protected function sheet(): TimesheetData
     {
-        return new TimesheetData($this->me(), $this->from, $this->to, [$this->project->id], $this->person !== '' ? (int) $this->person : null);
+        $person = $this->canSeeTeam() ? ($this->person !== '' ? (int) $this->person : null) : $this->me()->id;
+
+        return new TimesheetData($this->me(), $this->from, $this->to, [$this->project->id], $person);
     }
 
     public function export(string $format)
     {
         $this->authorize('view', $this->project);
         $notes = [];
-        if ($this->person !== '' && ($u = $this->workspace()->members()->find((int) $this->person))) {
+        if (! $this->canSeeTeam()) {
+            $notes[] = $this->me()->name;
+        } elseif ($this->person !== '' && ($u = $this->workspace()->members()->find((int) $this->person))) {
             $notes[] = $u->name;
         }
         [$contents, $filename, $mime] = $this->sheet()->export(
@@ -84,7 +94,9 @@ class Timesheet extends Component
             'total' => (int) $entries->sum('duration_seconds'),
             'count' => $entries->count(),
             'members' => $this->workspace()->members()->orderBy('name')->get(['users.id', 'name']),
-            'running' => \App\Models\TimeEntry::query()->running()->where('project_id', $this->project->id)->with('user:id,name')->get(),
+            'running' => \App\Models\TimeEntry::query()->running()->where('project_id', $this->project->id)
+                ->when(! $this->canSeeTeam(), fn ($q) => $q->where('user_id', $this->me()->id))->with('user:id,name')->get(),
+            'canSeeTeam' => $this->canSeeTeam(),
         ]);
     }
 }

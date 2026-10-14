@@ -209,6 +209,39 @@ class Project extends Model
 
     // ------------------------------------------------------------------ helpers
 
+    /**
+     * Projects a user belongs to: they own it, are a project member, or it's shared with
+     * a team they're in. (Workspace-wide projects are visible to everyone but don't make
+     * everyone "part of" them.)
+     */
+    public function scopePartOf(Builder $query, User $user): Builder
+    {
+        $teamIds = $user->teams()->pluck('teams.id');
+
+        return $query->where('projects.workspace_id', $user->current_workspace_id)
+            ->where(fn (Builder $q) => $q->where('owner_id', $user->id)
+                ->orWhereHas('members', fn (Builder $m) => $m->where('users.id', $user->id))
+                ->orWhere(fn (Builder $t) => $t->whereNotNull('team_id')->whereIn('team_id', $teamIds)));
+    }
+
+    /** Projects whose settings, members and everyone's data this user may manage. */
+    public function scopeManagedBy(Builder $query, User $user): Builder
+    {
+        if ($user->isAdmin()) {
+            return $query->where('projects.workspace_id', $user->current_workspace_id);
+        }
+        if ($user->isManager()) {
+            return $query->partOf($user);
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
+
+    public function isManagedBy(User $user): bool
+    {
+        return static::query()->managedBy($user)->whereKey($this->id)->exists();
+    }
+
     public function isVisibleTo(User $user): bool
     {
         return static::query()->visibleTo($user)->whereKey($this->id)->exists();

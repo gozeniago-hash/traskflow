@@ -46,6 +46,7 @@ class Index extends Component
 
     public function mount(): void
     {
+        $this->new = $this->new && $this->me()->canCreateProjects();
         $this->resetForm();
     }
 
@@ -96,6 +97,7 @@ class Index extends Component
 
     public function openCreate(): void
     {
+        $this->authorize('create', Project::class);
         $this->keyEdited = false;
         $this->resetForm();
         $this->resetValidation();

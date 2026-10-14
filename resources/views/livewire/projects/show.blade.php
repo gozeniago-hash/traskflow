@@ -13,7 +13,7 @@
                 <div class="flex items-center gap-2">
                     <span class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs font-semibold text-ink-700" title="Project ID — tickets are numbered {{ $project->key }}-1, {{ $project->key }}-2, …">{{ $project->key }}</span>
                     <h1 class="truncate text-xl font-semibold">{{ $project->name }}</h1>
-                    <button wire:click="openEdit" class="rounded p-1 text-ink-500 hover:bg-gray-100" title="Project details"><x-icon name="chevron-down" /></button>
+                    @if ($canManage)<button wire:click="openEdit" class="rounded p-1 text-ink-500 hover:bg-gray-100" title="Project details" aria-label="Project details"><x-icon name="chevron-down" /></button>@endif
                 </div>
                 <p class="text-xs text-ink-500">
                     {{ $project->team?->name ?? 'No team' }}
@@ -22,6 +22,9 @@
                 </p>
             </div>
 
+            @unless ($canManage)
+                <x-status-pill :status="$project->status" />
+            @else
             <div class="relative" x-data="{ open: false }">
                 <button x-on:click="open = !open"><x-status-pill :status="$project->status" class="cursor-pointer" /></button>
                 <div x-cloak x-show="open" x-on:click.outside="open = false" x-on:click="open = false" class="absolute left-0 z-30 mt-1 w-40 rounded-lg bg-white p-1 shadow-lg ring-1 ring-black/5">
@@ -32,6 +35,7 @@
                     @endforeach
                 </div>
             </div>
+            @endunless
 
             @if ($project->client_id)
                 <span class="pill {{ $project->portal_enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-ink-500' }}" title="Client portal">
@@ -44,17 +48,21 @@
                     @foreach ($members->take(5) as $m)<x-avatar :user="$m" size="sm" class="ring-2 ring-white" />@endforeach
                     @if ($members->count() > 5)<span class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-[10px] ring-2 ring-white">+{{ $members->count() - 5 }}</span>@endif
                 </div>
+                @if ($canManage || $canDelete)
                 <div class="relative" x-data="{ open: false }">
-                    <button x-on:click="open = !open" class="btn-ghost btn px-1.5"><x-icon name="dots" class="h-5 w-5" /></button>
+                    <button x-on:click="open = !open" class="btn-ghost btn px-1.5" aria-label="Project menu"><x-icon name="dots" class="h-5 w-5" /></button>
                     <div x-cloak x-show="open" x-on:click.outside="open = false" x-on:click="open = false" class="absolute right-0 z-30 mt-1 w-48 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
-                        <button wire:click="openEdit" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Edit project details</button>
-                        <button wire:click="openFields" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Custom fields</button>
+                        @if ($canManage)
+                            <button wire:click="openEdit" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Edit project details</button>
+                            <button wire:click="openFields" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Custom fields</button>
+                        @endif
                         @if ($canDelete)
                             <button wire:click="archive" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $project->archived_at ? 'Restore project' : 'Archive project' }}</button>
                             <button wire:click="deleteProject" wire:confirm="Permanently delete “{{ $project->name }}” and all of its tasks and files?" class="block w-full rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">Delete project</button>
                         @endif
                     </div>
                 </div>
+                @endif
             </div>
         </div>
 

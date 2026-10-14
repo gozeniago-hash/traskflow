@@ -41,9 +41,16 @@ trait ManagesProjectTasks
         // Re-render picks up the change.
     }
 
+    /** Sections and project structure: managers and admins. */
     protected function ensureCanEdit(): void
     {
         $this->authorize('update', $this->project);
+    }
+
+    /** Working on tasks: anyone on the team who can see the project. */
+    protected function ensureCanContribute(): void
+    {
+        $this->authorize('contribute', $this->project);
     }
 
     protected function section(?int $id): Section
@@ -58,7 +65,7 @@ trait ManagesProjectTasks
 
     public function addTask(int $sectionId): void
     {
-        $this->ensureCanEdit();
+        $this->ensureCanContribute();
         $title = trim($this->newTask[$sectionId] ?? '');
         if ($title === '') {
             return;
@@ -78,14 +85,14 @@ trait ManagesProjectTasks
 
     public function toggleComplete(int $taskId): void
     {
-        $this->ensureCanEdit();
+        $this->ensureCanContribute();
         $this->projectTask($taskId)->toggleComplete($this->me());
         $this->dispatch('task-saved');
     }
 
     public function startTimer(int $taskId): void
     {
-        $this->ensureCanEdit();
+        $this->ensureCanContribute();
         TimeTracker::start($this->projectTask($taskId), $this->me());
         $this->dispatch('timer-changed');
     }
@@ -118,7 +125,7 @@ trait ManagesProjectTasks
     /** Called by the Sortable helper with the full new order of a section. */
     public function reorder(?int $sectionId, array $ids): void
     {
-        $this->ensureCanEdit();
+        $this->ensureCanContribute();
         $section = $this->section($sectionId);
         $ids = array_values(array_filter(array_map('intval', $ids)));
 

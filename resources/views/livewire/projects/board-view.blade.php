@@ -1,3 +1,4 @@
+@php($canManage = auth()->user()->can('update', $project))
 <div>
     @include('livewire.projects.partials-toolbar')
 
@@ -8,9 +9,10 @@
                     @if ($editingSection === $section->id)
                         <input wire:model="sectionName" wire:keydown.enter="renameSection" wire:keydown.escape="$set('editingSection', null)" x-init="$el.focus(); $el.select()" x-on:blur="$wire.renameSection()" class="input input-sm font-semibold">
                     @else
-                        <h3 wire:dblclick="editSection({{ $section->id }})" class="truncate text-sm font-semibold">{{ $section->name }}</h3>
+                        <h3 @if ($canManage) wire:dblclick="editSection({{ $section->id }})" @endif class="truncate text-sm font-semibold">{{ $section->name }}</h3>
                         <span class="text-xs text-ink-500">{{ $section->tasks->count() }}</span>
                     @endif
+                    @if ($canManage)
                     <div class="relative ml-auto">
                         <button x-on:click="menu = !menu" class="rounded p-0.5 text-ink-500 hover:bg-gray-200"><x-icon name="dots" /></button>
                         <div x-cloak x-show="menu" x-on:click.outside="menu = false" x-on:click="menu = false" class="absolute right-0 z-20 mt-1 w-44 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
@@ -20,6 +22,7 @@
                             <button wire:click="deleteSection({{ $section->id }})" wire:confirm="Delete “{{ $section->name }}”? Its tasks move to another column." class="block w-full rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">Delete</button>
                         </div>
                     </div>
+                    @endif
                 </div>
 
                 <div x-data x-init="taskflowSortable($el, $wire)" data-section-id="{{ $section->id }}" data-group="board-{{ $project->id }}" class="flex min-h-[3rem] flex-col gap-2">
@@ -67,8 +70,10 @@
             </div>
         @endforeach
 
+        @if ($canManage)
         <form wire:submit="addSection" class="w-72 shrink-0 rounded-xl border border-dashed border-gray-300 p-2">
             <input wire:model="newSection" placeholder="+ Add section" class="w-full border-0 bg-transparent px-2 py-1.5 text-sm font-medium placeholder:text-ink-500 focus:ring-0 focus:outline-none">
         </form>
+        @endif
     </div>
 </div>

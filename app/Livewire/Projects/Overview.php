@@ -215,6 +215,7 @@ class Overview extends Component
     public function render()
     {
         $project = $this->project->fresh(['owner', 'team', 'client']);
+        $canSeeTeam = $this->me()->can('viewTeamData', $project);
         $members = $project->members()->orderBy('name')->get();
 
         return view('livewire.projects.overview', [
@@ -227,11 +228,13 @@ class Overview extends Component
                 ->orderBy('due_date')->with('assignee')->limit(6)->get(),
             'resources' => $project->resources()->with('attachment')->get(),
             'canEdit' => $this->me()->can('update', $project),
+            'canSeeTeam' => $canSeeTeam,
             'hasClient' => (bool) $project->client_id,
             'portalOn' => (bool) $project->portal_enabled && $project->client_id,
             'pendingApprovals' => $project->tasks()->where('approval_status', 'pending')->count(),
-            'timeTotal' => (int) TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')->sum('duration_seconds'),
-            'timeByPerson' => TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')
+            // Members see only their own time; managers and admins see everyone's.
+            'timeTotal' => (int) TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')->when(! $canSeeTeam, fn ($q) => $q->where('user_id', $this->me()->id))->sum('duration_seconds'),
+            'timeByPerson' => TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')->when(! $canSeeTeam, fn ($q) => $q->where('user_id', $this->me()->id))
                 ->selectRaw('user_id, sum(duration_seconds) as seconds')->groupBy('user_id')->orderByDesc('seconds')->with('user')->get(),
             'byAssignee' => Task::query()->where('project_id', $project->id)->whereNull('parent_id')->open()
                 ->selectRaw('assignee_id, count(*) as total')->groupBy('assignee_id')->with('assignee')->get(),

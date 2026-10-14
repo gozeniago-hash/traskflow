@@ -484,6 +484,96 @@ class AccessTest extends TestCase
         }
     }
 
+    /** A workspace-wide project Leo (member) and Jo can see, with time logged by two people. */
+    protected function roleFixture(): array
+    {
+        $leo = User::where('email', 'leo@taskflow.test')->first();
+        $jo = User::where('email', 'jo@taskflow.test')->first();
+        $admin = User::where('email', 'admin@taskflow.test')->first();
+        $ws = $leo->currentWorkspace;
+        $project = Project::create(['workspace_id' => $ws->id, 'name' => 'Roles Project', 'owner_id' => $admin->id, 'privacy' => 'workspace', 'color' => '#4573d2', 'status' => 'on_track']);
+        $other = Project::create(['workspace_id' => $ws->id, 'name' => 'Not Jo\'s Project', 'owner_id' => $admin->id, 'privacy' => 'workspace', 'color' => '#4573d2', 'status' => 'on_track']);
+        foreach ([$project, $other] as $p) {
+            $section = $p->sections()->create(['name' => 'Todo', 'position' => 1]);
+            $task = $p->tasks()->create(['title' => 'Shared task '.$p->id, 'section_id' => $section->id, 'creator_id' => $admin->id, 'position' => 1, 'assignee_id' => $admin->id]);
+            $p->tasks()->create(['title' => 'Leo task '.$p->id, 'section_id' => $section->id, 'creator_id' => $admin->id, 'position' => 2, 'assignee_id' => $leo->id]);
+            foreach ([$leo, $admin] as $u) {
+                \App\Models\TimeEntry::create(['project_id' => $p->id, 'task_id' => $task->id, 'user_id' => $u->id,
+                    'started_at' => now()->subHours(3), 'ended_at' => now()->subHours(2), 'duration_seconds' => 3600, 'note' => 'Time by '.$u->name]);
+            }
+        }
+        $ws->users()->updateExistingPivot($jo->id, ['role' => 'manager']);
+        $project->members()->attach($jo->id); // Jo is part of Roles Project only
+
+        return [$leo, $jo->fresh(), $admin, $project, $other];
+    }
+
+    public function test_members_work_in_projects_but_cannot_manage_them_or_the_workspace(): void
+    {
+        [$leo, , , $project] = $this->roleFixture();
+        $this->actingAs($leo);
+
+        // Can do the work…
+        Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $project])
+            ->set('newTask.'.$project->sections()->first()->id, 'Member task')->call('addTask', $project->sections()->first()->id)->assertHasNoErrors();
+        $this->assertDatabaseHas('tasks', ['title' => 'Member task', 'project_id' => $project->id]);
+        Livewire::test(\App\Livewire\Projects\Docs::class, ['project' => $project])->call('create')->assertHasNoErrors();
+
+        // …but not change the project.
+        $show = fn () => Livewire::test(\App\Livewire\Projects\Show::class, ['project' => $project, 'view' => 'list']);
+        $show()->assertDontSee('Edit project details')->assertDontSee('Custom fields');
+        $show()->call('openEdit')->assertForbidden();
+        $show()->call('setStatus', 'at_risk')->assertForbidden();
+        $show()->call('openFields')->assertForbidden();
+        Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $project])->set('newSection', 'Hack')->call('addSection')->assertForbidden();
+        $ov = fn () => Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $project]);
+        $ov()->call('saveDescription')->assertForbidden();
+        $ov()->set('updateTitle', 'x')->call('postUpdate')->assertForbidden();
+        $ov()->set('addMember', (string) $leo->id)->call('addProjectMember')->assertForbidden();
+        $ov()->set('resourceUrl', 'example.com')->call('addLink')->assertForbidden();
+        Livewire::test(\App\Livewire\Projects\Index::class)->assertDontSee('New project')->call('openCreate')->assertForbidden();
+
+        // No workspace modules.
+        foreach (['teams', 'members', 'clients', 'settings'] as $route) {
+            $this->get(route($route))->assertForbidden();
+        }
+        $this->get(route('home'))->assertDontSee(route('teams'))->assertDontSee(route('members'));
+
+        // Reports and timesheets: only their own data.
+        Livewire::test(\App\Livewire\Reports\Index::class)->set('report', 'incomplete')->set('person', '')->call('expandAll', true)
+            ->assertSee('Leo task '.$project->id)->assertDontSee('Shared task '.$project->id)->assertDontSee('Projects by status');
+        Livewire::test(\App\Livewire\Reports\Index::class)->set('report', 'timesheet')->set('range', 'last_7')->call('expandAll', true)
+            ->assertSee('Time by '.$leo->name)->assertDontSee('Time by Alex Rivera');
+        Livewire::test(\App\Livewire\Projects\Timesheet::class, ['project' => $project])->set('range', 'last_7')->set('person', '')
+            ->assertSee('Time by '.$leo->name)->assertDontSee('Time by Alex Rivera')->assertSee('Your time only');
+    }
+
+    public function test_managers_manage_only_the_projects_they_belong_to(): void
+    {
+        [, $jo, , $project, $other] = $this->roleFixture();
+        $this->actingAs($jo);
+
+        // Their project: full control and everyone's data.
+        Livewire::test(\App\Livewire\Projects\Show::class, ['project' => $project, 'view' => 'list'])->assertSee('Edit project details')
+            ->call('setStatus', 'at_risk')->assertHasNoErrors();
+        $this->assertSame('at_risk', $project->fresh()->status);
+        Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $project])->set('addMember', (string) User::where('email', 'leo@taskflow.test')->value('id'))->call('addProjectMember')->assertHasNoErrors();
+        Livewire::test(\App\Livewire\Projects\Timesheet::class, ['project' => $project])->set('range', 'last_7')
+            ->assertSee('Time by Leo Tan')->assertSee('Time by Alex Rivera');
+
+        // A workspace-wide project they're not part of: can see and work, not manage.
+        Livewire::test(\App\Livewire\Projects\Show::class, ['project' => $other, 'view' => 'list'])->call('setStatus', 'at_risk')->assertForbidden();
+        Livewire::test(\App\Livewire\Projects\Timesheet::class, ['project' => $other])->set('range', 'last_7')->assertDontSee('Time by Alex Rivera');
+
+        // Reports cover their projects, everyone in them.
+        Livewire::test(\App\Livewire\Reports\Index::class)->set('report', 'timesheet')->set('range', 'last_7')->call('expandAll', true)
+            ->assertSee('Time by Alex Rivera')->assertSee('Roles Project')->assertDontSee('Not Jo');
+
+        // Can create projects; no workspace modules.
+        $this->assertTrue($jo->canCreateProjects());
+        $this->get(route('members'))->assertForbidden();
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);

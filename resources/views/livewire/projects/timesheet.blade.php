@@ -8,10 +8,14 @@
         <input type="date" wire:model.live="from" class="input input-sm w-36 text-xs" aria-label="From">
         <span class="text-xs text-ink-500">to</span>
         <input type="date" wire:model.live="to" class="input input-sm w-36 text-xs" aria-label="To">
+        @if ($canSeeTeam)
         <select wire:model.live="person" class="input input-sm w-auto text-xs" aria-label="Person">
             <option value="">Everyone</option>
             @foreach ($members as $m)<option value="{{ $m->id }}">{{ $m->name }}</option>@endforeach
         </select>
+        @else
+            <span class="pill bg-gray-100 text-ink-700">Your time only</span>
+        @endif
         <span wire:loading.delay class="text-xs text-ink-500">Updating…</span>
         <div class="ml-auto flex gap-2">
             <button wire:click="export('xlsx')" class="btn-secondary btn text-xs" @disabled(! $count)>

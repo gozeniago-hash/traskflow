@@ -76,7 +76,7 @@ class MyTasks extends Component
 
             return;
         }
-        $this->authorize('update', $project);
+        $this->authorize('contribute', $project);
         $section = $project->firstSection();
 
         $task = $project->tasks()->create([

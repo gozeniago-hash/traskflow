@@ -69,7 +69,7 @@ class Docs extends Component
 
     protected function editableDoc(): ProjectDoc
     {
-        $this->authorize('update', $this->project);
+        $this->authorize('contribute', $this->project);
 
         return $this->project->docs()->findOrFail($this->docId);
     }
@@ -90,7 +90,7 @@ class Docs extends Component
 
     public function create(string $template = 'blank'): void
     {
-        $this->authorize('update', $this->project);
+        $this->authorize('contribute', $this->project);
         $template = array_key_exists($template, DocTemplates::LIST) ? $template : 'blank';
 
         $doc = $this->project->docs()->create([
@@ -226,6 +226,7 @@ class Docs extends Component
 
     public function toggleShare(): void
     {
+        $this->authorize('update', $this->project); // what clients see is a project setting
         $doc = $this->editableDoc();
         if (! $doc->client_visible && ! $this->project->portal_enabled) {
             $this->toast('Turn on the client portal for this project first (project details).', 'error');
@@ -255,7 +256,7 @@ class Docs extends Component
     public function delete(): void
     {
         $doc = $this->editableDoc();
-        abort_unless((int) $doc->created_by === (int) $this->me()->id || $this->me()->isAdmin() || (int) $this->project->owner_id === (int) $this->me()->id, 403, 'Only the doc author, the project owner or an admin can delete it.');
+        abort_unless((int) $doc->created_by === (int) $this->me()->id || $this->me()->can('update', $this->project) || (int) $this->project->owner_id === (int) $this->me()->id, 403, 'Only the doc author, the project owner or an admin can delete it.');
         $doc->delete();
         $this->docId = $this->project->docs()->value('id');
         $this->title = (string) $this->doc()?->title;
@@ -301,8 +302,9 @@ class Docs extends Component
         return view('livewire.projects.docs', [
             'docs' => $this->project->docs()->with('editor')->get(['id', 'title', 'client_visible', 'updated_at', 'updated_by', 'position']),
             'doc' => $doc,
-            'canEdit' => $this->me()->can('update', $this->project),
-            'canDelete' => $doc && ((int) $doc->created_by === (int) $this->me()->id || $this->me()->isAdmin() || (int) $this->project->owner_id === (int) $this->me()->id),
+            'canEdit' => $this->me()->can('contribute', $this->project),
+            'canManage' => $this->me()->can('update', $this->project),
+            'canDelete' => $doc && ((int) $doc->created_by === (int) $this->me()->id || $this->me()->can('update', $this->project) || (int) $this->project->owner_id === (int) $this->me()->id),
             'revisions' => $doc && $this->showHistory ? $doc->revisions()->with('user')->get() : collect(),
             'preview' => $this->previewRevisionId ? DocRevision::with('user')->find($this->previewRevisionId) : null,
             'templates' => DocTemplates::LIST,

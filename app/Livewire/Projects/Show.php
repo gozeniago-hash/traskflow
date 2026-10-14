@@ -138,6 +138,7 @@ class Show extends Component
             'clients' => $ws->clients()->orderBy('name')->get(),
             'people' => $ws->members()->orderBy('name')->get(),
             'canDelete' => $this->me()->can('delete', $this->project),
+            'canManage' => $this->me()->can('update', $this->project),
         ])->title($this->project->name);
     }
 }
