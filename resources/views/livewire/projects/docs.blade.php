@@ -83,7 +83,7 @@
                                     <button wire:click="duplicate" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Duplicate</button>
                                     <button wire:click="move(-1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move up</button>
                                     <button wire:click="move(1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move down</button>
-                                    <button onclick="window.print()" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Print / save as PDF</button>
+                                    <button x-data x-on:click="window.print()" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Print / save as PDF</button>
                                     @if ($canDelete)
                                         <button wire:click="delete" wire:confirm="Delete “{{ $doc->title }}”? Its history and images are deleted too." class="block w-full rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">Delete doc</button>
                                     @endif

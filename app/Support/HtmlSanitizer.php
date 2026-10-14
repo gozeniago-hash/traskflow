@@ -102,6 +102,8 @@ class HtmlSanitizer
                 'src' => static::safeUrl($value, false),
                 'class' => (bool) preg_match('/^[a-z0-9_\- ]{0,200}$/i', $value),
                 'width', 'height' => ctype_digit($value),
+                'data-trix-content-type' => (bool) preg_match('#^[a-z0-9.+-]+/[a-z0-9.+-]+$#i', $value),
+                'data-trix-attachment', 'data-trix-attributes' => static::cleanTrixJson($el, $attr->name, $value),
                 default => true,
             };
 
@@ -114,6 +116,45 @@ class HtmlSanitizer
             $el->setAttribute('rel', 'noopener noreferrer nofollow');
             $el->setAttribute('target', '_blank');
         }
+    }
+
+    /** Trix attachment metadata keys that may be kept, and how each value is checked. */
+    protected const TRIX_KEYS = [
+        'contentType' => 'mime', 'filename' => 'text', 'filesize' => 'int', 'width' => 'int', 'height' => 'int',
+        'url' => 'url', 'href' => 'url', 'previewable' => 'bool', 'caption' => 'text', 'presentation' => 'text',
+    ];
+
+    /**
+     * The editor re-reads this JSON when a doc is opened, so it is rebuilt from an
+     * allow-list: unknown keys dropped, links limited to http(s) and same-site paths.
+     */
+    protected static function cleanTrixJson(DOMElement $el, string $name, string $value): bool
+    {
+        $data = json_decode(html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8'), true);
+        if (! is_array($data)) {
+            return false;
+        }
+        $clean = [];
+        foreach ($data as $key => $v) {
+            $kind = self::TRIX_KEYS[$key] ?? null;
+            $ok = match ($kind) {
+                'mime' => is_string($v) && preg_match('#^[a-z0-9.+-]+/[a-z0-9.+-]+$#i', $v),
+                'text' => is_string($v) && mb_strlen($v) <= 300,
+                'int' => is_int($v) || (is_string($v) && ctype_digit($v)),
+                'bool' => is_bool($v),
+                'url' => is_string($v) && static::safeUrl($v, false),
+                default => false,
+            };
+            if ($ok) {
+                $clean[$key] = $kind === 'text' ? strip_tags($v) : $v;
+            }
+        }
+        if (! $clean) {
+            return false;
+        }
+        $el->setAttribute($name, json_encode($clean, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
+        return true;
     }
 
     protected static function safeUrl(string $url, bool $allowMail): bool

@@ -9,7 +9,7 @@
 <div>
     <x-page-header title="Reports" :subtitle="$scopeNote">
         <x-slot:actions>
-            <button onclick="window.print()" class="btn-secondary btn print:hidden">Print</button>
+            <button x-data x-on:click="window.print()" class="btn-secondary btn print:hidden">Print</button>
             @if ($report === 'timesheet')
                 <button wire:click="exportTimesheet('xlsx')" class="btn-primary btn print:hidden" @disabled(! $data['count'])><x-icon name="download" /> Excel</button>
                 <button wire:click="exportTimesheet('pdf')" class="btn-primary btn print:hidden" @disabled(! $data['count'])><x-icon name="download" /> PDF</button>

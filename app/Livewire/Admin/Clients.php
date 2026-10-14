@@ -23,8 +23,14 @@ class Clients extends Component
     public string $inviteEmail = '';
     public ?string $lastInviteUrl = null;
 
+    /*
+     * Clients and their portal invitations are admin-only: an invitation gives an
+     * outside person access to that client's shared projects.
+     */
+
     public function create(): void
     {
+        $this->requireAdmin();
         $this->reset(['editingId', 'form']);
         $this->resetValidation();
         $this->showForm = true;
@@ -32,6 +38,7 @@ class Clients extends Component
 
     public function edit(int $id): void
     {
+        $this->requireAdmin();
         $client = $this->client($id);
         $this->editingId = $client->id;
         $this->form = $client->only(array_keys($this->form));
@@ -41,6 +48,7 @@ class Clients extends Component
 
     public function save(): void
     {
+        $this->requireAdmin();
         $data = $this->validate([
             'form.name' => ['required', 'string', 'max:150'],
             'form.contact_name' => ['nullable', 'string', 'max:150'],
@@ -62,6 +70,7 @@ class Clients extends Component
 
     public function openInvite(int $clientId): void
     {
+        $this->requireAdmin();
         $client = $this->client($clientId);
         $this->inviteFor = $client->id;
         $this->inviteEmail = (string) $client->email;
@@ -71,6 +80,7 @@ class Clients extends Component
 
     public function sendInvite(): void
     {
+        $this->requireAdmin();
         $this->validate(['inviteEmail' => ['required', 'email', 'max:190']]);
         $client = $this->client($this->inviteFor);
 
@@ -88,6 +98,7 @@ class Clients extends Component
 
     public function revokeInvite(int $invitationId): void
     {
+        $this->requireAdmin();
         $this->workspace()->invitations()->whereKey($invitationId)->whereNull('accepted_at')->delete();
         $this->toast('Invitation revoked.');
     }

@@ -144,7 +144,10 @@ class GitHub
     /** Store one PR (from the API or a webhook payload) and relink it to tickets. */
     public function upsert(GithubRepository $repo, array $pr): PullRequest
     {
-        $model = PullRequest::firstOrNew(['github_repository_id' => $repo->id, 'number' => (int) $pr['number']]);
+        $model = PullRequest::query()->firstOrNew(['github_repository_id' => $repo->id, 'number' => (int) $pr['number']]);
+        // firstOrNew only fills mass-assignable attributes; the keys must be set explicitly.
+        $model->github_repository_id = $repo->id;
+        $model->number = (int) $pr['number'];
         $model->fill([
             'workspace_id' => $repo->workspace_id,
             'title' => Str::limit((string) ($pr['title'] ?? ''), 495),

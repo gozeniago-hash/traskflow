@@ -19,7 +19,12 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Password::defaults(fn () => Password::min(8));
+        // Minimum 8 characters, never a well-known password; in production also refuse
+        // passwords found in public breaches (checked anonymously against Have I Been Pwned).
+        Password::defaults(fn () => tap(
+            Password::min(8)->rules([new \App\Rules\NotCommonPassword]),
+            fn ($rule) => $this->app->environment('production') ? $rule->uncompromised() : $rule,
+        ));
 
         $this->registerRealtimeHooks();
 

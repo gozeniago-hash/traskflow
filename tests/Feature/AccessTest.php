@@ -423,6 +423,38 @@ class AccessTest extends TestCase
         $this->assertTrue($private->users()->whereKey($leo->id)->exists());
     }
 
+    public function test_only_admins_can_manage_clients_and_portal_invites(): void
+    {
+        $leo = User::where('email', 'leo@taskflow.test')->first();
+        $client = $leo->currentWorkspace->clients()->first();
+        $this->actingAs($leo);
+        $page = fn () => Livewire::test(\App\Livewire\Admin\Clients::class);
+
+        $page()->assertSee($client->name)->assertDontSee('New client')->assertDontSee('Invite to portal');
+        $page()->call('create')->assertForbidden();
+        $page()->call('edit', $client->id)->assertForbidden();
+        $page()->set('form.name', 'Made by a member')->call('save')->assertForbidden();
+        $page()->call('openInvite', $client->id)->assertForbidden();
+        $page()->set('inviteFor', $client->id)->set('inviteEmail', 'outsider@evil.test')->call('sendInvite')->assertForbidden();
+        $this->assertDatabaseMissing('clients', ['name' => 'Made by a member']);
+        $this->assertDatabaseMissing('invitations', ['email' => 'outsider@evil.test']);
+
+        $this->actingAs(User::where('email', 'admin@taskflow.test')->first());
+        Livewire::test(\App\Livewire\Admin\Clients::class)->call('openInvite', $client->id)
+            ->set('inviteEmail', 'new.contact@brightside.test')->call('sendInvite')->assertHasNoErrors();
+        $this->assertDatabaseHas('invitations', ['email' => 'new.contact@brightside.test', 'role' => 'client']);
+    }
+
+    public function test_common_passwords_are_rejected(): void
+    {
+        foreach (['password', 'Password', '12345678', 'aaaaaaaa'] as $weak) {
+            $this->post('/register', ['name' => 'Weak', 'email' => 'weak@example.com', 'workspace' => 'W', 'password' => $weak, 'password_confirmation' => $weak])
+                ->assertSessionHasErrors('password');
+        }
+        $this->post('/register', ['name' => 'Strong', 'email' => 'strong@example.com', 'workspace' => 'S', 'password' => 'Cebu-Sunrise-2026', 'password_confirmation' => 'Cebu-Sunrise-2026'])
+            ->assertSessionHasNoErrors();
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);

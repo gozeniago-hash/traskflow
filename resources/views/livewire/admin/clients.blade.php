@@ -1,8 +1,10 @@
 <div>
-    <x-page-header title="Clients" subtitle="Companies you deliver for. Invite their contacts to the client portal.">
-        <x-slot:actions>
-            <button wire:click="create" class="btn-primary btn"><x-icon name="plus" /> New client</button>
-        </x-slot:actions>
+    <x-page-header title="Clients" :subtitle="$isAdmin ? 'Companies you deliver for. Invite their contacts to the client portal.' : 'Companies you deliver for. Ask a workspace admin to add clients or invite their contacts.'">
+        @if ($isAdmin)
+            <x-slot:actions>
+                <button wire:click="create" class="btn-primary btn"><x-icon name="plus" /> New client</button>
+            </x-slot:actions>
+        @endif
     </x-page-header>
 
     <div class="space-y-4 p-6">
@@ -19,9 +21,9 @@
                         </div>
                     </div>
                     <div class="flex gap-1">
-                        <button wire:click="openInvite({{ $client->id }})" class="btn-secondary btn text-xs"><x-icon name="mail" /> Invite to portal</button>
-                        <button wire:click="edit({{ $client->id }})" class="btn-ghost btn text-xs">Edit</button>
                         @if ($isAdmin)
+                            <button wire:click="openInvite({{ $client->id }})" class="btn-secondary btn text-xs"><x-icon name="mail" /> Invite to portal</button>
+                            <button wire:click="edit({{ $client->id }})" class="btn-ghost btn text-xs">Edit</button>
                             <button wire:click="delete({{ $client->id }})" wire:confirm="Delete {{ $client->name }}? Their contacts lose portal access. Projects are kept." class="btn-ghost btn px-1.5 text-red-600"><x-icon name="trash" /></button>
                         @endif
                     </div>
@@ -44,7 +46,9 @@
                             @foreach ($client->invitations as $inv)
                                 <li class="flex items-center gap-2 text-sm text-ink-500" wire:key="inv-{{ $inv->id }}">
                                     <x-avatar size="sm" /><span class="truncate">{{ $inv->email }}</span><span class="pill bg-amber-50 text-amber-700">Invited</span>
-                                    <button wire:click="revokeInvite({{ $inv->id }})" class="ml-auto text-xs hover:text-red-600">Revoke</button>
+                                    @if ($isAdmin)
+                                        <button wire:click="revokeInvite({{ $inv->id }})" class="ml-auto text-xs hover:text-red-600">Revoke</button>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>
@@ -72,7 +76,7 @@
             </div>
         @empty
             <x-empty icon="briefcase" title="No clients yet" text="Add a client, link projects to them, and invite their team to the portal.">
-                <button wire:click="create" class="btn-primary btn"><x-icon name="plus" /> New client</button>
+                @if ($isAdmin)<button wire:click="create" class="btn-primary btn"><x-icon name="plus" /> New client</button>@endif
             </x-empty>
         @endforelse
     </div>

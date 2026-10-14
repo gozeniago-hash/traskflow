@@ -16,6 +16,6 @@
         "laravel-echo": "^2.2.6",
         "pusher-js": "^8.4.0",
         "sortablejs": "^1.15.6",
-        "trix": "^2.1.15"
+        "trix": "2.1.19"
     }
 }

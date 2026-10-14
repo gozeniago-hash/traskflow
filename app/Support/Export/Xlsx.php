@@ -89,8 +89,13 @@ class Xlsx
                     }
                     continue;
                 }
-                $style = self::STYLE[$col['type'] ?? 'text'][$bold ? 1 : 0];
-                $cells[] = match ($col['type'] ?? 'text') {
+                $type = $col['type'] ?? 'text';
+                // Labels such as "Total" or a day heading can sit in a date or number column.
+                if (($type === 'date' && ! $this->isDate($value)) || (in_array($type, ['hours', 'number'], true) && ! is_numeric($value))) {
+                    $type = 'text';
+                }
+                $style = self::STYLE[$type][$bold ? 1 : 0];
+                $cells[] = match ($type) {
                     'date' => '<c r="'.$this->ref($i + 1, $r).'" s="'.$style.'"><v>'.$this->excelDate($value).'</v></c>',
                     'hours', 'number' => '<c r="'.$this->ref($i + 1, $r).'" s="'.$style.'"><v>'.(0 + $value).'</v></c>',
                     default => $this->inline($i + 1, $r, (string) $value, $style),
@@ -163,6 +168,12 @@ class Xlsx
         }
 
         return $name.$row;
+    }
+
+    protected function isDate(mixed $value): bool
+    {
+        return $value instanceof \DateTimeInterface
+            || (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}/', $value) && strtotime($value) !== false);
     }
 
     protected function excelDate(\DateTimeInterface|string $date): int
