@@ -54,11 +54,12 @@ Route::middleware('auth')->group(function () {
 
             Route::livewire('/reports', Livewire\Reports\Index::class)->name('reports');
             Route::livewire('/teams', Livewire\Admin\Teams::class)->name('teams');
-            Route::livewire('/clients', Livewire\Admin\Clients::class)->name('clients');
             Route::livewire('/members', Livewire\Admin\Members::class)->name('members');
 
             Route::middleware('admin')->group(function () {
                 Route::livewire('/settings', Livewire\Admin\Settings::class)->name('settings');
+                // Client contact details and portal access are admin-only.
+                Route::livewire('/clients', Livewire\Admin\Clients::class)->name('clients');
             });
 
             Route::post('/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');

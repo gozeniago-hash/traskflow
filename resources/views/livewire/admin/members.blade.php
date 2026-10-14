@@ -71,11 +71,25 @@
                 </div>
                 <div>
                     <label class="label">Role</label>
-                    <select wire:model="role" class="input">
-                        <option value="member">Member — works on projects they can see</option>
-                        <option value="admin">Admin — manages people, clients and all projects</option>
+                    <select wire:model.live="role" class="input">
+                        <option value="member">Member — sees only projects shared with them</option>
+                        <option value="admin">Admin — sees and manages everything</option>
                     </select>
                 </div>
+                @if ($role === 'member' && $allTeams->isNotEmpty())
+                    <div>
+                        <label class="label">Teams <span class="font-normal normal-case text-ink-500">(optional)</span></label>
+                        <div class="space-y-1.5 rounded-md border border-gray-200 p-3">
+                            @foreach ($allTeams as $t)
+                                <label class="flex items-center gap-2 text-sm">
+                                    <input type="checkbox" wire:model="inviteTeams" value="{{ $t->id }}" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400">
+                                    {{ $t->name }} <span class="text-xs text-ink-500">· {{ $t->projects_count }} {{ \Illuminate\Support\Str::plural('project', $t->projects_count) }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p class="mt-1 text-xs text-ink-500">Team projects are only visible to that team's members. Leave all unticked to give access to workspace-wide projects only.</p>
+                    </div>
+                @endif
                 @if ($sentLinks)
                     <div class="rounded-md bg-emerald-50 p-3 text-sm text-emerald-800">
                         <p class="font-medium">Invitations sent. Share links directly if email isn't set up yet:</p>

@@ -50,9 +50,11 @@ class InvitationController extends Controller
                 $user->id => ['role' => $invitation->role, 'client_id' => $invitation->client_id],
             ]);
 
-            // New internal members join the workspace's first team by default.
-            if ($invitation->role !== 'client' && $team = $invitation->workspace->teams()->oldest()->first()) {
-                $team->users()->syncWithoutDetaching([$user->id]);
+            // Internal members join only the teams the admin picked when inviting.
+            if ($invitation->role !== 'client' && $invitation->team_ids) {
+                foreach ($invitation->workspace->teams()->whereKey($invitation->team_ids)->get() as $team) {
+                    $team->users()->syncWithoutDetaching([$user->id]);
+                }
             }
 
             $invitation->forceFill(['accepted_at' => now()])->save();

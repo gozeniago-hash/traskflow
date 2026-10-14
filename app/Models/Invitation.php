@@ -9,11 +9,11 @@ use Illuminate\Support\Str;
 
 class Invitation extends Model
 {
-    protected $fillable = ['workspace_id', 'client_id', 'invited_by', 'email', 'role', 'token', 'accepted_at', 'expires_at'];
+    protected $fillable = ['workspace_id', 'client_id', 'invited_by', 'email', 'role', 'team_ids', 'token', 'accepted_at', 'expires_at'];
 
     protected function casts(): array
     {
-        return ['accepted_at' => 'datetime', 'expires_at' => 'datetime'];
+        return ['accepted_at' => 'datetime', 'expires_at' => 'datetime', 'team_ids' => 'array'];
     }
 
     protected static function booted(): void

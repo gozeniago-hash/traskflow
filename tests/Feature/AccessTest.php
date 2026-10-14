@@ -455,6 +455,35 @@ class AccessTest extends TestCase
             ->assertSessionHasNoErrors();
     }
 
+    public function test_invited_members_join_only_the_teams_an_admin_picks(): void
+    {
+        $admin = User::where('email', 'admin@taskflow.test')->first();
+        $ws = $admin->currentWorkspace;
+        $teamProject = Project::where('workspace_id', $ws->id)->where('privacy', 'team')->whereNotNull('team_id')->firstOrFail();
+        $this->actingAs($admin);
+
+        // No team picked: the new member sees workspace-wide projects only.
+        Livewire::test(\App\Livewire\Admin\Members::class)->call('openInvite')
+            ->set('emails', 'plain@appyugo.test')->call('invite')->assertHasNoErrors();
+        // Team picked: they join that team.
+        Livewire::test(\App\Livewire\Admin\Members::class)->call('openInvite')
+            ->set('emails', 'teamed@appyugo.test')->set('inviteTeams', [(string) $teamProject->team_id])->call('invite')->assertHasNoErrors();
+        auth()->logout();
+
+        foreach (['plain@appyugo.test' => false, 'teamed@appyugo.test' => true] as $email => $shouldSee) {
+            $invitation = \App\Models\Invitation::where('email', $email)->firstOrFail();
+            $this->post(route('invitations.accept', $invitation->token), ['name' => 'New Person', 'password' => 'Cebu-Sunrise-2026', 'password_confirmation' => 'Cebu-Sunrise-2026'])
+                ->assertRedirect(route('dashboard'));
+            $user = User::where('email', $email)->first();
+            $this->assertSame('member', $user->role());
+            $this->assertSame($shouldSee, $teamProject->isVisibleTo($user), $email);
+            $this->assertSame($shouldSee ? 1 : 0, $user->teams()->count(), $email);
+            $this->get(route('clients'))->assertForbidden();
+            $this->get(route('home'))->assertDontSee(route('clients'));
+            auth()->logout();
+        }
+    }
+
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);

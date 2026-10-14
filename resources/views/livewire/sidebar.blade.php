@@ -42,9 +42,9 @@
 
         <p class="px-2.5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-ink-500">Workspace</p>
         <a href="{{ route('teams') }}" wire:navigate class="nav-link {{ $route === 'teams' ? 'nav-link-active' : '' }}"><x-icon name="users" /> Teams</a>
-        <a href="{{ route('clients') }}" wire:navigate class="nav-link {{ $route === 'clients' ? 'nav-link-active' : '' }}"><x-icon name="briefcase" /> Clients</a>
         <a href="{{ route('members') }}" wire:navigate class="nav-link {{ $route === 'members' ? 'nav-link-active' : '' }}"><x-icon name="user" /> Members</a>
         @if ($me->isAdmin())
+            <a href="{{ route('clients') }}" wire:navigate class="nav-link {{ $route === 'clients' ? 'nav-link-active' : '' }}"><x-icon name="briefcase" /> Clients</a>
             <a href="{{ route('settings') }}" wire:navigate class="nav-link {{ $route === 'settings' ? 'nav-link-active' : '' }}"><x-icon name="cog" /> Settings</a>
         @endif
     </nav>

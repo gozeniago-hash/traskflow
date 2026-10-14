@@ -15,7 +15,7 @@ class Invites
      * Create (or refresh) an invitation and email it. Returns the invitation;
      * the caller can show ->url() so admins can share it manually too.
      */
-    public static function send(Workspace $workspace, User $by, string $email, string $role, ?int $clientId = null): Invitation
+    public static function send(Workspace $workspace, User $by, string $email, string $role, ?int $clientId = null, array $teamIds = []): Invitation
     {
         $email = strtolower(trim($email));
 
@@ -25,6 +25,7 @@ class Invites
             'email' => $email,
             'role' => $role,
             'client_id' => $clientId,
+            'team_ids' => array_values(array_map('intval', $teamIds)) ?: null,
             'invited_by' => $by->id,
         ]);
 

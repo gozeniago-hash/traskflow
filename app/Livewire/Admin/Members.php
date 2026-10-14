@@ -17,12 +17,13 @@ class Members extends Component
     public bool $showInvite = false;
     public string $emails = '';
     public string $role = 'member';
+    public array $inviteTeams = [];
     public array $sentLinks = [];
 
     public function openInvite(): void
     {
         $this->requireAdmin();
-        $this->reset(['emails', 'role', 'sentLinks']);
+        $this->reset(['emails', 'role', 'sentLinks', 'inviteTeams']);
         $this->resetValidation();
         $this->showInvite = true;
     }
@@ -33,6 +34,8 @@ class Members extends Component
         $this->validate([
             'emails' => ['required', 'string'],
             'role' => ['required', 'in:admin,member'],
+            'inviteTeams' => ['array'],
+            'inviteTeams.*' => [\Illuminate\Validation\Rule::exists('teams', 'id')->where('workspace_id', $this->workspace()->id)],
         ]);
 
         $list = collect(preg_split('/[\s,;]+/', $this->emails))->filter()->map(fn ($e) => strtolower(trim($e)))->unique();
@@ -46,7 +49,7 @@ class Members extends Component
         $existing = $this->workspace()->users()->whereIn('email', $list)->pluck('email');
         $this->sentLinks = [];
         foreach ($list->diff($existing) as $email) {
-            $invitation = Invites::send($this->workspace(), $this->me(), $email, $this->role);
+            $invitation = Invites::send($this->workspace(), $this->me(), $email, $this->role, null, $this->inviteTeams);
             $this->sentLinks[$email] = $invitation->url();
         }
 
@@ -107,6 +110,7 @@ class Members extends Component
                 ->orderByRaw("case workspace_user.role when 'owner' then 0 when 'admin' then 1 else 2 end")->orderBy('name')->get(),
             'pending' => $workspace->invitations()->pending()->where('role', '!=', 'client')->latest()->get(),
             'isAdmin' => $this->me()->isAdmin(),
+            'allTeams' => $workspace->teams()->withCount('projects')->orderBy('name')->get(),
         ]);
     }
 }
