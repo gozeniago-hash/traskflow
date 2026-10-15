@@ -34,6 +34,7 @@
                 </span>
             @endif
             <livewire:timer-bar />
+            <livewire:notifications.bell />
             @if ($me->canCreateProjects())
                 <a href="{{ route('projects.index', ['new' => 1]) }}" wire:navigate class="btn-primary btn hidden sm:inline-flex"><x-icon name="plus" /> Create</a>
             @endif

@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         ));
 
         $this->registerRealtimeHooks();
+        \App\Support\ProjectLog::register();
         $this->registerRateLimits();
 
         if ($this->app->environment('production')) {

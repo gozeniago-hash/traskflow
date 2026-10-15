@@ -135,7 +135,7 @@ class Task extends Model
 
     public function activities(): HasMany
     {
-        return $this->hasMany(Activity::class)->oldest();
+        return $this->hasMany(Activity::class)->where('kind', 'task')->oldest(); // comments and files have their own lists
     }
 
     // ------------------------------------------------------------------- scopes

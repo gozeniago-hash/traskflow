@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
             Route::livewire('/my-tasks', Livewire\MyTasks::class)->name('my-tasks');
             Route::livewire('/search', Livewire\Search::class)->name('search');
             Route::livewire('/profile', Livewire\Profile::class)->name('profile');
+            Route::livewire('/notifications', Livewire\Notifications\Index::class)->name('notifications');
 
             Route::livewire('/projects', Livewire\Projects\Index::class)->name('projects.index');
             Route::livewire('/projects/{project}/{view?}', Livewire\Projects\Show::class)
@@ -80,6 +81,7 @@ Route::middleware('auth')->group(function () {
             Route::livewire('/', Livewire\Portal\Dashboard::class)->name('dashboard');
             Route::livewire('/projects/{project}', Livewire\Portal\ProjectView::class)->name('projects.show');
             Route::livewire('/account', Livewire\Profile::class)->name('account');
+            Route::livewire('/notifications', Livewire\Notifications\Index::class)->name('notifications');
         });
     });
 });

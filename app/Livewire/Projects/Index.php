@@ -153,7 +153,7 @@ class Index extends Component
                 default => ['To do'],
             };
             foreach ($sections as $i => $name) {
-                $project->sections()->create(['name' => $name, 'position' => $i + 1]);
+                \App\Support\ProjectLog::quietly(fn () => $project->sections()->create(['name' => $name, 'position' => $i + 1])); // starter sections aren't news
             }
 
             foreach (array_values($data['fields'] ?? []) as $i => $row) {

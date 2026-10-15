@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Activity extends Model
 {
-    protected $fillable = ['project_id', 'task_id', 'user_id', 'action', 'meta'];
+    protected $fillable = ['project_id', 'task_id', 'user_id', 'kind', 'subject_id', 'action', 'meta'];
 
     protected function casts(): array
     {
@@ -23,6 +23,30 @@ class Activity extends Model
             'action' => $action,
             'meta' => $meta ?: null,
         ]);
+    }
+
+    /** A project-level event: section, doc, file, resource, status update, comment, field, project or member. */
+    public static function log(int $projectId, string $kind, string $action, array $meta = [], ?int $subjectId = null, ?int $taskId = null, ?User $user = null): ?self
+    {
+        $user ??= auth()->user();
+        if (! $user || \App\Support\ProjectLog::$quiet) {
+            return null; // seeders, webhooks and other background work aren't anyone's change
+        }
+
+        return static::create([
+            'project_id' => $projectId,
+            'task_id' => $taskId,
+            'user_id' => $user->id,
+            'kind' => $kind,
+            'subject_id' => $subjectId,
+            'action' => $action,
+            'meta' => $meta ?: null,
+        ]);
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
     }
 
     public function user(): BelongsTo
@@ -52,6 +76,10 @@ class Activity extends Model
             'approved' => 'approved this task',
             'changes_requested' => 'requested changes',
             'client_request' => 'submitted this request from the client portal',
+            'renamed' => 'renamed this task from “'.($m['from'] ?? '').'”',
+            'description_changed' => 'edited the description',
+            'priority_changed' => 'set the priority to '.($m['to'] ?? '—'),
+            'start_changed' => isset($m['to']) ? 'changed the start date to '.$m['to'] : 'removed the start date',
             'field_changed' => isset($m['to']) && $m['to'] !== null && $m['to'] !== '' ? 'set '.($m['field'] ?? 'a field').' to '.$m['to'] : 'cleared '.($m['field'] ?? 'a field'),
             default => str_replace('_', ' ', $this->action),
         };

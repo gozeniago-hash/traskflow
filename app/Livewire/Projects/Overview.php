@@ -110,7 +110,9 @@ class Overview extends Component
         $this->authorize('update', $this->project);
         $userId = (int) $this->addMember;
         if ($userId && $this->workspace()->members()->whereKey($userId)->exists()) {
-            $this->project->members()->syncWithoutDetaching([$userId]);
+            if ($this->project->members()->syncWithoutDetaching([$userId])['attached']) {
+                \App\Support\ProjectLog::member($this->project, 'added', \App\Models\User::find($userId)?->name);
+            }
             \App\Support\Audit::log('project.member_added', 'Added '.\App\Models\User::find($userId)?->name.' to project “'.$this->project->name.'”', $this->project, ['user_id' => $userId]);
         }
         $this->addMember = '';
@@ -120,6 +122,7 @@ class Overview extends Component
     {
         $this->authorize('update', $this->project);
         if ($this->project->members()->detach($userId)) {
+            \App\Support\ProjectLog::member($this->project, 'removed', \App\Models\User::find($userId)?->name);
             \App\Support\Audit::log('project.member_removed', 'Removed '.\App\Models\User::find($userId)?->name.' from project “'.$this->project->name.'”', $this->project, ['user_id' => $userId]);
         }
     }

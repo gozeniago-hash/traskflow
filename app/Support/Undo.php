@@ -132,6 +132,9 @@ class Undo
 
         if ($snap->project_id) {
             Realtime::touch((int) $snap->project_id);
+            if (\App\Models\Project::whereKey($snap->project_id)->exists()) {
+                ProjectLog::restored((int) $snap->project_id, $snap->label);
+            }
         }
 
         return ['ok' => true, 'message' => 'Restored.', 'project_id' => $snap->project_id ? (int) $snap->project_id : null];

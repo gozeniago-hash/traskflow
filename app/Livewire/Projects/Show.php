@@ -126,10 +126,12 @@ class Show extends Component
     public function deleteProject()
     {
         $this->authorize('delete', $this->project);
-        foreach ($this->project->attachments as $attachment) {
-            $attachment->delete(); // removes the stored file too
-        }
-        $this->project->delete();
+        \App\Support\ProjectLog::quietly(function () {
+            foreach ($this->project->attachments as $attachment) {
+                $attachment->delete(); // removes the stored file too
+            }
+            $this->project->delete();
+        });
         \App\Support\Audit::log('project.deleted', 'Deleted project “'.$this->project->name.'” ('.$this->project->key.') and all its tasks and files', $this->project);
         session()->flash('status', 'Project deleted.');
 

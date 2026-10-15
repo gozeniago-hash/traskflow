@@ -491,7 +491,7 @@ class TaskPanel extends Component
 
         Undo::keepingFiles(function () use ($task) {
             $ids = Task::where('parent_id', $task->id)->pluck('id')->push($task->id);
-            Attachment::whereIn('task_id', $ids)->get()->each->delete();
+            \App\Support\ProjectLog::quietly(fn () => Attachment::whereIn('task_id', $ids)->get()->each->delete());
             $task->delete();
         });
 

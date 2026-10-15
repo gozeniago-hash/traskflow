@@ -30,6 +30,7 @@
                     </div>
                 </div>
             @endif
+            <livewire:notifications.bell />
             <x-avatar :user="$me" size="sm" />
             <form method="POST" action="{{ route('logout') }}">@csrf
                 <button class="btn-ghost btn px-1.5" title="Log out"><x-icon name="logout" /></button>

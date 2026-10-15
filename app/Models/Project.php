@@ -285,6 +285,6 @@ class Project extends Model
 
     public function firstSection(): Section
     {
-        return $this->sections()->first() ?? $this->sections()->create(['name' => 'To do', 'position' => 1]);
+        return $this->sections()->first() ?? \App\Support\ProjectLog::quietly(fn () => $this->sections()->create(['name' => 'To do', 'position' => 1]));
     }
 }
