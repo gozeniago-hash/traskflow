@@ -16,13 +16,13 @@
             <div class="grid gap-3 sm:grid-cols-2">
                 <div>
                     <label class="label">Section</label>
-                    <select wire:model="section_id" class="input input-sm">
+                    <select aria-label="Section" wire:model="section_id" class="input input-sm">
                         @foreach ($project->sections as $s)<option value="{{ $s->id }}">{{ $s->name }}</option>@endforeach
                     </select>
                 </div>
                 <div>
                     <label class="label">Assignee</label>
-                    <select wire:model="assignee_id" class="input input-sm">
+                    <select aria-label="Assignee" wire:model="assignee_id" class="input input-sm">
                         <option value="">No assignee</option>
                         @foreach ($people as $p)<option value="{{ $p->id }}">{{ $p->name }}{{ $p->id === auth()->id() ? ' (me)' : '' }}</option>@endforeach
                     </select>
@@ -62,7 +62,7 @@
                 <label class="inline-flex cursor-pointer items-center gap-2 text-sm text-ink-700">
                     <x-icon name="paperclip" class="h-4 w-4" />
                     <span><span class="font-medium text-coral-600 hover:underline">Attach files or images</span> or drag them here</span>
-                    <input type="file" x-ref="picker" wire:model="newFiles" multiple class="hidden">
+                    <input type="file" accept="{{ \App\Rules\SafeUpload::accept() }}" x-ref="picker" wire:model="newFiles" multiple class="hidden">
                 </label>
                 <p wire:loading wire:target="newFiles" class="mt-1 text-xs text-ink-500">Uploading…</p>
                 @error('newFiles.*')<p class="error">{{ $message }}</p>@enderror

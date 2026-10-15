@@ -47,6 +47,7 @@ class PasswordResetController extends Controller
             function (User $user, string $password) {
                 $user->forceFill(['password' => $password, 'remember_token' => Str::random(60)])->save();
                 event(new PasswordReset($user));
+                \App\Support\Audit::log('auth.password_reset', $user->name.' reset their password by email', $user, [], $user);
             }
         );
 

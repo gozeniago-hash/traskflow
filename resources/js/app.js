@@ -92,6 +92,120 @@ document.addEventListener('pointerdown', (e) => {
     if (el) window.tfLastPeek = { title: el.dataset.peekTitle, at: Date.now() };
 }, true);
 
+// Tab rows that don't fit scroll sideways; fade the edge that has more, and keep the active tab in view.
+window.tfTabScroll = function (el) {
+    const update = () => {
+        el.toggleAttribute('data-more-left', el.scrollLeft > 2);
+        el.toggleAttribute('data-more-right', el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
+    };
+    const active = el.querySelector('.tab-active, [aria-current="page"]');
+    if (active && el.scrollWidth > el.clientWidth) el.scrollLeft = Math.max(0, active.offsetLeft - el.clientWidth / 2 + active.offsetWidth / 2);
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    new ResizeObserver(update).observe(el);
+};
+
+// QR code for setting up two-step verification (library loaded only when needed).
+window.tfQr = async function (canvas, text) {
+    const QRCode = (await import('qrcode')).default;
+    QRCode.toCanvas(canvas, text, { width: 176, margin: 1, color: { dark: '#16161d', light: '#ffffff' } });
+};
+
+// ---------------------------------------------------------------- dialogs + toasts
+
+/**
+ * window.tfDialog.confirm('Delete “Q4 plan”? It can’t be recovered.') → Promise<boolean>
+ * window.tfDialog.prompt('Rename resource', 'Old name') → Promise<string|null>
+ * Messages split at the first "?" into a title and a detail line.
+ */
+window.tfDialog = {
+    ask(options) {
+        return new Promise((resolve) => window.dispatchEvent(new CustomEvent('tf-dialog', { detail: { ...options, resolve } })));
+    },
+    confirm(message, options = {}) {
+        return this.ask({ message, ...options });
+    },
+    prompt(message, value = '', options = {}) {
+        return this.ask({ message, value, prompt: true, okLabel: 'Save', ...options });
+    },
+};
+
+// Every wire:confirm opens the in-app dialog instead of the browser's confirm box.
+document.addEventListener('click', (e) => {
+    const el = e.target.closest && e.target.closest('[wire\\:confirm]');
+    if (!el || !el.__livewire_confirm || el.__livewire_confirm.__tf) return;
+    const message = (el.getAttribute('wire:confirm') || 'Are you sure?').replaceAll('\\n', '\n');
+    const fn = (action) => {
+        window.tfDialog.confirm(message, { okLabel: el.dataset.confirmLabel }).then((ok) => ok && action());
+    };
+    fn.__tf = true;
+    el.__livewire_confirm = fn;
+}, true);
+
+document.addEventListener('alpine:init', () => {
+    window.Alpine.data('tfDialogHost', () => ({
+        visible: false, shown: false, title: '', detail: '', prompt: false, value: '', okLabel: 'OK', cancelLabel: 'Cancel', danger: false, resolve: null, returnFocus: null,
+        open(d) {
+            if (this.resolve) this.resolve(this.prompt ? null : false);
+            const msg = String(d.message || 'Are you sure?');
+            const cut = msg.indexOf('?');
+            this.title = d.title || (cut > -1 && cut < msg.length - 1 ? msg.slice(0, cut + 1) : msg);
+            this.detail = d.detail ?? (cut > -1 && cut < msg.length - 1 ? msg.slice(cut + 1).trim() : '');
+            this.prompt = !!d.prompt;
+            this.value = d.value || '';
+            const verb = (msg.match(/^(Delete|Remove|Disconnect|Discard|Restore|Permanently delete)\b/i) || [])[1];
+            this.danger = d.danger ?? /^(delete|remove|disconnect|discard|permanently)/i.test(verb || '');
+            this.okLabel = d.okLabel || (verb ? verb.replace(/^permanently /i, '').replace(/^\w/, (c) => c.toUpperCase()) : 'OK');
+            this.cancelLabel = d.cancelLabel || 'Cancel';
+            this.resolve = d.resolve;
+            this.returnFocus = document.activeElement;
+            this.visible = true;
+            this.$nextTick(() => {
+                requestAnimationFrame(() => (this.shown = true));
+                if (this.prompt && this.$refs.input) { this.$refs.input.focus(); this.$refs.input.select(); }
+                else this.$refs.ok && this.$refs.ok.focus();
+            });
+        },
+        close(result) {
+            if (!this.visible) return;
+            const resolve = this.resolve;
+            this.resolve = null;
+            this.shown = false;
+            setTimeout(() => {
+                this.visible = false;
+                this.returnFocus && this.returnFocus.focus && this.returnFocus.focus();
+            }, 120);
+            if (resolve) resolve(this.prompt ? (result === null ? null : String(result).trim() || null) : result === true);
+        },
+    }));
+
+    window.Alpine.data('tfToasts', (flash = null) => ({
+        toasts: [],
+        init() { if (flash) this.add({ message: flash }); },
+        add(d) {
+            const id = Date.now() + Math.random();
+            this.toasts.push({ id, m: d.message, type: d.type || 'success', undo: d.undo || null, busy: false });
+            setTimeout(() => this.remove(id), d.undo ? 8000 : 3500);
+        },
+        remove(id) { this.toasts = this.toasts.filter((t) => t.id !== id); },
+        async undo(t) {
+            t.busy = true;
+            try {
+                const res = await fetch(t.undo, {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' },
+                });
+                const data = await res.json().catch(() => ({}));
+                this.remove(t.id);
+                this.add({ message: data.message || (res.ok ? 'Restored.' : 'This can no longer be undone.'), type: res.ok ? 'success' : 'error' });
+                if (res.ok && window.Livewire) window.Livewire.all().forEach((c) => c.$wire.$refresh());
+            } catch (e) {
+                t.busy = false;
+            }
+        },
+    }));
+});
+
 document.addEventListener('alpine:init', () => {
     /**
      * x-modal: fades in when it appears and fades out before telling Livewire to close.
@@ -265,7 +379,15 @@ document.addEventListener('alpine:init', () => {
             window.addEventListener('beforeunload', this.beforeUnload);
             // wire:navigate page changes don't fire beforeunload.
             this.onNavigate = (e) => {
-                if ((this.dirty || this.uploading) && !confirm('You have unsaved changes in this doc. Leave anyway?')) e.preventDefault();
+                if (!(this.dirty || this.uploading)) return;
+                e.preventDefault();
+                const url = e.detail && e.detail.url;
+                window.tfDialog.confirm('Leave this doc? Your unsaved changes will be lost.', { okLabel: 'Leave', danger: true }).then((ok) => {
+                    if (!ok || !url) return;
+                    this.dirty = false;
+                    this.uploading = false;
+                    window.Livewire.navigate(String(url));
+                });
             };
             document.addEventListener('livewire:navigate', this.onNavigate);
             this.$nextTick(() => this.$refs.trix.focus());

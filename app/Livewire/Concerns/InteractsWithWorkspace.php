@@ -17,9 +17,10 @@ trait InteractsWithWorkspace
         return $this->me()->currentWorkspace;
     }
 
-    protected function toast(string $message, string $type = 'success'): void
+    /** A toast message; pass an Undo token to offer an Undo button. */
+    protected function toast(string $message, string $type = 'success', ?string $undo = null): void
     {
-        $this->dispatch('toast', message: $message, type: $type);
+        $this->dispatch('toast', message: $message, type: $type, undo: $undo ? route('undo', $undo) : null);
     }
 
     protected function requireAdmin(): void

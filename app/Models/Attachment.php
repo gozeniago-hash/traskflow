@@ -19,15 +19,32 @@ class Attachment extends Model
         return ['client_visible' => 'boolean', 'size' => 'integer'];
     }
 
+    /** While true, deleting a row leaves its stored file in place (see App\Support\Undo). */
+    public static bool $keepFiles = false;
+
     protected static function booted(): void
     {
         static::deleted(function (Attachment $attachment) {
-            Storage::disk($attachment->disk)->delete($attachment->path);
+            if (! static::$keepFiles) {
+                Storage::disk($attachment->disk)->delete($attachment->path);
+            }
         });
+    }
+
+    /** Validation for every upload: size, allowed type, and the workspace's storage allowance. */
+    public static function rules(bool $required = false): array
+    {
+        return [$required ? 'required' : 'nullable', 'file', 'max:'.config('taskflow.max_upload_kb'), new \App\Rules\SafeUpload, new \App\Rules\WithinStorageQuota];
     }
 
     public static function storeUpload(UploadedFile $file, Project $project, User $user, ?Task $task = null, bool $clientVisible = false, ?Comment $comment = null, ?ProjectDoc $doc = null): self
     {
+        // Last line of defence: the same checks as rules(), in case a caller skipped validation.
+        $validator = \Illuminate\Support\Facades\Validator::make(['file' => $file], ['file' => ['file', new \App\Rules\SafeUpload, new \App\Rules\WithinStorageQuota($project->workspace_id)]], [], ['file' => 'file']);
+        if ($validator->fails()) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['upload' => $validator->errors()->first('file')]);
+        }
+
         $path = $file->store('attachments/'.$project->id, 'local');
 
         return static::create([

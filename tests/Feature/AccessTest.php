@@ -447,6 +447,7 @@ class AccessTest extends TestCase
 
     public function test_common_passwords_are_rejected(): void
     {
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class); // sign-up limits are tested separately
         foreach (['password', 'Password', '12345678', 'aaaaaaaa'] as $weak) {
             $this->post('/register', ['name' => 'Weak', 'email' => 'weak@example.com', 'workspace' => 'W', 'password' => $weak, 'password_confirmation' => $weak])
                 ->assertSessionHasErrors('password');

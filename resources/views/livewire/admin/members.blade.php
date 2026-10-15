@@ -20,7 +20,7 @@
                             <td class="hidden px-4 py-2.5 text-ink-500 md:table-cell">{{ $m->email }}</td>
                             <td class="px-4 py-2.5">
                                 @if ($isAdmin && $m->pivot->role !== 'owner' && $m->id !== auth()->id())
-                                    <select wire:change="changeRole({{ $m->id }}, $event.target.value)" class="input input-sm w-28">
+                                    <select aria-label="Role for {{ $m->name }}" wire:change="changeRole({{ $m->id }}, $event.target.value)" class="input input-sm w-28">
                                         <option value="admin" @selected($m->pivot->role === 'admin')>Admin</option>
                                         <option value="manager" @selected($m->pivot->role === 'manager')>Manager</option>
                                         <option value="member" @selected($m->pivot->role === 'member')>Member</option>
@@ -72,7 +72,7 @@
                 </div>
                 <div>
                     <label class="label">Role</label>
-                    <select wire:model.live="role" class="input">
+                    <select aria-label="Role" wire:model.live="role" class="input">
                         <option value="member">Member</option>
                         <option value="manager">Manager</option>
                         <option value="admin">Admin</option>

@@ -111,6 +111,7 @@ class Overview extends Component
         $userId = (int) $this->addMember;
         if ($userId && $this->workspace()->members()->whereKey($userId)->exists()) {
             $this->project->members()->syncWithoutDetaching([$userId]);
+            \App\Support\Audit::log('project.member_added', 'Added '.\App\Models\User::find($userId)?->name.' to project “'.$this->project->name.'”', $this->project, ['user_id' => $userId]);
         }
         $this->addMember = '';
     }
@@ -118,7 +119,9 @@ class Overview extends Component
     public function removeProjectMember(int $userId): void
     {
         $this->authorize('update', $this->project);
-        $this->project->members()->detach($userId);
+        if ($this->project->members()->detach($userId)) {
+            \App\Support\Audit::log('project.member_removed', 'Removed '.\App\Models\User::find($userId)?->name.' from project “'.$this->project->name.'”', $this->project, ['user_id' => $userId]);
+        }
     }
 
     // ---- Key resources ----------------------------------------------------
@@ -147,7 +150,7 @@ class Overview extends Component
     public function updatedResourceFiles(): void
     {
         $this->authorize('update', $this->project);
-        $this->validate(['resourceFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]], [], ['resourceFiles.*' => 'file']);
+        $this->validate(['resourceFiles.*' => \App\Models\Attachment::rules()], [], ['resourceFiles.*' => 'file']);
 
         foreach ($this->resourceFiles as $file) {
             $attachment = Attachment::storeUpload($file, $this->project, $this->me(), null, true);
@@ -195,7 +198,14 @@ class Overview extends Component
     public function removeResource(int $id): void
     {
         $this->authorize('update', $this->project);
-        $this->resource($id)->delete();
+        $resource = $this->resource($id);
+
+        $rows = $resource->attachment_id
+            ? \App\Support\Undo::attachmentRows([$resource->attachment_id])
+            : ['project_resources' => [$resource->getAttributes()]];
+        $undo = \App\Support\Undo::capture($this->me(), $this->project->id, 'resource '.$resource->title, $rows, \App\Support\Undo::filesOf($rows['attachments'] ?? []));
+        \App\Support\Undo::keepingFiles(fn () => $resource->delete());
+        $this->toast('Resource removed.', undo: $undo);
     }
 
     protected function saveResource(ProjectResource $resource): void

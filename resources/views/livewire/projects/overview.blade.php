@@ -28,7 +28,7 @@
                     <div class="flex items-center gap-1">
                         <button type="button" wire:click="$set('addingResource', 'link')" class="btn-ghost btn text-xs"><x-icon name="link" /> Add link</button>
                         <label class="btn-ghost btn cursor-pointer text-xs"><x-icon name="paperclip" /> Add file
-                            <input type="file" wire:model="resourceFiles" multiple class="hidden">
+                            <input type="file" accept="{{ \App\Rules\SafeUpload::accept() }}" wire:model="resourceFiles" multiple class="hidden">
                         </label>
                     </div>
                 @endif
@@ -82,7 +82,7 @@
                                     <button type="button" x-on:click="menu = !menu" class="rounded p-1 hover:bg-gray-100 hover:text-ink-900" title="More"><x-icon name="dots" /></button>
                                     <div x-cloak x-show="menu" x-on:click.outside="menu = false" x-on:click="menu = false"
                                          class="absolute right-0 z-20 mt-1 w-48 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
-                                        <button type="button" x-on:click="const t = prompt('Rename resource', @js($r->title)); if (t) $wire.renameResource({{ $r->id }}, t)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Rename</button>
+                                        <button type="button" x-on:click="tfDialog.prompt('Rename resource', @js($r->title)).then(t => { if (t) $wire.renameResource({{ $r->id }}, t) })" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Rename</button>
                                         @if ($hasClient)
                                             <button type="button" wire:click="toggleResourceShare({{ $r->id }})" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $r->client_visible ? 'Make internal only' : 'Share with client' }}</button>
                                         @endif
@@ -102,7 +102,7 @@
         <section class="grid grid-cols-2 gap-3 sm:grid-cols-3 2xl:grid-cols-5">
             @foreach ([
                 ['Total tasks', $progress['total'], 'text-ink-900'],
-                ['Completed', $progress['completed'], 'text-emerald-600'],
+                ['Completed', $progress['completed'], 'text-emerald-700'],
                 ['Overdue', $progress['overdue'], $progress['overdue'] ? 'text-red-600' : 'text-ink-900'],
                 ['Awaiting client', $pendingApprovals, $pendingApprovals ? 'text-violet-600' : 'text-ink-900'],
                 [$canSeeTeam ? 'Time logged' : 'Your time', \App\Models\TimeEntry::formatShort($timeTotal), 'text-ink-900'],
@@ -154,7 +154,7 @@
                             <x-status-pill :status="$u->status" />
                             <h3 class="font-medium">{{ $u->title }}</h3>
                             @if ($u->client_visible)<span class="pill bg-emerald-50 text-emerald-700"><x-icon name="eye" class="h-3 w-3" /> Shared</span>@endif
-                            @if ($canEdit)<button wire:click="deleteUpdate({{ $u->id }})" wire:confirm="Delete this update?" class="invisible ml-auto text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="trash" class="h-3.5 w-3.5" /></button>@endif
+                            @if ($canEdit)<button aria-label="Delete update" wire:click="deleteUpdate({{ $u->id }})" wire:confirm="Delete this update?" class="invisible ml-auto text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="trash" class="h-3.5 w-3.5" /></button>@endif
                         </div>
                         @if ($u->body)<p class="mt-1.5 whitespace-pre-line text-sm text-ink-700">{{ $u->body }}</p>@endif
                         <p class="mt-1.5 text-xs text-ink-500">{{ $u->user?->name }} · {{ $u->created_at->diffForHumans() }}</p>
@@ -187,14 +187,14 @@
                     <li wire:key="pm-{{ $m->id }}" class="group flex items-center gap-2 text-sm">
                         <x-avatar :user="$m" size="sm" /><span class="flex-1 truncate">{{ $m->name }}</span>
                         @if ($m->id === $p->owner_id)<span class="text-xs text-ink-500">Owner</span>@elseif ($canEdit)
-                            <button wire:click="removeProjectMember({{ $m->id }})" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>
+                            <button aria-label="Remove {{ $m->name }} from project" wire:click="removeProjectMember({{ $m->id }})" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>
                         @endif
                     </li>
                 @endforeach
             </ul>
             @if ($canEdit && $available->isNotEmpty())
                 <div class="mt-3 flex gap-2">
-                    <select wire:model="addMember" class="input input-sm">
+                    <select aria-label="Add project member" wire:model="addMember" class="input input-sm">
                         <option value="">Add member…</option>
                         @foreach ($available as $a)<option value="{{ $a->id }}">{{ $a->name }}</option>@endforeach
                     </select>

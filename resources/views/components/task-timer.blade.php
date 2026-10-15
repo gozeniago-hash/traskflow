@@ -13,7 +13,7 @@
      {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5']) }}>
     @if ($isRunning)
         <button type="button" wire:click.stop="stopTimer" title="Stop timer"
-                class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-coral-500 text-white shadow-sm ring-4 ring-coral-100 hover:bg-coral-600">
+                class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-coral-600 text-white shadow-sm ring-4 ring-coral-100 hover:bg-coral-600">
             <x-icon name="stop" class="h-2.5 w-2.5" />
         </button>
         <span class="text-xs font-semibold tabular-nums text-coral-600" x-text="clock">{{ \App\Models\TimeEntry::formatClock($base) }}</span>

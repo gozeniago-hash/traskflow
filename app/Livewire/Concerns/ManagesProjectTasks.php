@@ -201,12 +201,18 @@ trait ManagesProjectTasks
             return;
         }
 
+        // Remember the section and where each task sat, so Undo can put them back.
+        $tasks = $section->tasks()->get();
+        $undo = \App\Support\Undo::capture($this->me(), $this->project->id, 'section '.$section->name,
+            ['sections' => [$section->getAttributes()]], [],
+            $tasks->map(fn (Task $t) => [$t->id, $section->id, (int) $t->position])->all());
+
         if ($fallback) {
             $offset = $this->project->nextTaskPosition($fallback->id);
-            $section->tasks()->get()->each(fn (Task $t, $i) => $t->update(['section_id' => $fallback->id, 'position' => $offset + $i]));
+            $tasks->each(fn (Task $t, $i) => $t->update(['section_id' => $fallback->id, 'position' => $offset + $i]));
         }
         $section->delete();
-        $this->toast('Section deleted'.($fallback ? '. Its tasks moved to “'.$fallback->name.'”.' : '.'));
+        $this->toast('Section deleted'.($fallback && $tasks->isNotEmpty() ? '. Its tasks moved to “'.$fallback->name.'”.' : '.'), undo: $undo);
     }
 
     /** Sections with their (filtered) top-level tasks. */

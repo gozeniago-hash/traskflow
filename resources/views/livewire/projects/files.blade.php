@@ -2,7 +2,7 @@
     <div class="mb-4 flex flex-wrap items-center gap-3">
         <label class="btn-primary btn cursor-pointer">
             <x-icon name="upload" /> Upload files
-            <input type="file" wire:model="uploads" multiple class="hidden">
+            <input type="file" accept="{{ \App\Rules\SafeUpload::accept() }}" wire:model="uploads" multiple class="hidden">
         </label>
         @if ($project->portal_enabled && $canManage)
             <label class="flex items-center gap-2 text-sm text-ink-700">

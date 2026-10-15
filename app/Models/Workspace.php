@@ -24,13 +24,13 @@ class Workspace extends Model
         'member' => 'Works on projects shared with them. Can\'t change project settings or open workspace pages; sees only their own time and reports.',
     ];
 
-    protected $fillable = ['name', 'owner_id'];
+    protected $fillable = ['name', 'owner_id', 'require_two_factor'];
 
     protected $hidden = ['github_token'];
 
     protected function casts(): array
     {
-        return ['github_token' => 'encrypted'];
+        return ['github_token' => 'encrypted', 'require_two_factor' => 'boolean'];
     }
 
     public function githubRepositories(): HasMany
@@ -77,5 +77,34 @@ class Workspace extends Model
     public function invitations(): HasMany
     {
         return $this->hasMany(Invitation::class);
+    }
+
+    /** Bytes of uploaded files stored across all of this workspace's projects. */
+    public function storageUsed(): int
+    {
+        return (int) Attachment::whereIn('project_id', $this->projects()->select('id'))->sum('size');
+    }
+
+    /** Allowance in bytes, or null when unlimited. */
+    public function storageQuota(): ?int
+    {
+        $mb = (int) config('taskflow.workspace_storage_mb');
+
+        return $mb > 0 ? $mb * 1024 * 1024 : null;
+    }
+
+    public function hasRoomFor(int $bytes): bool
+    {
+        $quota = $this->storageQuota();
+
+        return $quota === null || $this->storageUsed() + $bytes <= $quota;
+    }
+
+    public function storageFullMessage(): string
+    {
+        $quota = $this->storageQuota();
+
+        return 'This workspace has used its '.($quota >= 1024 ** 3 ? round($quota / 1024 ** 3, 1).' GB' : round($quota / 1024 ** 2).' MB')
+            .' of file storage. Delete files you no longer need, or ask your admin for more space.';
     }
 }

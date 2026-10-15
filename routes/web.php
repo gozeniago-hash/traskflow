@@ -12,14 +12,16 @@ use Illuminate\Support\Facades\Route;
 // ----------------------------------------------------------------- guests
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:register');
 
     Route::get('/forgot-password', [PasswordResetController::class, 'request'])->name('password.request');
-    Route::post('/forgot-password', [PasswordResetController::class, 'email'])->name('password.email');
+    Route::post('/forgot-password', [PasswordResetController::class, 'email'])->middleware('throttle:password-reset')->name('password.email');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'reset'])->name('password.reset');
-    Route::post('/reset-password', [PasswordResetController::class, 'update'])->name('password.update');
+    Route::get('/two-factor', [\App\Http\Controllers\Auth\TwoFactorController::class, 'show'])->name('two-factor.challenge');
+    Route::post('/two-factor', [\App\Http\Controllers\Auth\TwoFactorController::class, 'store'])->middleware('throttle:login');
+    Route::post('/reset-password', [PasswordResetController::class, 'update'])->middleware('throttle:password-reset')->name('password.update');
 });
 
 // Invitations work whether or not someone is signed in.
@@ -28,13 +30,20 @@ Route::post('/github/webhook/{repository}', \App\Http\Controllers\GitHubWebhookC
     ->middleware('throttle:120,1')->name('github.webhook');
 
 Route::get('/invitations/{token}', [InvitationController::class, 'show'])->name('invitations.show');
-Route::post('/invitations/{token}', [InvitationController::class, 'accept'])->name('invitations.accept');
+Route::post('/invitations/{token}', [InvitationController::class, 'accept'])->middleware('throttle:invitation-accept')->name('invitations.accept');
 
 // ---------------------------------------------------------- signed-in users
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/undo/{token}', \App\Http\Controllers\UndoController::class)->name('undo');
 
-    Route::middleware('workspace')->group(function () {
+    Route::get('/email/verify', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'verify'])
+        ->middleware('signed')->name('verification.verify');
+    Route::post('/email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:3,1')->name('verification.send');
+
+    Route::middleware(['secure', 'workspace'])->group(function () {
         Route::get('/', [WorkspaceController::class, 'dashboard'])->name('dashboard');
         Route::post('/workspaces/{workspace}/switch', [WorkspaceController::class, 'switch'])->name('workspaces.switch');
         Route::get('/attachments/{attachment}', [AttachmentController::class, 'download'])->name('attachments.download');
@@ -60,6 +69,7 @@ Route::middleware('auth')->group(function () {
                 Route::livewire('/teams', Livewire\Admin\Teams::class)->name('teams');
                 Route::livewire('/members', Livewire\Admin\Members::class)->name('members');
                 Route::livewire('/clients', Livewire\Admin\Clients::class)->name('clients');
+                Route::livewire('/audit-log', Livewire\Admin\AuditLog::class)->name('audit-log');
             });
 
             Route::post('/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');

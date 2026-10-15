@@ -12,12 +12,13 @@
     --color-ink-800: #2a2b33;
     --color-ink-700: #3a3b45;
     --color-ink-500: #6b6d7a;
+    --color-ink-400: #8e909c; /* secondary text on the dark sidebar */
     --color-ink-300: #b7b9c4;
     --color-coral-50: #fff3f1;
     --color-coral-100: #ffe1dc;
     --color-coral-400: #f88a7a;
     --color-coral-500: #f06a5a;
-    --color-coral-600: #dc5242;
+    --color-coral-600: #d14334; /* white text on it meets 4.5:1 */
     --color-coral-700: #b83f31;
 }
 
@@ -28,7 +29,7 @@
 
 @layer components {
     .btn { @apply inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-coral-400 disabled:opacity-50; }
-    .btn-primary { @apply bg-coral-500 text-white hover:bg-coral-600; }
+    .btn-primary { @apply bg-coral-600 text-white hover:bg-coral-700; }
     .btn-secondary { @apply border border-gray-300 bg-white text-ink-800 hover:bg-gray-50; }
     .btn-ghost { @apply text-ink-700 hover:bg-gray-100; }
     .btn-danger { @apply bg-red-600 text-white hover:bg-red-700; }
@@ -88,3 +89,25 @@ trix-toolbar .trix-button-group { margin-bottom: 0; }
 .live-indicator[data-state="disconnected"] .live-label::after { content: 'Offline'; }
 .live-indicator[data-state="unavailable"] .live-dot,
 .live-indicator[data-state="failed"] .live-dot { background: #f59e0b; }
+
+/* ---- Touch screens ---- */
+@media (hover: none) {
+    /* Controls that appear on hover are always visible where there is no hover. */
+    .group-hover\:visible.invisible { visibility: visible; }
+}
+@media (pointer: coarse) {
+    /* Bigger round checkboxes, and an invisible 40px+ hit area around small icon buttons. */
+    .check { height: 1.5rem; width: 1.5rem; }
+    .check, button[aria-label]:not(.btn), button[title]:not(.btn), a[title]:not(.btn) { position: relative; }
+    .check::after, button[aria-label]:not(.btn)::after, button[title]:not(.btn)::after, a[title]:not(.btn)::after {
+        content: ''; position: absolute; inset: -10px;
+    }
+}
+
+/* ---- Horizontally scrolling tab rows (phones) ---- */
+.tab-scroll { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.tab-scroll::-webkit-scrollbar { display: none; }
+.tab-scroll > * { flex-shrink: 0; }
+.tab-scroll[data-more-right] { mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
+.tab-scroll[data-more-left] { mask-image: linear-gradient(to left, #000 calc(100% - 40px), transparent); }
+.tab-scroll[data-more-left][data-more-right] { mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent); }

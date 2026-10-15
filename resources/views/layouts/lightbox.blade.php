@@ -30,7 +30,7 @@
 
     <div x-show="images.length > 1" class="flex justify-center gap-2 overflow-x-auto px-4 py-3">
         <template x-for="(img, i) in images" :key="img.src">
-            <button type="button" x-on:click="index = i; zoomed = false; loading = true" class="h-14 w-14 shrink-0 overflow-hidden rounded-md ring-2 transition" :class="i === index ? 'ring-coral-400' : 'ring-transparent opacity-60 hover:opacity-100'">
+            <button type="button" x-on:click="index = i; zoomed = false; loading = true" :aria-label="'Show image ' + (i + 1)" class="h-14 w-14 shrink-0 overflow-hidden rounded-md ring-2 transition" :class="i === index ? 'ring-coral-400' : 'ring-transparent opacity-60 hover:opacity-100'">
                 <img :src="img.src" alt="" class="h-full w-full object-cover" loading="lazy">
             </button>
         </template>

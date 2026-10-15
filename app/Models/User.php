@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -20,7 +21,7 @@ class User extends Authenticatable
 
     protected $fillable = ['name', 'email', 'password', 'title', 'avatar_color', 'current_workspace_id'];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'];
 
     /** Cached pivot row for the current workspace (per request). */
     protected $membershipCache = false;
@@ -30,6 +31,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_confirmed_at' => 'datetime',
         ];
     }
 
@@ -144,5 +148,53 @@ class User extends Authenticatable
     public function firstName(): string
     {
         return Str::before($this->name, ' ') ?: $this->name;
+    }
+
+    // ---------------------------------------------------------- two-step verification
+
+    public function hasTwoFactor(): bool
+    {
+        return $this->two_factor_confirmed_at !== null && filled($this->two_factor_secret);
+    }
+
+    /** Ten single-use codes for when the phone isn't at hand. */
+    public static function newRecoveryCodes(): array
+    {
+        return collect(range(1, 10))->map(fn () => Str::lower(Str::random(5).'-'.Str::random(5)))->all();
+    }
+
+    /** Checks an authenticator code or a recovery code (which is then used up). */
+    public function verifyTwoFactorCode(string $code): bool
+    {
+        if (! $this->hasTwoFactor()) {
+            return false;
+        }
+
+        $step = \App\Support\Totp::verify($this->two_factor_secret, $code, $this->two_factor_last_step);
+        if ($step !== null) {
+            $this->forceFill(['two_factor_last_step' => $step])->save();
+
+            return true;
+        }
+
+        $code = Str::lower(trim($code));
+        $codes = $this->two_factor_recovery_codes ?? [];
+        foreach ($codes as $i => $recovery) {
+            if (hash_equals($recovery, $code)) {
+                unset($codes[$i]);
+                $this->forceFill(['two_factor_recovery_codes' => array_values($codes)])->save();
+                \App\Support\Audit::log('auth.recovery_code_used', $this->name.' signed in with a recovery code ('.count($codes).' left)', $this, [], $this);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** Email verification is on when the app can actually send email (see config/taskflow.php). */
+    public function needsToVerifyEmail(): bool
+    {
+        return config('taskflow.verify_email') && ! $this->hasVerifiedEmail();
     }
 }

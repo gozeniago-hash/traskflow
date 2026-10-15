@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Support\Undo;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Activity;
@@ -341,7 +342,7 @@ class TaskPanel extends Component
 
     public function updatedNewCommentFiles(): void
     {
-        $this->validate(['newCommentFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]], [], ['newCommentFiles.*' => 'file']);
+        $this->validate(['newCommentFiles.*' => \App\Models\Attachment::rules()], [], ['newCommentFiles.*' => 'file']);
         $this->commentFiles = array_merge($this->commentFiles, $this->newCommentFiles);
         $this->newCommentFiles = [];
     }
@@ -358,7 +359,7 @@ class TaskPanel extends Component
         $this->authorize('comment', $task);
         $this->validate([
             'comment' => ['nullable', 'string', 'max:10000'],
-            'commentFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')],
+            'commentFiles.*' => \App\Models\Attachment::rules(),
         ], [], ['commentFiles.*' => 'file']);
 
         if (trim($this->comment) === '' && ! $this->commentFiles) {
@@ -394,7 +395,7 @@ class TaskPanel extends Component
     public function updatedUploads(): void
     {
         $task = $this->task();
-        $this->validate(['uploads.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]]);
+        $this->validate(['uploads.*' => \App\Models\Attachment::rules()]);
         foreach ($this->uploads as $file) {
             Attachment::storeUpload($file, $task->project, $this->me(), $task);
         }
@@ -406,7 +407,10 @@ class TaskPanel extends Component
     {
         $attachment = $this->task()->ownAttachments()->findOrFail($id);
         $this->authorize('delete', $attachment);
-        $attachment->delete();
+        $rows = Undo::attachmentRows([$attachment->id]);
+        $undo = Undo::capture($this->me(), $attachment->project_id, 'file '.$attachment->original_name, $rows, Undo::filesOf($rows['attachments']));
+        Undo::keepingFiles(fn () => $attachment->delete());
+        $this->toast('File deleted.', undo: $undo);
         $this->saved();
     }
 
@@ -479,19 +483,24 @@ class TaskPanel extends Component
     public function deleteTask(): void
     {
         $task = $this->task();
-        // Delete stored files for the task and its subtasks (DB rows cascade, files don't).
-        foreach ($task->attachments->concat($task->subtasks()->with('attachments')->get()->pluck('attachments')->flatten()) as $attachment) {
-            $attachment->delete();
-        }
+        $this->authorize('delete', $task);
+
+        // Keep everything for a few minutes so the delete can be undone.
+        $rows = Undo::taskRows([$task->id]);
+        $undo = Undo::capture($this->me(), $task->project_id, 'task '.$task->title, $rows, Undo::filesOf($rows['attachments']));
+
+        Undo::keepingFiles(function () use ($task) {
+            $ids = Task::where('parent_id', $task->id)->pluck('id')->push($task->id);
+            Attachment::whereIn('task_id', $ids)->get()->each->delete();
+            $task->delete();
+        });
+
         if ($task->parent_id) {
-            $parent = $task->parent_id;
-            $task->delete();
-            $this->open($parent);
+            $this->open($task->parent_id);
         } else {
-            $task->delete();
             $this->taskId = null;
         }
-        $this->toast('Task deleted.');
+        $this->toast(($task->parent_id ? 'Subtask' : 'Task').' deleted.', undo: $undo);
         $this->saved();
     }
 

@@ -31,7 +31,7 @@
                     @foreach ($docs as $d)
                         <li wire:key="sd-{{ $d->id }}"><a href="{{ route('projects.show', [$d->project_id, 'docs']) }}?doc={{ $d->id }}" wire:navigate class="block px-2 py-2 hover:bg-gray-50">
                             <span class="flex items-center gap-2 text-sm font-medium"><x-icon name="list" class="h-4 w-4 text-ink-300" />{{ $d->title }}
-                                <span class="ml-auto max-w-40 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white" style="background-color: {{ $d->project->color }}">{{ $d->project->name }}</span></span>
+                                <span class="ml-auto max-w-40 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white" style="background-color: {{ \App\Support\Color::forWhiteText($d->project->color) }}">{{ $d->project->name }}</span></span>
                             <span class="mt-0.5 block truncate pl-6 text-xs text-ink-500">{{ $d->excerpt(160) }}</span>
                         </a></li>
                     @endforeach
@@ -44,7 +44,7 @@
                     <li wire:key="s-{{ $t->id }}"><button wire:click="$dispatch('open-task', { id: {{ $t->id }} })" data-peek-title="{{ $t->title }}" class="flex w-full items-center gap-2.5 px-2 py-2 text-left text-sm hover:bg-gray-50">
                         <span class="check {{ $t->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></span>
                         <span class="flex-1 truncate {{ $t->isCompleted() ? 'text-ink-500 line-through' : '' }}"><span class="mr-1.5 font-mono text-[11px] text-ink-500">{{ $t->ticket() }}</span>{{ $t->title }}</span>
-                        <span class="hidden max-w-40 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white sm:inline" style="background-color: {{ $t->project->color }}">{{ $t->project->name }}</span>
+                        <span class="hidden max-w-40 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white sm:inline" style="background-color: {{ \App\Support\Color::forWhiteText($t->project->color) }}">{{ $t->project->name }}</span>
                         <x-avatar :user="$t->assignee" size="xs" />
                     </button></li>
                 @empty

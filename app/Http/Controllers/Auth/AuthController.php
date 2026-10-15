@@ -36,15 +36,18 @@ class AuthController extends Controller
             ]);
         }
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        $user = User::where('email', Str::lower($credentials['email']))->first();
+        if (! Auth::validate($credentials) || ! $user) {
             RateLimiter::hit($key);
+            if ($user) {
+                \App\Support\Audit::log('auth.login_failed', 'Failed sign-in for '.$user->email, $user, [], $user);
+            }
             throw ValidationException::withMessages(['email' => 'These credentials do not match our records.']);
         }
 
         RateLimiter::clear($key);
-        $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        return \App\Support\SignIn::complete($request, $user, $request->boolean('remember'));
     }
 
     public function showRegister(): View
@@ -79,12 +82,31 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        \App\Support\Audit::log('auth.registered', $user->name.' created an account and the '.$user->currentWorkspace->name.' workspace', $user, [], $user);
+
+        if ($user->needsToVerifyEmail()) {
+            $this->sendVerification($user);
+
+            return redirect()->route('verification.notice');
+        }
 
         return redirect()->route('home')->with('status', 'Welcome to TaskFlow! Create your first project to get started.');
     }
 
+    protected function sendVerification(User $user): void
+    {
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Verification email failed: '.$e->getMessage());
+        }
+    }
+
     public function logout(Request $request): RedirectResponse
     {
+        if ($request->user()) {
+            \App\Support\Audit::log('auth.logout', $request->user()->name.' signed out');
+        }
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -1,12 +1,12 @@
 <div class="flex min-h-0 flex-1 flex-col">
     <div class="flex items-center justify-between px-3 pt-3" x-data="{ open: false }">
         <button type="button" x-on:click="open = !open" class="flex min-w-0 flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-ink-800">
-            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-coral-500 text-xs font-bold text-white">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($workspace->name, 0, 1)) }}</span>
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-coral-600 text-xs font-bold text-white">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($workspace->name, 0, 1)) }}</span>
             <span class="truncate text-sm font-semibold text-white">{{ $workspace->name }}</span>
             <x-icon name="chevron-down" class="ml-auto h-3.5 w-3.5 text-ink-300" />
         </button>
         <div x-cloak x-show="open" x-on:click.outside="open = false" class="absolute left-3 top-14 z-50 w-56 rounded-lg bg-white p-1.5 shadow-xl ring-1 ring-black/5">
-            <p class="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink-500">Workspaces</p>
+            <p class="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink-400">Workspaces</p>
             @foreach ($myWorkspaces as $ws)
                 <form method="POST" action="{{ route('workspaces.switch', $ws) }}">@csrf
                     <button class="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm hover:bg-gray-100">
@@ -29,7 +29,7 @@
         <a href="{{ route('projects.index') }}" wire:navigate class="nav-link {{ $route === 'projects.index' ? 'nav-link-active' : '' }}"><x-icon name="folder" /> Projects</a>
         <a href="{{ route('reports') }}" wire:navigate class="nav-link {{ $route === 'reports' ? 'nav-link-active' : '' }}"><x-icon name="chart" /> Reports</a>
 
-        <p class="px-2.5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-ink-500">Projects</p>
+        <p class="px-2.5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-ink-400">Projects</p>
         @forelse ($sidebarProjects as $p)
             <a href="{{ route('projects.show', $p) }}" wire:navigate
                class="nav-link {{ $currentProjectId === $p->id ? 'nav-link-active' : '' }}">
@@ -37,15 +37,16 @@
                 <span class="truncate">{{ $p->name }}</span>
             </a>
         @empty
-            <p class="px-2.5 text-xs text-ink-500">No projects yet.</p>
+            <p class="px-2.5 text-xs text-ink-400">No projects yet.</p>
         @endforelse
 
         @if ($me->isAdmin())
-            <p class="px-2.5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-ink-500">Workspace</p>
+            <p class="px-2.5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-ink-400">Workspace</p>
             <a href="{{ route('teams') }}" wire:navigate class="nav-link {{ $route === 'teams' ? 'nav-link-active' : '' }}"><x-icon name="users" /> Teams</a>
             <a href="{{ route('members') }}" wire:navigate class="nav-link {{ $route === 'members' ? 'nav-link-active' : '' }}"><x-icon name="user" /> Members</a>
             <a href="{{ route('clients') }}" wire:navigate class="nav-link {{ $route === 'clients' ? 'nav-link-active' : '' }}"><x-icon name="briefcase" /> Clients</a>
             <a href="{{ route('settings') }}" wire:navigate class="nav-link {{ $route === 'settings' ? 'nav-link-active' : '' }}"><x-icon name="cog" /> Settings</a>
+            <a href="{{ route('audit-log') }}" wire:navigate class="nav-link {{ $route === 'audit-log' ? 'nav-link-active' : '' }}"><x-icon name="clock" /> Audit log</a>
         @endif
     </nav>
 

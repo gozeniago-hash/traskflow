@@ -210,7 +210,7 @@ class Docs extends Component
     public function storeDocUpload(): array
     {
         $doc = $this->editableDoc();
-        $this->validate(['docUpload' => ['required', 'file', 'max:'.config('taskflow.max_upload_kb')]], [], ['docUpload' => 'file']);
+        $this->validate(['docUpload' => \App\Models\Attachment::rules(required: true)], [], ['docUpload' => 'file']);
 
         $attachment = Attachment::storeUpload($this->docUpload, $this->project, $this->me(), null, false, null, $doc);
         $this->docUpload = null;

@@ -53,7 +53,7 @@
                         <p class="input bg-gray-50 text-ink-700">{{ \App\Models\ProjectField::TYPES[$editing->type] }}</p>
                         <p class="mt-1 text-[11px] text-ink-500">The type can't change once tasks may have values.</p>
                     @else
-                        <select wire:model.live="form.type" class="input">
+                        <select aria-label="Field type" wire:model.live="form.type" class="input">
                             @foreach (\App\Models\ProjectField::TYPES as $k => $label)<option value="{{ $k }}">{{ $label }}</option>@endforeach
                         </select>
                     @endif
@@ -75,13 +75,13 @@
                                     <button type="button" x-on:click="pick = !pick" class="h-6 w-6 rounded-full ring-2 ring-white {{ \App\Models\ProjectField::SWATCHES[$o['color']] ?? 'bg-gray-400' }}" title="Color"></button>
                                     <div x-cloak x-show="pick" x-on:click.outside="pick = false" class="absolute left-0 z-20 mt-1 grid w-36 grid-cols-5 gap-1.5 rounded-lg bg-white p-2 shadow-lg ring-1 ring-black/5">
                                         @foreach (\App\Models\ProjectField::SWATCHES as $c => $cls)
-                                            <button type="button" wire:click="setOptionColor({{ $i }}, '{{ $c }}')" x-on:click="pick = false" class="h-5 w-5 rounded-full {{ $cls }}"></button>
+                                            <button type="button" wire:click="setOptionColor({{ $i }}, '{{ $c }}')" aria-label="{{ ucfirst($c) }}" x-on:click="pick = false" class="h-5 w-5 rounded-full {{ $cls }}"></button>
                                         @endforeach
                                     </div>
                                 </div>
                                 <input wire:model="form.options.{{ $i }}.label" class="input input-sm flex-1">
-                                <button type="button" wire:click="moveOption({{ $i }}, -1)" class="text-ink-300 hover:text-ink-900"><x-icon name="chevron-down" class="h-3.5 w-3.5 rotate-180" /></button>
-                                <button type="button" wire:click="moveOption({{ $i }}, 1)" class="text-ink-300 hover:text-ink-900"><x-icon name="chevron-down" class="h-3.5 w-3.5" /></button>
+                                <button type="button" wire:click="moveOption({{ $i }}, -1)" aria-label="Move up" class="text-ink-300 hover:text-ink-900"><x-icon name="chevron-down" class="h-3.5 w-3.5 rotate-180" /></button>
+                                <button type="button" wire:click="moveOption({{ $i }}, 1)" aria-label="Move down" class="text-ink-300 hover:text-ink-900"><x-icon name="chevron-down" class="h-3.5 w-3.5" /></button>
                                 <button type="button" wire:click="removeOption({{ $i }})" class="text-ink-500 hover:text-red-600" title="Remove"><x-icon name="x" class="h-4 w-4" /></button>
                             </li>
                         @endforeach

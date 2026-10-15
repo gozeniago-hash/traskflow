@@ -13,7 +13,7 @@
             <form wire:submit="addTask" class="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 p-2">
                 <x-icon name="plus" class="ml-1 h-4 w-4 text-ink-300" />
                 <input wire:model="newTitle" placeholder="Add a task for yourself…" class="min-w-48 flex-1 border-0 bg-transparent p-1 text-sm focus:ring-0 focus:outline-none">
-                <select wire:model="newProject" class="input input-sm w-auto text-xs">
+                <select aria-label="Project for the new task" wire:model="newProject" class="input input-sm w-auto text-xs">
                     @foreach ($projects as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach
                 </select>
                 <input type="date" wire:model="newDue" class="input input-sm w-36 text-xs">
@@ -28,14 +28,14 @@
                 <ul class="divide-y divide-gray-100 border-y border-gray-100">
                     @foreach ($tasks as $task)
                         <li wire:key="mt-{{ $task->id }}" class="flex cursor-pointer items-center gap-2.5 px-2 py-2 hover:bg-gray-50" wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}">
-                            <button wire:click.stop="toggleComplete({{ $task->id }})" class="check {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
+                            <button wire:click.stop="toggleComplete({{ $task->id }})" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}" class="check {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
                             <span class="min-w-0 flex-1">
                                 <span class="block truncate text-sm {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}"><span class="mr-1.5 font-mono text-[11px] text-ink-500">{{ $task->ticket() }}</span>{{ $task->title }}</span>
                                 @if ($task->parent)<span class="block truncate text-xs text-ink-500">↳ {{ $task->parent->title }}</span>@endif
                             </span>
                             <x-task-timer :task="$task" :running="$running" />
                             <x-priority-pill :priority="$task->priority" class="hidden sm:inline-flex" />
-                            <span class="hidden max-w-40 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white sm:inline" style="background-color: {{ $task->project->color }}">{{ $task->project->name }}</span>
+                            <span class="hidden max-w-40 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white sm:inline" style="background-color: {{ \App\Support\Color::forWhiteText($task->project->color) }}">{{ $task->project->name }}</span>
                             <span class="w-20 text-right text-xs {{ $task->dueClass() }}">{{ $show === 'completed' ? $task->completed_at->format('M j') : $task->dueLabel() }}</span>
                         </li>
                     @endforeach

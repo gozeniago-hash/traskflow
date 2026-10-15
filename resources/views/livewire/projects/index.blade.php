@@ -14,11 +14,11 @@
             <button wire:click="$set('scope', 'all')" class="rounded px-2.5 py-1 font-medium {{ $scope === 'all' ? 'bg-ink-900 text-white' : 'hover:bg-gray-100' }}">All</button>
             <button wire:click="$set('scope', 'mine')" class="rounded px-2.5 py-1 font-medium {{ $scope === 'mine' ? 'bg-ink-900 text-white' : 'hover:bg-gray-100' }}">I'm a member</button>
         </div>
-        <select wire:model.live="status" class="input input-sm w-auto text-xs">
+        <select aria-label="Filter by status" wire:model.live="status" class="input input-sm w-auto text-xs">
             <option value="">Any status</option>
             @foreach (\App\Models\Project::STATUSES as $k => $label)<option value="{{ $k }}">{{ $label }}</option>@endforeach
         </select>
-        <select wire:model.live="team" class="input input-sm w-auto text-xs">
+        <select aria-label="Filter by team" wire:model.live="team" class="input input-sm w-auto text-xs">
             <option value="">All teams</option>
             @foreach ($teams as $t)<option value="{{ $t->id }}">{{ $t->name }}</option>@endforeach
         </select>
@@ -90,20 +90,20 @@
                 </div>
                 <div>
                     <label class="label">Team</label>
-                    <select wire:model="form.team_id" class="input">
+                    <select aria-label="Team" wire:model="form.team_id" class="input">
                         <option value="">No team</option>
                         @foreach ($teams as $t)<option value="{{ $t->id }}">{{ $t->name }}</option>@endforeach
                     </select>
                 </div>
                 <div>
                     <label class="label">Who can see it</label>
-                    <select wire:model="form.privacy" class="input">
+                    <select aria-label="Who can see this project" wire:model="form.privacy" class="input">
                         @foreach (\App\Models\Project::PRIVACY as $k => $label)<option value="{{ $k }}">{{ $label }}</option>@endforeach
                     </select>
                 </div>
                 <div>
                     <label class="label">Client</label>
-                    <select wire:model.live="form.client_id" class="input">
+                    <select aria-label="Client" wire:model.live="form.client_id" class="input">
                         <option value="">Internal project</option>
                         @foreach ($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach
                     </select>
@@ -131,7 +131,7 @@
                             @foreach ($form['fields'] as $i => $row)
                                 <li wire:key="nf-{{ $i }}" class="grid gap-2 rounded-md bg-gray-50 p-2 sm:grid-cols-[minmax(0,1fr)_140px_auto]">
                                     <input wire:model="form.fields.{{ $i }}.name" placeholder="Field name" class="input input-sm">
-                                    <select wire:model.live="form.fields.{{ $i }}.type" class="input input-sm">
+                                    <select aria-label="Field type" wire:model.live="form.fields.{{ $i }}.type" class="input input-sm">
                                         @foreach (\App\Models\ProjectField::TYPES as $k => $label)<option value="{{ $k }}">{{ $label }}</option>@endforeach
                                     </select>
                                     <button type="button" wire:click="removeFieldRow({{ $i }})" class="justify-self-end rounded p-1 text-ink-500 hover:text-red-600" title="Remove"><x-icon name="x" class="h-4 w-4" /></button>
@@ -156,7 +156,7 @@
                     <label class="label">Color</label>
                     <div class="flex flex-wrap gap-2">
                         @foreach (\App\Models\Project::COLORS as $c)
-                            <button type="button" wire:click="$set('form.color', '{{ $c }}')" class="h-7 w-7 rounded-md ring-offset-2 {{ $form['color'] === $c ? 'ring-2 ring-ink-900' : '' }}" style="background-color: {{ $c }}"></button>
+                            <button type="button" wire:click="$set('form.color', '{{ $c }}')" aria-label="Colour {{ $c }}" class="h-7 w-7 rounded-md ring-offset-2 {{ $form['color'] === $c ? 'ring-2 ring-ink-900' : '' }}" style="background-color: {{ $c }}"></button>
                         @endforeach
                     </div>
                 </div>

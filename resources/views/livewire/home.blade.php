@@ -5,7 +5,7 @@
     <div class="mt-5 inline-flex flex-wrap gap-6 rounded-full bg-gray-50 px-5 py-2.5 text-sm">
         <span><strong class="text-ink-900">{{ $stats['open'] }}</strong> <span class="text-ink-500">open tasks</span></span>
         <span><strong class="{{ $stats['overdue'] ? 'text-red-600' : 'text-ink-900' }}">{{ $stats['overdue'] }}</strong> <span class="text-ink-500">overdue</span></span>
-        <span><strong class="text-emerald-600">{{ $stats['doneThisWeek'] }}</strong> <span class="text-ink-500">completed this week</span></span>
+        <span><strong class="text-emerald-700">{{ $stats['doneThisWeek'] }}</strong> <span class="text-ink-500">completed this week</span></span>
     </div>
 
     <div class="mt-8 grid gap-6 lg:grid-cols-2">
@@ -17,9 +17,9 @@
             <ul class="flex-1 divide-y divide-gray-100">
                 @forelse ($upcoming as $task)
                     <li wire:key="h-{{ $task->id }}" class="flex cursor-pointer items-center gap-2.5 px-5 py-2.5 hover:bg-gray-50" wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}">
-                        <button wire:click.stop="toggleComplete({{ $task->id }})" class="check {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
+                        <button wire:click.stop="toggleComplete({{ $task->id }})" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}" class="check {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
                         <span class="flex-1 truncate text-sm {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}"><span class="mr-1.5 font-mono text-[11px] text-ink-500">{{ $task->ticket() }}</span>{{ $task->title }}</span>
-                        <span class="hidden max-w-32 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white sm:inline" style="background-color: {{ $task->project->color }}">{{ $task->project->name }}</span>
+                        <span class="hidden max-w-32 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white sm:inline" style="background-color: {{ \App\Support\Color::forWhiteText($task->project->color) }}">{{ $task->project->name }}</span>
                         <span class="w-16 text-right text-xs {{ $task->dueClass() }}">{{ $task->dueLabel() }}</span>
                     </li>
                 @empty

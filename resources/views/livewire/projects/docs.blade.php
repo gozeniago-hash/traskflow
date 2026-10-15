@@ -48,7 +48,7 @@
                     <p><strong x-text="conflict"></strong> saved changes to this doc after you started editing. Your latest edits are not saved yet.</p>
                     <div class="mt-2 flex gap-2">
                         <button type="button" x-on:click="save(true)" class="btn bg-amber-600 text-white hover:bg-amber-700">Overwrite with my version</button>
-                        <button type="button" x-on:click="if (confirm('Discard your unsaved changes and load the latest version?')) { dirty = false; $wire.reloadLatest() }" class="btn-secondary btn">Discard mine &amp; load theirs</button>
+                        <button type="button" x-on:click="tfDialog.confirm('Discard your unsaved changes? The latest saved version will load instead.', { okLabel: 'Discard mine', danger: true }).then(ok => { if (ok) { dirty = false; $wire.reloadLatest() } })" class="btn-secondary btn">Discard mine &amp; load theirs</button>
                     </div>
                 </div>
 
@@ -78,7 +78,7 @@
                         @if ($canEdit)
                             <button wire:click="startEdit" class="btn-primary btn"><x-icon name="list" /> Edit</button>
                             <div class="relative" x-data="{ open: false }">
-                                <button x-on:click="open = !open" class="btn-ghost btn px-1.5"><x-icon name="dots" class="h-5 w-5" /></button>
+                                <button x-on:click="open = !open" aria-label="Doc options" :aria-expanded="open" class="btn-ghost btn px-1.5"><x-icon name="dots" class="h-5 w-5" /></button>
                                 <div x-cloak x-show="open" x-on:click.outside="open = false" x-on:click="open = false" class="absolute right-0 z-30 mt-1 w-44 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
                                     <button wire:click="duplicate" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Duplicate</button>
                                     <button wire:click="move(-1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move up</button>

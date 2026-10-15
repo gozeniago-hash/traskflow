@@ -20,6 +20,9 @@
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <!-- Tests build their own data; never load the demo workspace, whatever the shell or .env says. -->
+        <env name="SEED_DEMO_DATA" value="false" force="true"/>
+        <server name="SEED_DEMO_DATA" value="false" force="true"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>

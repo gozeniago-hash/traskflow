@@ -28,11 +28,29 @@ class Settings extends Component
         $this->name = $this->workspace()->name;
     }
 
+    public function setRequireTwoFactor(bool $on): void
+    {
+        $this->requireAdmin();
+        if ($on && ! $this->me()->hasTwoFactor()) {
+            $this->toast('Turn on two-step verification for your own account first (Profile), so you don’t lock yourself out.', 'error');
+
+            return;
+        }
+        $this->workspace()->update(['require_two_factor' => $on]);
+        \App\Support\Audit::log($on ? 'workspace.two_factor_required' : 'workspace.two_factor_optional',
+            $on ? 'Required two-step verification for everyone on the team' : 'Made two-step verification optional', $this->workspace());
+        $this->toast($on ? 'Two-step verification is now required. Teammates without it will be asked to set it up.' : 'Two-step verification is now optional.');
+    }
+
     public function save(): void
     {
         $this->requireAdmin();
         $this->validate(['name' => ['required', 'string', 'max:120']]);
+        $old = $this->workspace()->name;
         $this->workspace()->update(['name' => $this->name]);
+        if ($old !== $this->name) {
+            \App\Support\Audit::log('workspace.renamed', 'Renamed the workspace from “'.$old.'” to “'.$this->name.'”', $this->workspace());
+        }
         $this->dispatch('workspace-updated');
         $this->toast('Workspace renamed.');
     }
@@ -50,6 +68,11 @@ class Settings extends Component
                 'Archived projects' => $ws->projects()->whereNotNull('archived_at')->count(),
             ],
             'archived' => $ws->projects()->whereNotNull('archived_at')->orderBy('name')->get(),
+            'storage' => ['used' => $ws->storageUsed(), 'quota' => $ws->storageQuota()],
+            'security' => [
+                'required' => (bool) $ws->require_two_factor,
+                'without' => $ws->members()->get()->reject->hasTwoFactor()->count(),
+            ],
             'github' => [
                 'connected' => filled($ws->github_token),
                 'login' => $ws->github_login,
@@ -61,7 +84,9 @@ class Settings extends Component
     public function unarchive(int $projectId): void
     {
         $this->requireAdmin();
-        $this->workspace()->projects()->findOrFail($projectId)->update(['archived_at' => null]);
+        $project = $this->workspace()->projects()->findOrFail($projectId);
+        $project->update(['archived_at' => null]);
+        \App\Support\Audit::log('project.restored', 'Restored archived project “'.$project->name.'”', $project);
         $this->dispatch('project-updated');
         $this->toast('Project restored.');
     }
@@ -82,6 +107,7 @@ class Settings extends Component
         }
         $ws->forceFill(['github_token' => trim($this->githubToken), 'github_login' => $login])->save();
         $this->githubToken = '';
+        \App\Support\Audit::log('github.connected', 'Connected GitHub as @'.$login, $this->workspace());
         $this->toast('GitHub connected as @'.$login.'.');
     }
 
@@ -90,6 +116,7 @@ class Settings extends Component
         $this->requireAdmin();
         $ws = $this->workspace();
         $ws->forceFill(['github_token' => null, 'github_login' => null])->save();
+        \App\Support\Audit::log('github.disconnected', 'Disconnected GitHub', $this->workspace());
         $this->toast('GitHub disconnected. Linked pull requests stay on tasks until you remove the repositories.');
     }
 
@@ -123,6 +150,7 @@ class Settings extends Component
         }
 
         $repo = $ws->githubRepositories()->create(['full_name' => $name, 'webhook_secret' => Str::random(40)]);
+        \App\Support\Audit::log('github.repository_added', 'Added GitHub repository '.$name, $repo);
         $hooked = $gh->installWebhook($repo);
         $this->newRepo = '';
         try {
@@ -154,6 +182,7 @@ class Settings extends Component
         $repo = $this->repo($id);
         GitHub::for($this->workspace())->removeWebhook($repo);
         $repo->delete();
+        \App\Support\Audit::log('github.repository_removed', 'Removed GitHub repository '.$repo->full_name, $repo);
         $this->toast('Repository removed.');
     }
 

@@ -24,7 +24,7 @@
                         @if ($isAdmin)
                             <button wire:click="openInvite({{ $client->id }})" class="btn-secondary btn text-xs"><x-icon name="mail" /> Invite to portal</button>
                             <button wire:click="edit({{ $client->id }})" class="btn-ghost btn text-xs">Edit</button>
-                            <button wire:click="delete({{ $client->id }})" wire:confirm="Delete {{ $client->name }}? Their contacts lose portal access. Projects are kept." class="btn-ghost btn px-1.5 text-red-600"><x-icon name="trash" /></button>
+                            <button aria-label="Delete {{ $client->name }}" wire:click="delete({{ $client->id }})" wire:confirm="Delete {{ $client->name }}? Their contacts lose portal access. Projects are kept." class="btn-ghost btn px-1.5 text-red-600"><x-icon name="trash" /></button>
                         @endif
                     </div>
                 </div>
@@ -37,7 +37,7 @@
                                 <li class="group flex items-center gap-2 text-sm" wire:key="c{{ $client->id }}-{{ $c->id }}">
                                     <x-avatar :user="$c" size="sm" /><span class="truncate">{{ $c->name }}</span><span class="truncate text-xs text-ink-500">{{ $c->email }}</span>
                                     @if ($isAdmin)
-                                        <button wire:click="removeContact({{ $client->id }}, {{ $c->id }})" wire:confirm="Remove {{ $c->name }}'s portal access?" class="invisible ml-auto text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>
+                                        <button aria-label="Remove {{ $c->name }}'s portal access" wire:click="removeContact({{ $client->id }}, {{ $c->id }})" wire:confirm="Remove {{ $c->name }}'s portal access?" class="invisible ml-auto text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>
                                     @endif
                                 </li>
                             @empty

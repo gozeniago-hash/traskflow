@@ -45,6 +45,11 @@ class InvitationController extends Controller
             $user = User::create(['name' => $data['name'], 'email' => $invitation->email, 'password' => $data['password']]);
         }
 
+        // The invitation link went to this address, so it counts as verified.
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
+
         DB::transaction(function () use ($invitation, $user) {
             $invitation->workspace->users()->syncWithoutDetaching([
                 $user->id => ['role' => $invitation->role, 'client_id' => $invitation->client_id],
@@ -61,9 +66,8 @@ class InvitationController extends Controller
             $user->forceFill(['current_workspace_id' => $invitation->workspace_id])->save();
         });
 
-        Auth::login($user, true);
-        $request->session()->regenerate();
+        \App\Support\Audit::log('invitation.accepted', $user->name.' ('.$user->email.') joined as '.$invitation->role, $user, [], $user, $invitation->workspace_id);
 
-        return redirect()->route('dashboard')->with('status', 'Welcome to '.$invitation->workspace->name.'!');
+        return \App\Support\SignIn::complete($request, $user, true, route('dashboard'), 'Welcome to '.$invitation->workspace->name.'!');
     }
 }

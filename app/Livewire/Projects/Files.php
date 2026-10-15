@@ -37,7 +37,7 @@ class Files extends Component
     public function updatedUploads(): void
     {
         $this->authorize('contribute', $this->project);
-        $this->validate(['uploads.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]]);
+        $this->validate(['uploads.*' => \App\Models\Attachment::rules()]);
 
         foreach ($this->uploads as $file) {
             $share = $this->shareWithClient && $this->project->portal_enabled && $this->me()->can('update', $this->project);
@@ -59,8 +59,10 @@ class Files extends Component
     {
         $attachment = $this->project->attachments()->findOrFail($id);
         $this->authorize('delete', $attachment);
-        $attachment->delete();
-        $this->toast('File deleted.');
+        $rows = \App\Support\Undo::attachmentRows([$attachment->id]);
+        $undo = \App\Support\Undo::capture($this->me(), $this->project->id, 'file '.$attachment->original_name, $rows, \App\Support\Undo::filesOf($rows['attachments']));
+        \App\Support\Undo::keepingFiles(fn () => $attachment->delete());
+        $this->toast('File deleted.', undo: $undo);
     }
 
     public function render()

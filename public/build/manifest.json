@@ -1,6 +1,15 @@
 {
+  "node_modules/qrcode/lib/browser.js": {
+    "file": "assets/browser-CtRHRBS8.js",
+    "name": "browser",
+    "src": "node_modules/qrcode/lib/browser.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
   "resources/css/app.css": {
-    "file": "assets/app-DUlXDPpK.css",
+    "file": "assets/app-DD_tz77W.css",
     "name": "app",
     "names": [
       "app.css"
@@ -9,10 +18,13 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-C7vknHV4.js",
+    "file": "assets/app-B5Ri3kIL.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
+    "dynamicImports": [
+      "node_modules/qrcode/lib/browser.js"
+    ],
     "css": [
       "assets/app-Bh2jpL6a.css"
     ]

@@ -38,7 +38,7 @@
                 @php($available = $members->whereNotIn('id', $team->users->pluck('id')))
                 @if ($isAdmin && $available->isNotEmpty())
                     <div class="mt-3 flex gap-2 border-t border-gray-100 pt-3">
-                        <select wire:model="addUser.{{ $team->id }}" class="input input-sm">
+                        <select aria-label="Add person to {{ $team->name }}" wire:model="addUser.{{ $team->id }}" class="input input-sm">
                             <option value="">Add a member…</option>
                             @foreach ($available as $m)<option value="{{ $m->id }}">{{ $m->name }}</option>@endforeach
                         </select>

@@ -47,14 +47,14 @@
         <div class="w-full max-w-sm">
             {{-- Logo for small screens, where the brand panel is hidden --}}
             <a href="{{ route('login') }}" class="mb-8 flex items-center gap-2 text-base font-semibold text-ink-900 lg:hidden">
-                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-coral-500 text-white"><x-icon name="check" class="h-4 w-4" /></span>
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-coral-600 text-white"><x-icon name="check" class="h-4 w-4" /></span>
                 TaskFlow
             </a>
 
             <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
                 @if (session('status'))
                     <div class="mb-5 flex items-start gap-2 rounded-md bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800 ring-1 ring-emerald-200">
-                        <x-icon name="check-circle" class="mt-0.5 h-4 w-4 text-emerald-600" />
+                        <x-icon name="check-circle" class="mt-0.5 h-4 w-4 text-emerald-700" />
                         <span>{{ session('status') }}</span>
                     </div>
                 @endif

@@ -4,7 +4,7 @@
     <div class="card bg-white p-5">
         <div class="flex flex-wrap items-start gap-4">
             <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white" style="background-color: {{ $p->color }}"><x-icon name="folder" class="h-6 w-6" /></span>
-            <div class="min-w-0 flex-1">
+            <div class="min-w-0 flex-1 basis-56">
                 <div class="flex flex-wrap items-center gap-2">
                     <h1 class="text-xl font-semibold">{{ $p->name }}</h1>
                     <x-status-pill :status="$p->status" />
@@ -14,13 +14,13 @@
                     @if ($p->due_date) · Target {{ $p->due_date->format('F j, Y') }}@endif
                 </p>
             </div>
-            <button wire:click="$set('showRequest', true)" class="btn-primary btn"><x-icon name="plus" /> Submit a request</button>
+            <button wire:click="$set('showRequest', true)" class="btn-primary btn w-full justify-center sm:w-auto"><x-icon name="plus" /> Submit a request</button>
         </div>
         <div class="mt-5">
             <div class="mb-1.5 flex justify-between text-xs text-ink-500"><span>{{ $progress['completed'] }} of {{ $progress['total'] }} shared items complete</span><span>{{ $progress['percent'] }}%</span></div>
             <x-progress-bar :percent="$progress['percent']" :color="$p->color" class="h-2" />
         </div>
-        <nav class="-mb-5 mt-5 flex gap-5 border-t border-gray-100 pt-3">
+        <nav class="tab-scroll -mx-5 -mb-5 mt-5 flex gap-5 border-t border-gray-100 px-5 pt-3" x-data x-init="tfTabScroll($el)" aria-label="Project sections">
             @foreach (['overview' => 'Overview', 'tasks' => 'Tasks', 'docs' => 'Docs', 'files' => 'Files'] as $key => $label)
                 <button wire:click="$set('tab', '{{ $key }}')" class="tab {{ $tab === $key ? 'tab-active' : '' }}">
                     {{ $label }}
@@ -248,7 +248,7 @@
             <div class="mt-5">
                 <div class="mb-1 flex items-center justify-between">
                     <p class="label mb-0">Files</p>
-                    <label class="btn-ghost btn cursor-pointer py-1 text-xs"><x-icon name="upload" /> Upload<input type="file" wire:model="uploads" multiple class="hidden"></label>
+                    <label class="btn-ghost btn cursor-pointer py-1 text-xs"><x-icon name="upload" /> Upload<input type="file" accept="{{ \App\Rules\SafeUpload::accept() }}" wire:model="uploads" multiple class="hidden"></label>
                 </div>
                 <span wire:loading wire:target="uploads" class="text-xs text-ink-500">Uploading…</span>
                 @error('uploads.*')<p class="error">{{ $message }}</p>@enderror
@@ -294,7 +294,7 @@
                         <div class="flex items-center gap-2 border-t border-gray-100 px-2 py-1">
                             <label class="flex cursor-pointer items-center gap-1 rounded px-1.5 py-1 text-xs text-ink-500 hover:bg-gray-100 hover:text-ink-900">
                                 <x-icon name="paperclip" class="h-4 w-4" /> Attach
-                                <input type="file" x-ref="pcpicker" wire:model="newCommentFiles" multiple class="hidden">
+                                <input type="file" accept="{{ \App\Rules\SafeUpload::accept() }}" x-ref="pcpicker" wire:model="newCommentFiles" multiple class="hidden">
                             </label>
                             <span wire:loading wire:target="newCommentFiles" class="text-xs text-ink-500">Uploading…</span>
                         </div>
@@ -328,7 +328,7 @@
                     </div>
                     <div>
                         <label class="label">Attachments</label>
-                        <input type="file" wire:model="requestFiles" multiple class="block w-full text-sm file:mr-2 file:rounded file:border-0 file:bg-gray-100 file:px-2 file:py-1.5 file:text-sm">
+                        <input type="file" accept="{{ \App\Rules\SafeUpload::accept() }}" wire:model="requestFiles" multiple class="block w-full text-sm file:mr-2 file:rounded file:border-0 file:bg-gray-100 file:px-2 file:py-1.5 file:text-sm">
                         @error('requestFiles.*')<p class="error">{{ $message }}</p>@enderror
                     </div>
                 </div>

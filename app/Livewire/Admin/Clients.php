@@ -59,10 +59,13 @@ class Clients extends Component
         ])['form'];
 
         if ($this->editingId) {
-            $this->client($this->editingId)->update($data);
+            $client = $this->client($this->editingId);
+            $client->update($data);
+            \App\Support\Audit::log('client.updated', 'Updated client “'.$client->name.'”', $client);
             $this->toast('Client updated.');
         } else {
-            $this->workspace()->clients()->create($data);
+            $client = $this->workspace()->clients()->create($data);
+            \App\Support\Audit::log('client.created', 'Added client “'.$client->name.'”', $client);
             $this->toast('Client added.');
         }
         $this->showForm = false;
@@ -91,15 +94,25 @@ class Clients extends Component
             return;
         }
 
+        if (Invites::remaining($this->workspace()) < 1) {
+            $this->addError('inviteEmail', 'This workspace can send '.Invites::PER_HOUR.' invitations an hour. Try again later.');
+
+            return;
+        }
         $invitation = Invites::send($this->workspace(), $this->me(), $this->inviteEmail, 'client', $client->id);
         $this->lastInviteUrl = $invitation->url();
+        \App\Support\Audit::log('invitation.sent', 'Invited '.$invitation->email.' to the '.$client->name.' client portal', $invitation, ['role' => 'client']);
         $this->toast('Invitation sent to '.$invitation->email.'.');
     }
 
     public function revokeInvite(int $invitationId): void
     {
         $this->requireAdmin();
-        $this->workspace()->invitations()->whereKey($invitationId)->whereNull('accepted_at')->delete();
+        $invitation = $this->workspace()->invitations()->whereKey($invitationId)->whereNull('accepted_at')->first();
+        if ($invitation) {
+            $invitation->delete();
+            \App\Support\Audit::log('invitation.revoked', 'Revoked the portal invitation for '.$invitation->email, $invitation);
+        }
         $this->toast('Invitation revoked.');
     }
 
@@ -108,6 +121,7 @@ class Clients extends Component
         $this->requireAdmin();
         $this->client($clientId);
         $this->workspace()->users()->wherePivot('client_id', $clientId)->wherePivot('role', 'client')->detach($userId);
+        \App\Support\Audit::log('client.contact_removed', 'Removed portal access for '.\App\Models\User::find($userId)?->email, $this->client($clientId), ['user_id' => $userId]);
         $this->toast('Portal access removed.');
     }
 
@@ -117,6 +131,7 @@ class Clients extends Component
         $client = $this->client($id);
         $this->workspace()->users()->wherePivot('client_id', $client->id)->wherePivot('role', 'client')->detach();
         $client->delete();
+        \App\Support\Audit::log('client.deleted', 'Deleted client “'.$client->name.'”', $client);
         $this->toast('Client deleted. Their projects were kept.');
     }
 

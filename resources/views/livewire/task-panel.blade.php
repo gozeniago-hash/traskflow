@@ -80,7 +80,7 @@
                     <dt class="text-ink-500">Assignee</dt>
                     <dd class="flex items-center gap-2">
                         <x-avatar :user="$task->assignee" size="sm" />
-                        <select wire:model.live="assignee_id" @disabled(! $canEdit) class="input input-sm max-w-56">
+                        <select aria-label="Assignee" wire:model.live="assignee_id" @disabled(! $canEdit) class="input input-sm max-w-56">
                             <option value="">No assignee</option>
                             @foreach ($people as $p)<option value="{{ $p->id }}">{{ $p->name }}{{ $p->id === auth()->id() ? ' (me)' : '' }}</option>@endforeach
                         </select>
@@ -98,7 +98,7 @@
                     @unless ($task->parent_id)
                         <dt class="text-ink-500">Section</dt>
                         <dd>
-                            <select wire:model.live="section_id" @disabled(! $canEdit) class="input input-sm max-w-56">
+                            <select aria-label="Section" wire:model.live="section_id" @disabled(! $canEdit) class="input input-sm max-w-56">
                                 @foreach ($task->project->sections as $s)<option value="{{ $s->id }}">{{ $s->name }}</option>@endforeach
                             </select>
                         </dd>
@@ -157,11 +157,11 @@
                         <ul class="divide-y divide-gray-100 rounded-md border border-gray-200">
                             @foreach ($task->subtasks as $sub)
                                 <li wire:key="sub-{{ $sub->id }}" class="group flex items-center gap-2 px-2.5 py-1.5 text-sm">
-                                    <button wire:click="toggleComplete({{ $sub->id }})" class="check {{ $sub->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
+                                    <button wire:click="toggleComplete({{ $sub->id }})" aria-label="{{ $sub->isCompleted() ? 'Mark subtask incomplete' : 'Mark subtask complete' }}" class="check {{ $sub->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
                                     <button wire:click="open({{ $sub->id }})" class="flex-1 truncate text-left hover:underline {{ $sub->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $sub->title }}</button>
                                     @if ($sub->due_date)<span class="text-xs {{ $sub->dueClass() }}">{{ $sub->dueLabel() }}</span>@endif
                                     <x-avatar :user="$sub->assignee" size="xs" />
-                                    @if ($canEdit)<button wire:click="deleteSubtask({{ $sub->id }})" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>@endif
+                                    @if ($canEdit)<button aria-label="Delete subtask" wire:click="deleteSubtask({{ $sub->id }})" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>@endif
                                 </li>
                             @endforeach
                             @if ($canEdit)
@@ -180,7 +180,7 @@
                         <p class="label mb-0">Attachments</p>
                         @if ($canEdit)
                             <label class="btn-ghost btn cursor-pointer py-1 text-xs"><x-icon name="paperclip" /> Attach
-                                <input type="file" wire:model="uploads" multiple class="hidden">
+                                <input type="file" accept="{{ \App\Rules\SafeUpload::accept() }}" wire:model="uploads" multiple class="hidden">
                             </label>
                         @endif
                     </div>
@@ -237,7 +237,7 @@
                             @if ($canEdit)
                                 <div class="ml-auto">
                                     @if ($isRunningHere)
-                                        <button wire:click="stopTimer" class="btn bg-coral-500 text-white hover:bg-coral-600"><x-icon name="stop" class="h-3.5 w-3.5" /> Stop</button>
+                                        <button wire:click="stopTimer" class="btn bg-coral-600 text-white hover:bg-coral-600"><x-icon name="stop" class="h-3.5 w-3.5" /> Stop</button>
                                     @else
                                         <button wire:click="startTimer" class="btn-secondary btn"><x-icon name="play" class="h-3.5 w-3.5" /> {{ $running ? 'Switch timer here' : 'Start timer' }}</button>
                                     @endif
@@ -269,7 +269,7 @@
                                         <span class="min-w-0 flex-1 truncate text-ink-500">{{ $e->note ?: ($e->is_manual ? 'Logged manually' : 'Timer') }}</span>
                                         <span class="shrink-0 text-xs text-ink-500">{{ $e->started_at->format('M j') }}</span>
                                         @if (! $e->isRunning() && ($e->user_id === auth()->id() || auth()->user()->isAdmin()))
-                                            <button wire:click="deleteTimeEntry({{ $e->id }})" wire:confirm="Delete this time entry?" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>
+                                            <button aria-label="Delete time entry" wire:click="deleteTimeEntry({{ $e->id }})" wire:confirm="Delete this time entry?" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>
                                         @endif
                                     </li>
                                 @endforeach
@@ -295,7 +295,7 @@
                                         @elseif (! $c->is_internal)<span class="pill bg-emerald-100 text-emerald-700">Visible to client</span>@endif
                                         <span class="text-ink-500">{{ $c->created_at->diffForHumans() }}</span>
                                         @if ($c->user_id === auth()->id() || auth()->user()->isAdmin())
-                                            <button wire:click="deleteComment({{ $c->id }})" wire:confirm="Delete this comment?" class="invisible ml-auto text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="trash" class="h-3 w-3" /></button>
+                                            <button aria-label="Delete comment" wire:click="deleteComment({{ $c->id }})" wire:confirm="Delete this comment?" class="invisible ml-auto text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="trash" class="h-3 w-3" /></button>
                                         @endif
                                     </div>
                                     @if ($c->body !== '')<p class="mt-1 whitespace-pre-line break-words text-sm text-ink-800">{{ $c->body }}</p>@endif
@@ -332,7 +332,7 @@
                 <div class="flex items-center gap-2 border-t border-gray-100 px-2 py-1">
                     <label class="flex cursor-pointer items-center gap-1 rounded px-1.5 py-1 text-xs text-ink-500 hover:bg-gray-100 hover:text-ink-900" title="Attach files or images">
                         <x-icon name="paperclip" class="h-4 w-4" /> Attach
-                        <input type="file" x-ref="cpicker" wire:model="newCommentFiles" multiple class="hidden">
+                        <input type="file" accept="{{ \App\Rules\SafeUpload::accept() }}" x-ref="cpicker" wire:model="newCommentFiles" multiple class="hidden">
                     </label>
                     <span wire:loading wire:target="newCommentFiles" class="text-xs text-ink-500">Uploading…</span>
                 </div>

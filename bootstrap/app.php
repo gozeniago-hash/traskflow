@@ -18,10 +18,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'member' => \App\Http\Middleware\EnsureMember::class,
             'client' => \App\Http\Middleware\EnsureClient::class,
             'admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'secure' => \App\Http\Middleware\EnsureAccountSecure::class,
         ]);
         // Railway (and most PaaS hosts) terminate HTTPS at a proxy.
         $middleware->trustProxies(at: '*');
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        // Every page and live action counts against the per-person limit (config taskflow.requests_per_minute).
+        $middleware->web(append: ['throttle:web']);
         $middleware->validateCsrfTokens(except: ['github/webhook/*']);
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('dashboard'));

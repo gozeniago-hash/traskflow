@@ -24,7 +24,7 @@
         <input type="date" {{ $now }}="{{ $model }}" @disabled($disabled) class="input input-sm w-40">
         @break
     @case('select')
-        <select {{ $now }}="{{ $model }}" @disabled($disabled) class="input input-sm max-w-56">
+        <select aria-label="{{ $field->name ?? 'Value' }}" {{ $now }}="{{ $model }}" @disabled($disabled) class="input input-sm max-w-56">
             <option value="">—</option>
             @foreach ($field->optionList() as $o)<option value="{{ $o['id'] }}">{{ $o['label'] }}</option>@endforeach
         </select>
@@ -50,7 +50,7 @@
         <input type="url" {{ $blur }}="{{ $model }}" @disabled($disabled) class="input input-sm" placeholder="https://">
         @break
     @case('person')
-        <select {{ $now }}="{{ $model }}" @disabled($disabled) class="input input-sm max-w-56">
+        <select aria-label="{{ $field->name ?? 'Value' }}" {{ $now }}="{{ $model }}" @disabled($disabled) class="input input-sm max-w-56">
             <option value="">—</option>
             @foreach ($people as $id => $name)<option value="{{ $id }}">{{ $name }}</option>@endforeach
         </select>

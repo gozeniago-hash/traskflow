@@ -66,9 +66,9 @@
             </div>
         </div>
 
-        <nav class="mt-4 flex gap-5">
+        <nav class="tab-scroll -mx-6 mt-4 flex gap-5 px-6" x-data x-init="tfTabScroll($el)" aria-label="Project views">
             @foreach (\App\Models\Project::VIEWS as $key => $label)
-                <a href="{{ route('projects.show', [$project, $key]) }}" wire:navigate class="tab {{ $view === $key ? 'tab-active' : '' }}">{{ $label }}</a>
+                <a href="{{ route('projects.show', [$project, $key]) }}" wire:navigate @if ($view === $key) aria-current="page" @endif class="tab {{ $view === $key ? 'tab-active' : '' }}">{{ $label }}</a>
             @endforeach
         </nav>
     </div>
@@ -115,33 +115,33 @@
                     <label class="label">Color</label>
                     <div class="flex flex-wrap gap-2">
                         @foreach (\App\Models\Project::COLORS as $c)
-                            <button type="button" wire:click="$set('form.color', '{{ $c }}')" class="h-7 w-7 rounded-md ring-offset-2 {{ ($form['color'] ?? '') === $c ? 'ring-2 ring-ink-900' : '' }}" style="background-color: {{ $c }}"></button>
+                            <button type="button" wire:click="$set('form.color', '{{ $c }}')" aria-label="Colour {{ $c }}" class="h-7 w-7 rounded-md ring-offset-2 {{ ($form['color'] ?? '') === $c ? 'ring-2 ring-ink-900' : '' }}" style="background-color: {{ $c }}"></button>
                         @endforeach
                     </div>
                 </div>
                 <div>
                     <label class="label">Owner</label>
-                    <select wire:model="form.owner_id" class="input">
+                    <select aria-label="Project owner" wire:model="form.owner_id" class="input">
                         <option value="">—</option>
                         @foreach ($people as $u)<option value="{{ $u->id }}">{{ $u->name }}</option>@endforeach
                     </select>
                 </div>
                 <div>
                     <label class="label">Team</label>
-                    <select wire:model="form.team_id" class="input">
+                    <select aria-label="Team" wire:model="form.team_id" class="input">
                         <option value="">No team</option>
                         @foreach ($teams as $t)<option value="{{ $t->id }}">{{ $t->name }}</option>@endforeach
                     </select>
                 </div>
                 <div>
                     <label class="label">Who can see it</label>
-                    <select wire:model="form.privacy" class="input">
+                    <select aria-label="Who can see this project" wire:model="form.privacy" class="input">
                         @foreach (\App\Models\Project::PRIVACY as $k => $label)<option value="{{ $k }}">{{ $label }}</option>@endforeach
                     </select>
                 </div>
                 <div>
                     <label class="label">Default view</label>
-                    <select wire:model="form.default_view" class="input">
+                    <select aria-label="Default view" wire:model="form.default_view" class="input">
                         @foreach (\App\Models\Project::VIEWS as $k => $label)<option value="{{ $k }}">{{ $label }}</option>@endforeach
                     </select>
                 </div>
@@ -150,7 +150,7 @@
 
                 <div class="rounded-lg border border-gray-200 p-4 sm:col-span-2">
                     <label class="label">Client</label>
-                    <select wire:model.live="form.client_id" class="input">
+                    <select aria-label="Client" wire:model.live="form.client_id" class="input">
                         <option value="">Internal project (no client)</option>
                         @foreach ($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach
                     </select>

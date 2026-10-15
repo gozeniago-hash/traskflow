@@ -102,7 +102,13 @@ class Show extends Component
             $data['portal_enabled'] = false;
         }
 
+        $before = $this->project->only(['privacy', 'team_id', 'client_id', 'portal_enabled', 'owner_id']);
         $this->project->update($data);
+        // Access-related changes go in the audit log.
+        $changed = array_keys(array_diff_assoc(array_map('strval', $this->project->only(array_keys($before))), array_map('strval', $before)));
+        if ($changed) {
+            \App\Support\Audit::log('project.access_changed', 'Changed who can access “'.$this->project->name.'” ('.implode(', ', str_replace(['_id', '_'], ['', ' '], $changed)).')', $this->project, ['from' => $before, 'to' => $this->project->only(array_keys($before))]);
+        }
         $this->showEdit = false;
         $this->dispatch('project-updated');
         $this->toast('Project updated.');
@@ -112,6 +118,7 @@ class Show extends Component
     {
         $this->authorize('delete', $this->project);
         $this->project->update(['archived_at' => $this->project->archived_at ? null : now()]);
+        \App\Support\Audit::log($this->project->archived_at ? 'project.archived' : 'project.restored', ($this->project->archived_at ? 'Archived' : 'Restored').' project “'.$this->project->name.'”', $this->project);
         $this->dispatch('project-updated');
         $this->toast($this->project->archived_at ? 'Project archived.' : 'Project restored.');
     }
@@ -123,6 +130,7 @@ class Show extends Component
             $attachment->delete(); // removes the stored file too
         }
         $this->project->delete();
+        \App\Support\Audit::log('project.deleted', 'Deleted project “'.$this->project->name.'” ('.$this->project->key.') and all its tasks and files', $this->project);
         session()->flash('status', 'Project deleted.');
 
         return $this->redirectRoute('projects.index', navigate: true);

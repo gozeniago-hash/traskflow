@@ -47,10 +47,16 @@ class Members extends Component
         }
 
         $existing = $this->workspace()->users()->whereIn('email', $list)->pluck('email');
+        if ($list->diff($existing)->count() > Invites::remaining($this->workspace())) {
+            $this->addError('emails', 'This workspace can send '.Invites::PER_HOUR.' invitations an hour. Try again later, or send fewer at once.');
+
+            return;
+        }
         $this->sentLinks = [];
         foreach ($list->diff($existing) as $email) {
             $invitation = Invites::send($this->workspace(), $this->me(), $email, $this->role, null, $this->inviteTeams);
             $this->sentLinks[$email] = $invitation->url();
+            \App\Support\Audit::log('invitation.sent', 'Invited '.$email.' as '.$this->role, $invitation, ['role' => $this->role, 'teams' => $this->inviteTeams]);
         }
 
         $this->emails = '';
@@ -69,7 +75,8 @@ class Members extends Component
             return;
         }
         $this->workspace()->users()->updateExistingPivot($userId, ['role' => $role]);
-        $this->toast($target->name.' is now '.($role === 'admin' ? 'an admin' : 'a member').'.');
+        \App\Support\Audit::log('member.role_changed', 'Changed '.$target->name.'’s role from '.$target->pivot->role.' to '.$role, $target, ['from' => $target->pivot->role, 'to' => $role]);
+        $this->toast($target->name.' is now '.($role === 'admin' ? 'an admin' : 'a '.$role).'.');
     }
 
     public function remove(int $userId): void
@@ -91,13 +98,18 @@ class Members extends Component
         if ($target->current_workspace_id === $workspace->id) {
             $target->forceFill(['current_workspace_id' => null])->save();
         }
+        \App\Support\Audit::log('member.removed', 'Removed '.$target->name.' ('.$target->email.') from the workspace', $target);
         $this->toast($target->name.' was removed from the workspace.');
     }
 
     public function revoke(int $invitationId): void
     {
         $this->requireAdmin();
-        $this->workspace()->invitations()->whereKey($invitationId)->whereNull('accepted_at')->delete();
+        $invitation = $this->workspace()->invitations()->whereKey($invitationId)->whereNull('accepted_at')->first();
+        if ($invitation) {
+            $invitation->delete();
+            \App\Support\Audit::log('invitation.revoked', 'Revoked the invitation for '.$invitation->email, $invitation);
+        }
         $this->toast('Invitation revoked.');
     }
 

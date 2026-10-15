@@ -6,6 +6,9 @@ use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureClient;
 use App\Http\Middleware\EnsureMember;
 use App\Http\Middleware\EnsureWorkspace;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Livewire;
@@ -27,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         ));
 
         $this->registerRealtimeHooks();
+        $this->registerRateLimits();
 
         if ($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
@@ -34,11 +38,42 @@ class AppServiceProvider extends ServiceProvider
 
         // Re-run our access middleware on every Livewire update request, not just the first page load.
         Livewire::addPersistentMiddleware([
+            \App\Http\Middleware\EnsureAccountSecure::class,
             EnsureWorkspace::class,
             EnsureMember::class,
             EnsureClient::class,
             EnsureAdmin::class,
         ]);
+    }
+
+    /**
+     * Request limits. One person (or one address, when signed out) can't use the whole server,
+     * and sign-up, password reset and invitations can't be used to flood mailboxes.
+     */
+    protected function registerRateLimits(): void
+    {
+        $tooMany = fn (string $what) => fn ($request, array $headers) => $request->expectsJson()
+            ? response()->json(['message' => $what], 429, $headers)
+            : back()->withInput($request->except('password', 'password_confirmation'))->withErrors(['email' => $what])->withHeaders($headers);
+
+        RateLimiter::for('web', fn (Request $request) => Limit::perMinute(config('taskflow.requests_per_minute'))
+            ->by($request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip()));
+
+        RateLimiter::for('login', fn (Request $request) => Limit::perMinute(20)->by('login:'.$request->ip())
+            ->response($tooMany('Too many sign-in attempts from your network. Wait a minute and try again.')));
+
+        RateLimiter::for('register', fn (Request $request) => [
+            Limit::perMinute(5)->by('register-min:'.$request->ip())->response($tooMany('Too many sign-ups from your network. Wait a minute and try again.')),
+            Limit::perDay(20)->by('register-day:'.$request->ip())->response($tooMany('Too many sign-ups from your network today. Try again tomorrow.')),
+        ]);
+
+        RateLimiter::for('password-reset', fn (Request $request) => [
+            Limit::perMinute(3)->by('reset-ip:'.$request->ip())->response($tooMany('Too many reset requests. Wait a minute and try again.')),
+            Limit::perHour(5)->by('reset-email:'.strtolower((string) $request->input('email')))->response($tooMany('Too many reset requests for this email. Try again later.')),
+        ]);
+
+        RateLimiter::for('invitation-accept', fn (Request $request) => Limit::perMinute(10)->by('accept:'.$request->ip())
+            ->response($tooMany('Too many attempts. Wait a minute and try again.')));
     }
 
     /** Any change to project data tells everyone viewing that project to refresh. */

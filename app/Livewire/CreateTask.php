@@ -58,7 +58,7 @@ class CreateTask extends Component
 
     public function updatedNewFiles(): void
     {
-        $this->validate(['newFiles.*' => ['file', 'max:'.config('taskflow.max_upload_kb')]], [], ['newFiles.*' => 'file']);
+        $this->validate(['newFiles.*' => \App\Models\Attachment::rules()], [], ['newFiles.*' => 'file']);
         $this->files = array_merge($this->files, $this->newFiles);
         $this->newFiles = [];
     }
@@ -89,7 +89,7 @@ class CreateTask extends Component
             'assignee_id' => ['nullable', Rule::exists('workspace_user', 'user_id')->where('workspace_id', $ws->id)->whereNot('role', 'client')],
             'due_date' => ['nullable', 'date'],
             'priority' => ['required', Rule::in(array_keys(Task::PRIORITIES))],
-            'files.*' => ['file', 'max:'.config('taskflow.max_upload_kb')],
+            'files.*' => \App\Models\Attachment::rules(),
             ...CustomFields::rules($project->fields),
         ], [], ['files.*' => 'file', ...CustomFields::attributes($project->fields)]);
 

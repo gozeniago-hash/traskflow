@@ -14,7 +14,7 @@
         <div>
             <div class="mb-1 flex items-center justify-between">
                 <label class="label mb-0" for="password">Password</label>
-                <a href="{{ route('password.request') }}" class="text-xs font-medium text-coral-600 hover:underline">Forgot password?</a>
+                <a href="{{ route('password.request') }}" class="text-xs font-medium text-coral-700 hover:underline">Forgot password?</a>
             </div>
             <x-password-input />
         </div>
@@ -28,6 +28,6 @@
     </form>
 
     @slot('footer')
-        New to TaskFlow? <a href="{{ route('register') }}" class="font-medium text-coral-600 hover:underline">Create a workspace</a>
+        New to TaskFlow? <a href="{{ route('register') }}" class="font-medium text-coral-700 hover:underline">Create a workspace</a>
     @endslot
 @endcomponent

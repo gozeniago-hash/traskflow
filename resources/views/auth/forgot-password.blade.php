@@ -11,6 +11,6 @@
         <button class="btn-primary btn w-full py-2">Send reset link</button>
     </form>
     @slot('footer')
-        <a href="{{ route('login') }}" class="font-medium text-coral-600 hover:underline">← Back to sign in</a>
+        <a href="{{ route('login') }}" class="font-medium text-coral-700 hover:underline">← Back to sign in</a>
     @endslot
 @endcomponent

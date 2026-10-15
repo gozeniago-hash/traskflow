@@ -12,6 +12,21 @@
                 <div class="flex justify-end"><button class="btn-primary btn">Save</button></div>
             </form>
 
+            {{-- Security --}}
+            <div class="card p-5">
+                <h2 class="flex items-center gap-2 font-semibold"><x-icon name="lock" class="h-5 w-5 text-ink-700" /> Security</h2>
+                <label class="mt-3 flex items-start gap-3">
+                    <input type="checkbox" class="mt-0.5 rounded border-gray-300 text-coral-600 focus:ring-coral-400" @checked($security['required'])
+                           wire:change="setRequireTwoFactor($event.target.checked)" aria-describedby="tfa-req-help">
+                    <span>
+                        <span class="text-sm font-medium">Require two-step verification for the team</span>
+                        <span id="tfa-req-help" class="mt-0.5 block text-sm text-ink-500">Admins, managers and members must use an authenticator app when they sign in. Anyone who hasn’t set it up is asked to before they can continue. Client portal users aren’t affected.</span>
+                        <span class="mt-1 block text-sm {{ $security['without'] ? 'text-amber-800' : 'text-emerald-700' }}">{{ $security['without'] ? $security['without'].' '.\Illuminate\Support\Str::plural('teammate', $security['without']).' haven’t turned it on yet.' : 'Everyone on the team has it on.' }}</span>
+                    </span>
+                </label>
+                <a href="{{ route('audit-log') }}" wire:navigate class="mt-4 inline-flex text-sm font-medium text-coral-700 hover:underline">View the audit log →</a>
+            </div>
+
             {{-- GitHub --}}
             <div class="card p-5">
                 <div class="flex items-start justify-between gap-3">
@@ -122,6 +137,16 @@
                     <div class="flex justify-between"><dt class="text-ink-500">{{ $label }}</dt><dd class="font-medium">{{ $value }}</dd></div>
                 @endforeach
             </dl>
+            @php($fmt = fn ($b) => $b >= 1024 ** 3 ? round($b / 1024 ** 3, 1).' GB' : ($b >= 1024 ** 2 ? round($b / 1024 ** 2, 1).' MB' : round($b / 1024).' KB'))
+            <div class="mt-4 border-t border-gray-100 pt-4 text-sm">
+                <div class="flex justify-between"><span class="text-ink-500">File storage</span><span class="font-medium">{{ $fmt($storage['used']) }}{{ $storage['quota'] ? ' of '.$fmt($storage['quota']) : '' }}</span></div>
+                @if ($storage['quota'])
+                    @php($pct = min(100, round($storage['used'] / $storage['quota'] * 100)))
+                    <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-gray-100" role="progressbar" aria-label="File storage used" aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="h-full rounded-full {{ $pct >= 90 ? 'bg-red-500' : 'bg-coral-500' }}" style="width: {{ $pct }}%"></div>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </div>

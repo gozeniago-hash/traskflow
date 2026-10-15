@@ -52,11 +52,14 @@ class Teams extends Component
         ]);
 
         if ($this->editingId) {
-            $this->team($this->editingId)->update($data);
+            $team = $this->team($this->editingId);
+            $team->update($data);
+            \App\Support\Audit::log('team.updated', 'Updated team “'.$team->name.'”', $team);
             $this->toast('Team updated.');
         } else {
             $team = $this->workspace()->teams()->create($data);
             $team->users()->attach($this->me()->id);
+            \App\Support\Audit::log('team.created', 'Created team “'.$team->name.'”', $team);
             $this->toast('Team created.');
         }
 
@@ -70,20 +73,26 @@ class Teams extends Component
         if (! $userId || ! $this->workspace()->members()->whereKey($userId)->exists()) {
             return;
         }
-        $this->team($teamId)->users()->syncWithoutDetaching([$userId]);
+        $team = $this->team($teamId);
+        $team->users()->syncWithoutDetaching([$userId]);
+        \App\Support\Audit::log('team.member_added', 'Added '.\App\Models\User::find($userId)?->name.' to team “'.$team->name.'”', $team, ['user_id' => $userId]);
         $this->addUser[$teamId] = '';
     }
 
     public function removeMember(int $teamId, int $userId): void
     {
         $this->requireAdmin();
-        $this->team($teamId)->users()->detach($userId);
+        $team = $this->team($teamId);
+        $team->users()->detach($userId);
+        \App\Support\Audit::log('team.member_removed', 'Removed '.\App\Models\User::find($userId)?->name.' from team “'.$team->name.'”', $team, ['user_id' => $userId]);
     }
 
     public function delete(int $id): void
     {
         $this->requireAdmin();
-        $this->team($id)->delete();
+        $team = $this->team($id);
+        $team->delete();
+        \App\Support\Audit::log('team.deleted', 'Deleted team “'.$team->name.'”', $team);
         $this->toast('Team deleted. Its projects were kept.');
     }
 

@@ -204,7 +204,7 @@ class Task extends Model
             return 'text-red-600';
         }
         if ($this->due_date->lte(today()->addDay())) {
-            return 'text-emerald-600';
+            return 'text-emerald-700';
         }
 
         return 'text-ink-500';

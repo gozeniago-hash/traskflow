@@ -14,7 +14,7 @@
                     @endif
                     @if ($canManage)
                     <div class="relative ml-auto">
-                        <button x-on:click="menu = !menu" class="rounded p-0.5 text-ink-500 hover:bg-gray-200"><x-icon name="dots" /></button>
+                        <button x-on:click="menu = !menu" aria-label="Column options" :aria-expanded="menu" class="rounded p-0.5 text-ink-500 hover:bg-gray-200"><x-icon name="dots" /></button>
                         <div x-cloak x-show="menu" x-on:click.outside="menu = false" x-on:click="menu = false" class="absolute right-0 z-20 mt-1 w-44 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
                             <button wire:click="editSection({{ $section->id }})" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Rename</button>
                             <button wire:click="moveSection({{ $section->id }}, -1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move left</button>
@@ -31,7 +31,7 @@
                              wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}"
                              class="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition hover:border-gray-300 hover:shadow">
                             <div class="flex items-start gap-2">
-                                <button wire:click.stop="toggleComplete({{ $task->id }})" class="check mt-0.5 {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
+                                <button wire:click.stop="toggleComplete({{ $task->id }})" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}" class="check mt-0.5 {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
                                 <div class="min-w-0">
                                     <p class="font-mono text-[11px] text-ink-500">{{ $project->key }}-{{ $task->number }}</p>
                                     <p class="text-sm font-medium leading-snug {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</p>

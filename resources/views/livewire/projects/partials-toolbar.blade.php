@@ -6,7 +6,7 @@
             <button wire:click="$set('filter', '{{ $key }}')" class="rounded px-2.5 py-1 font-medium {{ $filter === $key ? 'bg-ink-900 text-white' : 'text-ink-700 hover:bg-gray-100' }}">{{ $label }}</button>
         @endforeach
     </div>
-    <select wire:model.live="assigneeFilter" class="input input-sm w-auto text-xs">
+    <select aria-label="Filter by assignee" wire:model.live="assigneeFilter" class="input input-sm w-auto text-xs">
         <option value="">Everyone's tasks</option>
         <option value="me">Assigned to me</option>
         <option value="unassigned">Unassigned</option>
