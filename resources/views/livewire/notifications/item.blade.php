@@ -1,5 +1,5 @@
 @php($href = $feed->link($a))
-<li wire:key="n-{{ $a->id }}" class="{{ $isNew ? 'bg-coral-50/50' : '' }}">
+<li wire:key="n-{{ $a->id }}" class="{{ $isNew ? 'bg-coral-50/50' : '' }} {{ ($fadeIn ?? false) ? 'tf-fade-in' : '' }}">
     <{{ $href ? 'a' : 'div' }} @if ($href) href="{{ $href }}" wire:navigate @endif class="flex gap-3 px-4 py-3 {{ $href ? 'hover:bg-gray-50' : '' }}">
         <span class="relative shrink-0">
             <x-avatar :user="$a->user" size="md" />

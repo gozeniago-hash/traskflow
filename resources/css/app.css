@@ -111,3 +111,8 @@ trix-toolbar .trix-button-group { margin-bottom: 0; }
 .tab-scroll[data-more-right] { mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
 .tab-scroll[data-more-left] { mask-image: linear-gradient(to left, #000 calc(100% - 40px), transparent); }
 .tab-scroll[data-more-left][data-more-right] { mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
+
+/* ---- Gentle fade for content that replaces a loading placeholder ---- */
+@keyframes tf-fade-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+.tf-fade-in { animation: tf-fade-in 160ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .tf-fade-in { animation: none; } }

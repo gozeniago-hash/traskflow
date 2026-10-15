@@ -129,10 +129,15 @@ class NotificationsTest extends TestCase
         $web->sections()->create(['name' => 'Two', 'position' => 71]);
 
         $this->actingAs($maya);
-        $bell = Livewire::test(\App\Livewire\Notifications\Bell::class)->assertSee('2 new');
-        $bell->call('toggle')->assertSee('added the section “Two”');
+        $bell = Livewire::test(\App\Livewire\Notifications\Bell::class)->assertSee('2 new')->assertDontSee('added the section');
+
+        // Hovering loads the list ahead of time but doesn't mark anything read.
+        $bell->call('prefetch')->assertSee('added the section “Two”')->assertSee('2 new');
+        $this->assertSame(2, NotificationFeed::for($maya->fresh())->unreadCount());
+
+        // Opening marks them read; they stay highlighted in the open panel.
+        $bell->call('opened')->assertSeeHtml('aria-label="Notifications"')->assertSeeHtml('aria-label="New"');
         $this->assertSame(0, NotificationFeed::for($maya->fresh())->unreadCount());
-        $bell->call('toggle')->assertDontSee('new');
     }
 
     public function test_notifications_page_filters_by_project_and_type(): void
