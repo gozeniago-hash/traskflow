@@ -85,20 +85,27 @@ class AuthController extends Controller
         \App\Support\Audit::log('auth.registered', $user->name.' created an account and the '.$user->currentWorkspace->name.' workspace', $user, [], $user);
 
         if ($user->needsToVerifyEmail()) {
-            $this->sendVerification($user);
-
-            return redirect()->route('verification.notice');
+            if ($this->sendVerification($user)) {
+                return redirect()->route('verification.notice');
+            }
+            // The confirmation email couldn't be sent: don't lock the new account out.
+            $user->markEmailAsVerified();
+            \App\Support\Audit::log('auth.verification_skipped', 'Couldn’t send the confirmation email to '.$user->email.', so it was skipped', $user, [], $user);
         }
 
         return redirect()->route('home')->with('status', 'Welcome to TaskFlow! Create your first project to get started.');
     }
 
-    protected function sendVerification(User $user): void
+    protected function sendVerification(User $user): bool
     {
         try {
             $user->sendEmailVerificationNotification();
+
+            return true;
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('Verification email failed: '.$e->getMessage());
+
+            return false;
         }
     }
 

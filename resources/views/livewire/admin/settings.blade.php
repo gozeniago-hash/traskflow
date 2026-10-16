@@ -12,6 +12,31 @@
                 <div class="flex justify-end"><button class="btn-primary btn">Save</button></div>
             </form>
 
+            {{-- Email --}}
+            <div class="card p-5">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 class="flex items-center gap-2 font-semibold"><x-icon name="bell" class="h-5 w-5 text-ink-700" /> Email</h2>
+                        <p class="mt-1 text-sm text-ink-500">Invitations, password resets and email confirmations are sent from here.</p>
+                    </div>
+                    @if ($mail['configured'])<span class="pill bg-emerald-50 text-emerald-700">Set up</span>@else<span class="pill bg-amber-50 text-amber-800">Not set up</span>@endif
+                </div>
+                <dl class="mt-3 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
+                    <dt class="text-ink-500">Sent with</dt><dd>{{ $mail['configured'] ? $mail['provider'] : 'Nothing yet — emails are only written to the log' }}</dd>
+                    <dt class="text-ink-500">From</dt><dd class="break-all">{{ $mail['from'] }}</dd>
+                    <dt class="text-ink-500">New sign-ups</dt><dd>{{ $mail['verify'] ? 'Confirm their email before they start' : 'Start right away (no email confirmation)' }}</dd>
+                </dl>
+                <div class="mt-4 flex flex-wrap items-center gap-3">
+                    <button type="button" wire:click="sendTestEmail" wire:loading.attr="disabled" wire:target="sendTestEmail" class="btn-secondary btn">
+                        <span wire:loading.remove wire:target="sendTestEmail">Send me a test email</span>
+                        <span wire:loading wire:target="sendTestEmail">Sending…</span>
+                    </button>
+                    @if ($mailTest)
+                        <p role="status" class="text-sm {{ $mailTest['ok'] ? 'text-emerald-700' : 'text-red-700' }}">{{ $mailTest['message'] }}</p>
+                    @endif
+                </div>
+            </div>
+
             {{-- Security --}}
             <div class="card p-5">
                 <h2 class="flex items-center gap-2 font-semibold"><x-icon name="lock" class="h-5 w-5 text-ink-700" /> Security</h2>

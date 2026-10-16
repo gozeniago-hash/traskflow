@@ -28,6 +28,40 @@ class Settings extends Component
         $this->name = $this->workspace()->name;
     }
 
+    /** Outcome of the last test email, shown in the Email card. */
+    public ?array $mailTest = null;
+
+    public function sendTestEmail(): void
+    {
+        $this->requireAdmin();
+        $me = $this->me();
+        $key = 'mail-test:'.$me->id;
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 3)) {
+            $this->mailTest = ['ok' => false, 'message' => 'Wait a few minutes before sending another test email.'];
+
+            return;
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit($key, 600);
+
+        if (in_array(config('mail.default'), ['log', 'array'], true)) {
+            $this->mailTest = ['ok' => false, 'message' => 'Outgoing email isn’t set up yet, so nothing was sent.'];
+
+            return;
+        }
+
+        try {
+            \Illuminate\Support\Facades\Mail::raw(
+                "This is a test from TaskFlow.\n\nIf you can read this, invitations, password resets and email confirmations will reach people too.",
+                fn ($m) => $m->to($me->email)->subject('TaskFlow test email')
+            );
+            \App\Support\Audit::log('workspace.mail_test', 'Sent a test email to '.$me->email, $this->workspace());
+            $this->mailTest = ['ok' => true, 'message' => 'Sent to '.$me->email.'. Check your inbox (and spam folder).'];
+        } catch (\Throwable $e) {
+            report($e);
+            $this->mailTest = ['ok' => false, 'message' => \App\Support\MailStatus::explain($e)];
+        }
+    }
+
     public function setRequireTwoFactor(bool $on): void
     {
         $this->requireAdmin();
@@ -69,6 +103,7 @@ class Settings extends Component
             ],
             'archived' => $ws->projects()->whereNotNull('archived_at')->orderBy('name')->get(),
             'storage' => ['used' => $ws->storageUsed(), 'quota' => $ws->storageQuota()],
+            'mail' => \App\Support\MailStatus::summary(),
             'security' => [
                 'required' => (bool) $ws->require_two_factor,
                 'without' => $ws->members()->get()->reject->hasTwoFactor()->count(),
