@@ -18,7 +18,7 @@
     @if ($a && $a->isImage())
         <img src="{{ $a->viewUrl() }}" alt="" loading="lazy" class="h-10 w-10 shrink-0 rounded-md object-cover ring-1 ring-black/5">
     @elseif ($a)
-        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-[10px] font-bold {{ $a->isPdf() ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-ink-500' }}">{{ \Illuminate\Support\Str::limit(strtoupper($a->extension()), 4, '') }}</span>
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-[10px] font-semibold {{ $a->isPdf() ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-ink-500' }}">{{ \Illuminate\Support\Str::limit(strtoupper($a->extension()), 4, '') }}</span>
     @else
         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-sky-50 text-sky-600"><x-icon name="link" class="h-5 w-5" /></span>
     @endif

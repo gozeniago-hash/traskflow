@@ -11,7 +11,7 @@
         <x-icon name="bell" class="h-5 w-5" />
         @if ($count)
             <span x-show="!open" x-transition.opacity.duration.150ms
-                  class="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-coral-600 px-1 text-[10px] font-semibold leading-none text-white">{{ $count >= 99 ? '99+' : $count }}</span>
+                  class="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-600 px-1 text-[10px] font-semibold leading-none text-white">{{ $count >= 99 ? '99+' : $count }}</span>
         @endif
     </button>
 
@@ -21,7 +21,7 @@
          class="fixed inset-x-2 top-14 z-50 origin-top-right overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/5 will-change-transform sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-[26rem]">
         <div class="flex items-center justify-between border-b border-gray-100 px-4 py-2.5">
             <h2 class="text-sm font-semibold">Notifications</h2>
-            <a href="{{ $allUrl }}" wire:navigate x-on:click="hide()" class="text-xs font-medium text-coral-700 hover:underline">View all</a>
+            <a href="{{ $allUrl }}" wire:navigate x-on:click="hide()" class="text-xs font-medium text-accent-700 hover:underline">View all</a>
         </div>
         <ul class="max-h-[min(70vh,32rem)] divide-y divide-gray-100 overflow-y-auto overscroll-contain" aria-busy="{{ $loaded ? 'false' : 'true' }}">
             @if (! $loaded)

@@ -21,7 +21,7 @@
     </div>
 @else
     <div {{ $attributes->merge(['class' => 'group flex items-center gap-2 rounded-md border border-gray-200 bg-white p-2']) }}>
-        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded text-[10px] font-bold {{ $a->isPdf() ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-ink-500' }}">{{ \Illuminate\Support\Str::limit($a->extension(), 4, '') }}</span>
+        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded text-[10px] font-semibold {{ $a->isPdf() ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-ink-500' }}">{{ \Illuminate\Support\Str::limit($a->extension(), 4, '') }}</span>
         <a href="{{ $a->isPdf() ? $a->viewUrl() : $a->downloadUrl() }}" @if ($a->isPdf()) target="_blank" rel="noopener" @endif class="min-w-0 flex-1">
             <span class="block truncate text-sm hover:underline">{{ $a->original_name }}</span>
             <span class="text-xs text-ink-500">{{ $a->humanSize() }}{{ $a->user ? ' · '.$a->user->firstName() : '' }}</span>

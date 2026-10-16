@@ -12,7 +12,7 @@
         <section class="card flex flex-col">
             <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3.5">
                 <h2 class="flex items-center gap-2 font-semibold"><x-avatar :user="auth()->user()" size="sm" /> My tasks</h2>
-                <a href="{{ route('my-tasks') }}" wire:navigate class="text-xs font-medium text-coral-600 hover:underline">View all</a>
+                <a href="{{ route('my-tasks') }}" wire:navigate class="text-xs font-medium text-accent-600 hover:underline">View all</a>
             </div>
             <ul class="flex-1 divide-y divide-gray-100">
                 @forelse ($upcoming as $task)
@@ -31,7 +31,7 @@
         <section class="card">
             <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3.5">
                 <h2 class="font-semibold">Projects</h2>
-                <a href="{{ route('projects.index') }}" wire:navigate class="text-xs font-medium text-coral-600 hover:underline">View all</a>
+                <a href="{{ route('projects.index') }}" wire:navigate class="text-xs font-medium text-accent-600 hover:underline">View all</a>
             </div>
             <div class="grid gap-1 p-3 sm:grid-cols-2">
                 <a href="{{ route('projects.index', ['new' => 1]) }}" wire:navigate class="flex items-center gap-3 rounded-lg p-2.5 hover:bg-gray-50">

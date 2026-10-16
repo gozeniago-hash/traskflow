@@ -42,7 +42,8 @@ class Project extends Model
         'private' => 'Only project members',
     ];
 
-    public const COLORS = ['#f06a5a', '#fd9a00', '#eec300', '#62d26f', '#37c5ab', '#20aaea', '#4573d2', '#8d84e8', '#aa62e3', '#e362e3', '#ea4e9d', '#6d6e6f'];
+    /** Muted project colours (clay, ochre, mustard, moss, teal, steel, slate, periwinkle, dusk, mauve, rose, grey). */
+    public const COLORS = ['#b4685c', '#b07d3e', '#9c8a3c', '#5e8c5f', '#3f8a80', '#4a85a8', '#4e6a9e', '#7570a8', '#80659e', '#9a6390', '#a55e7b', '#6e7378'];
 
     public const VIEWS = ['overview' => 'Overview', 'list' => 'List', 'board' => 'Board', 'calendar' => 'Calendar', 'docs' => 'Docs', 'files' => 'Files', 'timesheet' => 'Timesheet'];
 

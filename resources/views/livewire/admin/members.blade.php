@@ -10,7 +10,7 @@
     <div class="p-6">
         <div class="card overflow-hidden">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 text-left text-xs uppercase tracking-wide text-ink-500">
+                <thead class="bg-gray-50 text-left text-xs text-ink-500">
                     <tr><th class="px-4 py-2.5 font-semibold">Name</th><th class="hidden px-4 py-2.5 font-semibold md:table-cell">Email</th><th class="px-4 py-2.5 font-semibold">Role</th><th class="hidden px-4 py-2.5 font-semibold sm:table-cell">Open tasks</th><th></th></tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -85,7 +85,7 @@
                         <div class="space-y-1.5 rounded-md border border-gray-200 p-3">
                             @foreach ($allTeams as $t)
                                 <label class="flex items-center gap-2 text-sm">
-                                    <input type="checkbox" wire:model="inviteTeams" value="{{ $t->id }}" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400">
+                                    <input type="checkbox" wire:model="inviteTeams" value="{{ $t->id }}" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400">
                                     {{ $t->name }} <span class="text-xs text-ink-500">· {{ $t->projects_count }} {{ \Illuminate\Support\Str::plural('project', $t->projects_count) }}</span>
                                 </label>
                             @endforeach

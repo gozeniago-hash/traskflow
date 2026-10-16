@@ -2,7 +2,7 @@
     {{-- Doc list --}}
     <aside class="shrink-0 border-gray-200 md:w-64 md:border-r">
         <div class="flex items-center justify-between px-4 pb-2 pt-4">
-            <p class="text-xs font-semibold uppercase tracking-wide text-ink-500">Docs</p>
+            <p class="text-xs font-semibold text-ink-500">Docs</p>
             @if ($canEdit && ! $editing)
                 <button wire:click="$set('showTemplates', true)" class="btn-ghost btn px-2 py-1 text-xs"><x-icon name="plus" /> New</button>
             @endif
@@ -10,8 +10,8 @@
         <nav class="flex gap-1 overflow-x-auto px-2 pb-3 md:flex-col md:overflow-visible">
             @foreach ($docs as $d)
                 <button wire:key="dl-{{ $d->id }}" wire:click="select({{ $d->id }})" @disabled($editing) title="{{ $editing ? 'Click Done to finish editing first' : '' }}"
-                        class="group flex shrink-0 items-start gap-2 rounded-md px-2.5 py-2 text-left disabled:cursor-not-allowed disabled:opacity-60 md:w-full {{ $doc && $doc->id === $d->id ? 'bg-coral-50 ring-1 ring-coral-100' : 'hover:bg-gray-50' }}">
-                    <x-icon name="list" class="mt-0.5 h-4 w-4 shrink-0 {{ $doc && $doc->id === $d->id ? 'text-coral-500' : 'text-ink-300' }}" />
+                        class="group flex shrink-0 items-start gap-2 rounded-md px-2.5 py-2 text-left disabled:cursor-not-allowed disabled:opacity-60 md:w-full {{ $doc && $doc->id === $d->id ? 'bg-accent-50 ring-1 ring-accent-100' : 'hover:bg-gray-50' }}">
+                    <x-icon name="list" class="mt-0.5 h-4 w-4 shrink-0 {{ $doc && $doc->id === $d->id ? 'text-accent-500' : 'text-ink-300' }}" />
                     <span class="min-w-0">
                         <span class="block max-w-48 truncate text-sm font-medium text-ink-900">{{ $d->title }}</span>
                         <span class="hidden text-[11px] text-ink-500 md:block">
@@ -33,7 +33,7 @@
                 @if ($canEdit)
                     <div class="mt-6 grid gap-3 sm:grid-cols-2">
                         @foreach ($templates as $key => [$label, $hint])
-                            <button wire:click="create('{{ $key }}')" class="card p-4 text-left transition hover:border-coral-400 hover:shadow-sm">
+                            <button wire:click="create('{{ $key }}')" class="card p-4 text-left transition hover:border-accent-400 hover:shadow-sm">
                                 <p class="font-medium">{{ $label }}</p><p class="mt-0.5 text-xs text-ink-500">{{ $hint }}</p>
                             </button>
                         @endforeach
@@ -108,7 +108,7 @@
                         @else
                             <h1 class="mb-4 text-3xl font-semibold">{{ $doc->title }}</h1>
                             @if (trim((string) $doc->content) === '')
-                                <p class="text-sm text-ink-500">This doc is empty.@if ($canEdit) <button wire:click="startEdit" class="text-coral-600 hover:underline">Start writing</button>@endif</p>
+                                <p class="text-sm text-ink-500">This doc is empty.@if ($canEdit) <button wire:click="startEdit" class="text-accent-600 hover:underline">Start writing</button>@endif</p>
                             @else
                                 <div wire:key="dc-{{ $doc->id }}-{{ $doc->updated_at?->timestamp }}" class="doc-content trix-content" x-data x-init="tfDocImages($el, 'doc-{{ $doc->id }}')">{!! \App\Support\HtmlSanitizer::clean($doc->content) !!}</div>
                             @endif
@@ -120,7 +120,7 @@
                             <p class="label">Version history</p>
                             <ul class="space-y-1 text-sm">
                                 <li>
-                                    <button wire:click="$set('previewRevisionId', null)" class="w-full rounded-md px-2 py-1.5 text-left {{ ! $preview ? 'bg-coral-50 ring-1 ring-coral-100' : 'hover:bg-gray-50' }}">
+                                    <button wire:click="$set('previewRevisionId', null)" class="w-full rounded-md px-2 py-1.5 text-left {{ ! $preview ? 'bg-accent-50 ring-1 ring-accent-100' : 'hover:bg-gray-50' }}">
                                         <span class="block font-medium">Current version</span>
                                         <span class="text-xs text-ink-500">{{ $doc->updated_at?->format('M j, g:i A') }} · {{ $doc->editor?->firstName() }}</span>
                                     </button>
@@ -147,7 +147,7 @@
         <x-modal title="New doc" close="showTemplates" width="max-w-xl">
             <div class="grid gap-3 sm:grid-cols-2">
                 @foreach ($templates as $key => [$label, $hint])
-                    <button wire:click="create('{{ $key }}')" class="rounded-lg border border-gray-200 p-4 text-left transition hover:border-coral-400 hover:bg-coral-50/40">
+                    <button wire:click="create('{{ $key }}')" class="rounded-lg border border-gray-200 p-4 text-left transition hover:border-accent-400 hover:bg-accent-50/40">
                         <p class="font-medium">{{ $label }}</p><p class="mt-0.5 text-xs text-ink-500">{{ $hint }}</p>
                     </button>
                 @endforeach

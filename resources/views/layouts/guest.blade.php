@@ -7,18 +7,16 @@
 <body class="min-h-full bg-gray-50">
 <div class="flex min-h-screen">
     {{-- Brand panel (large screens) --}}
-    <aside class="relative hidden w-[42%] max-w-xl shrink-0 flex-col overflow-hidden bg-ink-950 px-12 py-10 text-white lg:flex">
-        <div aria-hidden="true" class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-coral-500/10 blur-2xl"></div>
-        <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-coral-500/10 blur-3xl"></div>
+    <aside class="relative hidden w-[42%] max-w-xl shrink-0 flex-col overflow-hidden bg-accent-900 px-12 py-10 text-white lg:flex">
 
         <a href="{{ route('login') }}" class="relative flex items-center gap-2.5 text-lg font-semibold">
-            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-coral-500"><x-icon name="check" class="h-4 w-4" /></span>
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-accent-700"><x-icon name="check" class="h-4 w-4" /></span>
             TaskFlow
         </a>
 
         <div class="relative my-auto py-12">
             <h2 class="text-[2rem] font-semibold leading-tight tracking-tight">
-                Plan the work.<br>Share the progress.<br><span class="text-coral-400">Keep clients in the loop.</span>
+                Plan the work.<br>Share the progress.<br>Keep clients in the loop.
             </h2>
             <ul class="mt-10 space-y-5">
                 @foreach ([
@@ -27,19 +25,19 @@
                     ['briefcase', 'Client portal', 'Share updates, files and approvals with clients.'],
                 ] as [$icon, $label, $text])
                     <li class="flex items-start gap-3.5">
-                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 ring-1 ring-white/10">
-                            <x-icon :name="$icon" class="h-5 w-5 text-coral-400" />
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10">
+                            <x-icon :name="$icon" class="h-5 w-5 text-accent-100" />
                         </span>
                         <span>
                             <span class="block text-sm font-medium text-white">{{ $label }}</span>
-                            <span class="block text-sm text-ink-300">{{ $text }}</span>
+                            <span class="block text-sm text-accent-100/80">{{ $text }}</span>
                         </span>
                     </li>
                 @endforeach
             </ul>
         </div>
 
-        <p class="relative text-xs text-ink-500">&copy; {{ date('Y') }} TaskFlow</p>
+        <p class="relative text-xs text-white/60">&copy; {{ date('Y') }} TaskFlow</p>
     </aside>
 
     {{-- Form --}}
@@ -47,7 +45,7 @@
         <div class="w-full max-w-sm">
             {{-- Logo for small screens, where the brand panel is hidden --}}
             <a href="{{ route('login') }}" class="mb-8 flex items-center gap-2 text-base font-semibold text-ink-900 lg:hidden">
-                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-coral-600 text-white"><x-icon name="check" class="h-4 w-4" /></span>
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-600 text-white"><x-icon name="check" class="h-4 w-4" /></span>
                 TaskFlow
             </a>
 

@@ -9,7 +9,7 @@
 <header class="border-b border-gray-200 bg-white">
     <div class="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
         <a href="{{ route('portal.dashboard') }}" wire:navigate class="flex items-center gap-2">
-            <span class="flex h-7 w-7 items-center justify-center rounded-md bg-coral-600 text-xs font-bold text-white">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($workspace->name, 0, 1)) }}</span>
+            <span class="flex h-7 w-7 items-center justify-center rounded-md bg-accent-600 text-xs font-semibold text-white">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($workspace->name, 0, 1)) }}</span>
             <span class="text-sm font-semibold">{{ $workspace->name }}</span>
             <span class="hidden rounded bg-gray-100 px-1.5 py-0.5 text-[11px] font-medium text-ink-500 sm:inline">Client portal</span>
         </a>

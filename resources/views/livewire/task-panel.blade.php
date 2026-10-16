@@ -67,9 +67,9 @@
                     </button>
                 @endif
 
-                <textarea wire:model.live.blur="title" rows="1" x-data x-init="const fit = () => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }; new ResizeObserver(fit).observe($el); fit()" x-on:input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
+                <textarea aria-label="Task name" wire:model.live.blur="title" rows="1" x-data x-init="const fit = () => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }; new ResizeObserver(fit).observe($el); fit()" x-on:input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
                           @disabled(! $canEdit)
-                          class="w-full resize-none rounded-md border border-transparent px-1 py-0.5 text-xl font-semibold hover:border-gray-200 focus:border-coral-400 focus:outline-none {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}"></textarea>
+                          class="w-full resize-none rounded-md border border-transparent px-1 py-0.5 text-xl font-semibold hover:border-gray-200 focus:border-accent-400 focus:outline-none {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}"></textarea>
 
                 @if ($task->requested_by_client)
                     <p class="mt-1 inline-flex items-center gap-1 rounded bg-sky-50 px-2 py-0.5 text-xs text-sky-700"><x-icon name="briefcase" class="h-3 w-3" /> Requested by the client</p>
@@ -88,12 +88,12 @@
 
                     <dt class="text-ink-500">Due date</dt>
                     <dd class="flex flex-wrap items-center gap-2">
-                        <input type="date" wire:model.live="due_date" @disabled(! $canEdit) class="input input-sm w-40">
+                        <input type="date" aria-label="Due date" wire:model.live="due_date" @disabled(! $canEdit) class="input input-sm w-40">
                         @if ($task->dueLabel())<span class="text-xs {{ $task->dueClass() }}">{{ $task->dueLabel() }}</span>@endif
                     </dd>
 
                     <dt class="text-ink-500">Start date</dt>
-                    <dd><input type="date" wire:model.live="start_date" @disabled(! $canEdit) class="input input-sm w-40"></dd>
+                    <dd><input type="date" aria-label="Start date" wire:model.live="start_date" @disabled(! $canEdit) class="input input-sm w-40"></dd>
 
                     @unless ($task->parent_id)
                         <dt class="text-ink-500">Section</dt>
@@ -117,7 +117,7 @@
                         <dd wire:key="fdd-{{ $f->id }}">
                             <x-field-input :field="$f" model="fieldValues.{{ $f->id }}" :people="$fieldPeople" :live="true" :disabled="! $canEdit" />
                             @if ($f->type === 'url' && ! empty($fieldValues[$f->id]))
-                                <a href="{{ $fieldValues[$f->id] }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-xs text-coral-600 hover:underline">Open link <x-icon name="arrow-up-right" class="h-3 w-3" /></a>
+                                <a href="{{ $fieldValues[$f->id] }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-xs text-accent-600 hover:underline">Open link <x-icon name="arrow-up-right" class="h-3 w-3" /></a>
                             @endif
                             @error('fieldValues.'.$f->id)<p class="error">{{ $message }}</p>@enderror
                             @if ($f->required && $f->normalize($fieldValues[$f->id] ?? null) === null)<p class="mt-0.5 text-[11px] text-red-600">Required — please fill this in.</p>@endif
@@ -128,7 +128,7 @@
                         <dt class="text-ink-500">Client</dt>
                         <dd class="flex flex-wrap items-center gap-2">
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" wire:model.live="client_visible" @disabled(! $canEdit) class="rounded border-gray-300 text-coral-500 focus:ring-coral-400">
+                                <input type="checkbox" wire:model.live="client_visible" @disabled(! $canEdit) class="rounded border-gray-300 text-accent-500 focus:ring-accent-400">
                                 <span>{{ $client_visible ? 'Visible in portal' : 'Internal only' }}</span>
                             </label>
                             @if ($client_visible && $canEdit)
@@ -147,13 +147,13 @@
                 {{-- Description --}}
                 <div class="mt-5">
                     <p class="label">Description</p>
-                    <textarea wire:model.live.blur="description" rows="4" @disabled(! $canEdit) placeholder="Add more detail to this task…" class="input"></textarea>
+                    <textarea aria-label="Description" wire:model.live.blur="description" rows="4" @disabled(! $canEdit) placeholder="Add more detail to this task…" class="input"></textarea>
                 </div>
 
                 {{-- Subtasks --}}
                 @unless ($task->parent_id)
                     <div class="mt-5">
-                        <p class="label">Subtasks @if ($task->subtasks->count())<span class="normal-case text-ink-300">· {{ $task->subtasks->whereNotNull('completed_at')->count() }}/{{ $task->subtasks->count() }}</span>@endif</p>
+                        <p class="label">Subtasks @if ($task->subtasks->count())<span class="text-ink-500">· {{ $task->subtasks->whereNotNull('completed_at')->count() }}/{{ $task->subtasks->count() }}</span>@endif</p>
                         <ul class="divide-y divide-gray-100 rounded-md border border-gray-200">
                             @foreach ($task->subtasks as $sub)
                                 <li wire:key="sub-{{ $sub->id }}" class="group flex items-center gap-2 px-2.5 py-1.5 text-sm">
@@ -230,14 +230,14 @@
                     <div class="rounded-md border border-gray-200">
                         <div class="flex flex-wrap items-center gap-3 px-3 py-2.5">
                             <div wire:key="pt-{{ $task->id }}-{{ $isRunningHere ? 'on' : 'off' }}-{{ $trackedTotal }}" x-data="tfTimer({{ $isRunningHere ? 'true' : 'false' }}, {{ $trackedTotal }})" class="flex items-center gap-2">
-                                <x-icon name="clock" class="h-4 w-4 {{ $isRunningHere ? 'text-coral-500' : 'text-ink-300' }}" />
-                                <span class="text-lg font-semibold tabular-nums {{ $isRunningHere ? 'text-coral-600' : 'text-ink-900' }}" x-text="clock">{{ \App\Models\TimeEntry::formatClock($trackedTotal) }}</span>
+                                <x-icon name="clock" class="h-4 w-4 {{ $isRunningHere ? 'text-accent-500' : 'text-ink-300' }}" />
+                                <span class="text-lg font-semibold tabular-nums {{ $isRunningHere ? 'text-accent-600' : 'text-ink-900' }}" x-text="clock">{{ \App\Models\TimeEntry::formatClock($trackedTotal) }}</span>
                                 <span class="text-xs text-ink-500">total</span>
                             </div>
                             @if ($canEdit)
                                 <div class="ml-auto">
                                     @if ($isRunningHere)
-                                        <button wire:click="stopTimer" class="btn bg-coral-600 text-white hover:bg-coral-600"><x-icon name="stop" class="h-3.5 w-3.5" /> Stop</button>
+                                        <button wire:click="stopTimer" class="btn bg-accent-600 text-white hover:bg-accent-600"><x-icon name="stop" class="h-3.5 w-3.5" /> Stop</button>
                                     @else
                                         <button wire:click="startTimer" class="btn-secondary btn"><x-icon name="play" class="h-3.5 w-3.5" /> {{ $running ? 'Switch timer here' : 'Start timer' }}</button>
                                     @endif
@@ -264,7 +264,7 @@
                                     <li wire:key="te-{{ $e->id }}" class="group flex items-center gap-2 px-3 py-1.5 text-sm">
                                         <x-avatar :user="$e->user" size="xs" />
                                         <span class="w-16 shrink-0 font-medium tabular-nums">
-                                            @if ($e->isRunning())<span class="text-coral-600">running</span>@else{{ \App\Models\TimeEntry::formatShort($e->duration_seconds) }}@endif
+                                            @if ($e->isRunning())<span class="text-accent-600">running</span>@else{{ \App\Models\TimeEntry::formatShort($e->duration_seconds) }}@endif
                                         </span>
                                         <span class="min-w-0 flex-1 truncate text-ink-500">{{ $e->note ?: ($e->is_manual ? 'Logged manually' : 'Timer') }}</span>
                                         <span class="shrink-0 text-xs text-ink-500">{{ $e->started_at->format('M j') }}</span>
@@ -326,7 +326,7 @@
               x-on:dragover.prevent="drag = true" x-on:dragleave.prevent="drag = false"
               x-on:drop.prevent="drag = false; $refs.cpicker.files = $event.dataTransfer.files; $refs.cpicker.dispatchEvent(new Event('change'))"
               x-on:paste="if ($event.clipboardData.files.length) { $refs.cpicker.files = $event.clipboardData.files; $refs.cpicker.dispatchEvent(new Event('change')) }">
-            <div class="rounded-md border transition" :class="drag ? 'border-coral-400 ring-2 ring-coral-100' : 'border-gray-300'">
+            <div class="rounded-md border transition" :class="drag ? 'border-accent-400 ring-2 ring-accent-100' : 'border-gray-300'">
                 <textarea wire:model="comment" rows="2" placeholder="Ask a question or post an update… (drop or paste images here)" class="block w-full resize-none rounded-t-md border-0 px-3 py-2 text-sm focus:ring-0 focus:outline-none" x-on:keydown.meta.enter="$wire.addComment()" x-on:keydown.ctrl.enter="$wire.addComment()"></textarea>
                 <x-upload-queue :files="$commentFiles" remove="removeCommentFile" class="px-3 pb-2" />
                 <div class="flex items-center gap-2 border-t border-gray-100 px-2 py-1">
@@ -343,7 +343,7 @@
             <div class="mt-2 flex items-center justify-between gap-2">
                 @if ($task->client_visible)
                     <label class="flex items-center gap-2 text-xs text-ink-700">
-                        <input type="checkbox" wire:model="commentForClient" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Visible to client
+                        <input type="checkbox" wire:model="commentForClient" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Visible to client
                     </label>
                 @else
                     <span class="text-xs text-ink-500">Internal comment</span>

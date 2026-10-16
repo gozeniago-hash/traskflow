@@ -55,8 +55,8 @@
     </div>
 
     @if ($running->isNotEmpty())
-        <p class="flex items-center gap-2 rounded-md bg-coral-50 px-3 py-2 text-xs text-coral-800">
-            <span class="h-2 w-2 animate-pulse rounded-full bg-coral-500"></span>
+        <p class="flex items-center gap-2 rounded-md bg-accent-50 px-3 py-2 text-xs text-accent-800">
+            <span class="h-2 w-2 animate-pulse rounded-full bg-accent-500"></span>
             Timer running for {{ $running->pluck('user.name')->filter()->join(', ', ' and ') }}. It appears here once stopped.
         </p>
     @endif

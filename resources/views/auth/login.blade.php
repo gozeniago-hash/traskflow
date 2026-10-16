@@ -14,12 +14,12 @@
         <div>
             <div class="mb-1 flex items-center justify-between">
                 <label class="label mb-0" for="password">Password</label>
-                <a href="{{ route('password.request') }}" class="text-xs font-medium text-coral-700 hover:underline">Forgot password?</a>
+                <a href="{{ route('password.request') }}" class="text-xs font-medium text-accent-700 hover:underline">Forgot password?</a>
             </div>
             <x-password-input />
         </div>
         <label class="flex items-center gap-2 text-sm text-ink-700">
-            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Keep me signed in
+            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Keep me signed in
         </label>
         <button class="btn-primary btn w-full py-2.5" :disabled="busy">
             <span x-show="!busy">Sign in</span>
@@ -28,6 +28,6 @@
     </form>
 
     @slot('footer')
-        New to TaskFlow? <a href="{{ route('register') }}" class="font-medium text-coral-700 hover:underline">Create a workspace</a>
+        New to TaskFlow? <a href="{{ route('register') }}" class="font-medium text-accent-700 hover:underline">Create a workspace</a>
     @endslot
 @endcomponent

@@ -53,7 +53,7 @@
     ];
 @endphp
 @php
-    // Callers often pass only a colour (e.g. class="text-coral-400"); keep the default size in that case.
+    // Callers often pass only a colour (e.g. class="text-accent-400"); keep the default size in that case.
     $hasSize = (bool) preg_match('/(^|\s)(h|w|size)-/', $class);
     $class = trim(($hasSize ? '' : 'h-4 w-4 shrink-0 ').$class);
 @endphp

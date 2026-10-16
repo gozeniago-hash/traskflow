@@ -63,9 +63,9 @@
 
         @if ($report === 'timesheet')
         @elseif ($report === 'projects')
-            <label class="flex items-center gap-1.5 text-xs text-ink-700"><input type="checkbox" wire:model.live="includeArchived" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Include archived</label>
+            <label class="flex items-center gap-1.5 text-xs text-ink-700"><input type="checkbox" wire:model.live="includeArchived" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Include archived</label>
         @else
-            <label class="flex items-center gap-1.5 text-xs text-ink-700"><input type="checkbox" wire:model.live="includeSubtasks" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Include subtasks</label>
+            <label class="flex items-center gap-1.5 text-xs text-ink-700"><input type="checkbox" wire:model.live="includeSubtasks" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Include subtasks</label>
         @endif
 
         <button wire:click="resetFilters" class="text-xs text-ink-500 hover:text-ink-900 hover:underline">Reset</button>
@@ -87,9 +87,9 @@
             <div class="card mt-5">
                 <div class="flex flex-wrap items-center gap-4 border-b border-gray-100 px-4 py-3 text-xs text-ink-700">
                     <span class="font-semibold text-ink-900">Open work per person</span>
-                    <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-red-500"></span>Overdue</span>
-                    <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-amber-400"></span>Due in 7 days</span>
-                    <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-slate-400"></span>Due later</span>
+                    <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-late"></span>Overdue</span>
+                    <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-soon"></span>Due in 7 days</span>
+                    <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-accent-400"></span>Due later</span>
                     <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-slate-200"></span>No due date</span>
                     <span class="ml-auto flex gap-2 print:hidden">
                         <button wire:click="expandAll(true)" class="hover:underline">Expand all</button>
@@ -106,7 +106,7 @@
                                 <span class="truncate text-sm font-medium">{{ $row['user']?->name ?? 'Unassigned' }}</span>
                             </span>
                             <span class="flex h-3 items-center gap-0.5" style="width: {{ max(4, $row['total'] / $data['max'] * 100) }}%">
-                                @foreach ([['overdue', 'bg-red-500', 'overdue'], ['this_week', 'bg-amber-400', 'due in 7 days'], ['later', 'bg-slate-400', 'due later'], ['no_date', 'bg-slate-200', 'no due date']] as [$k, $cls, $label])
+                                @foreach ([['overdue', 'bg-late', 'overdue'], ['this_week', 'bg-soon', 'due in 7 days'], ['later', 'bg-accent-400', 'due later'], ['no_date', 'bg-slate-200', 'no due date']] as [$k, $cls, $label])
                                     @if ($row[$k])<span title="{{ $row[$k] }} {{ $label }}" class="h-full rounded-sm {{ $cls }}" style="flex-grow: {{ $row[$k] }}"></span>@endif
                                 @endforeach
                             </span>
@@ -136,7 +136,7 @@
                     @foreach ($data['perDay'] as $date => $count)
                         @php($d = \Carbon\Carbon::parse($date))
                         <div class="group relative flex h-full flex-1 items-end" title="{{ $d->format('D, M j') }}: {{ $count }} {{ \Illuminate\Support\Str::plural('task', $count) }}">
-                            <div class="w-full rounded-t-[3px] {{ $count ? 'bg-coral-500 group-hover:bg-coral-600' : '' }}" style="height: {{ $count ? max(6, $count / $data['maxDay'] * 100) : 0 }}%"></div>
+                            <div class="w-full rounded-t-[3px] {{ $count ? 'bg-accent-500 group-hover:bg-accent-600' : '' }}" style="height: {{ $count ? max(6, $count / $data['maxDay'] * 100) : 0 }}%"></div>
                         </div>
                     @endforeach
                 </div>
@@ -163,7 +163,7 @@
                                 <x-avatar :user="$row['user']" size="sm" />
                                 <span class="truncate text-sm font-medium">{{ $row['user']?->name ?? 'Unassigned' }}</span>
                             </span>
-                            <span class="h-3"><span class="block h-full rounded-sm bg-coral-500" style="width: {{ max(3, $row['total'] / $data['max'] * 100) }}%" title="{{ $row['total'] }} due"></span></span>
+                            <span class="h-3"><span class="block h-full rounded-sm bg-accent-500" style="width: {{ max(3, $row['total'] / $data['max'] * 100) }}%" title="{{ $row['total'] }} due"></span></span>
                             <span class="flex items-center gap-3 text-xs text-ink-500">
                                 <span>next: {{ $row['next']?->isToday() ? 'Today' : ($row['next']?->isTomorrow() ? 'Tomorrow' : $row['next']?->format('M j')) }}</span>
                                 <span class="w-10 text-right text-sm font-semibold tabular-nums text-ink-900">{{ $row['total'] }}</span>
@@ -205,7 +205,7 @@
                         <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold"><x-status-pill :status="$g['status']" /> <span class="font-normal text-ink-500">{{ $g['projects']->count() }}</span></h3>
                         <div class="card overflow-x-auto">
                             <table class="w-full min-w-[720px] text-sm">
-                                <thead class="bg-gray-50 text-left text-xs uppercase tracking-wide text-ink-500">
+                                <thead class="bg-gray-50 text-left text-xs text-ink-500">
                                     <tr><th class="px-4 py-2 font-semibold">Project</th><th class="px-4 py-2 font-semibold">Owner</th><th class="px-4 py-2 font-semibold">Client</th><th class="w-40 px-4 py-2 font-semibold">Progress</th><th class="px-4 py-2 text-right font-semibold">Overdue</th><th class="px-4 py-2 text-right font-semibold">Logged</th><th class="px-4 py-2 font-semibold">Due</th></tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100">
@@ -265,7 +265,7 @@
                                 <x-avatar :user="$row['user']" size="sm" />
                                 <span class="truncate text-sm font-medium">{{ $row['user']?->name ?? 'Unassigned' }}</span>
                             </span>
-                            <span class="h-3"><span class="block h-full rounded-sm bg-emerald-500" style="width: {{ max(3, $row['total'] / $data['max'] * 100) }}%" title="{{ $row['total'] }} completed"></span></span>
+                            <span class="h-3"><span class="block h-full rounded-sm bg-accent-500" style="width: {{ max(3, $row['total'] / $data['max'] * 100) }}%" title="{{ $row['total'] }} completed"></span></span>
                             <span class="flex items-center gap-3 text-xs text-ink-500">
                                 @if ($row['late'])<span class="text-red-600">{{ $row['late'] }} late</span>@endif
                                 <span class="w-10 text-right text-sm font-semibold tabular-nums text-ink-900">{{ $row['total'] }}</span>
@@ -307,7 +307,7 @@
                                 <x-avatar :user="$row['user']" size="sm" />
                                 <span class="truncate text-sm font-medium">{{ $row['user']?->name ?? 'Former member' }}</span>
                             </span>
-                            <span class="h-3"><span class="block h-full rounded-sm bg-coral-400" style="width: {{ max(3, $row['seconds'] / $data['max'] * 100) }}%"></span></span>
+                            <span class="h-3"><span class="block h-full rounded-sm bg-accent-400" style="width: {{ max(3, $row['seconds'] / $data['max'] * 100) }}%"></span></span>
                             <span class="flex items-center gap-3 text-xs text-ink-500">
                                 <span class="hidden sm:inline">{{ $row['count'] }} {{ \Illuminate\Support\Str::plural('entry', $row['count']) }} · {{ $row['projects'] }} {{ \Illuminate\Support\Str::plural('project', $row['projects']) }}</span>
                                 <span class="w-20 text-right text-sm font-semibold tabular-nums text-ink-900">{{ \App\Models\TimeEntry::formatShort($row['seconds']) }}</span>

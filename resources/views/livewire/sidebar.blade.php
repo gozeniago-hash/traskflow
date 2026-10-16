@@ -1,17 +1,17 @@
 <div class="flex min-h-0 flex-1 flex-col">
     <div class="flex items-center justify-between px-3 pt-3" x-data="{ open: false }">
-        <button type="button" x-on:click="open = !open" class="flex min-w-0 flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-ink-800">
-            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-coral-600 text-xs font-bold text-white">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($workspace->name, 0, 1)) }}</span>
-            <span class="truncate text-sm font-semibold text-white">{{ $workspace->name }}</span>
-            <x-icon name="chevron-down" class="ml-auto h-3.5 w-3.5 text-ink-300" />
+        <button type="button" x-on:click="open = !open" class="flex min-w-0 flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-white">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent-600 text-xs font-semibold text-white">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($workspace->name, 0, 1)) }}</span>
+            <span class="truncate text-sm font-semibold text-ink-900">{{ $workspace->name }}</span>
+            <x-icon name="chevron-down" class="ml-auto h-3.5 w-3.5 text-ink-500" />
         </button>
         <div x-cloak x-show="open" x-on:click.outside="open = false" class="absolute left-3 top-14 z-50 w-56 rounded-lg bg-white p-1.5 shadow-xl ring-1 ring-black/5">
-            <p class="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink-400">Workspaces</p>
+            <p class="px-2 py-1 text-xs font-medium text-ink-500">Workspaces</p>
             @foreach ($myWorkspaces as $ws)
                 <form method="POST" action="{{ route('workspaces.switch', $ws) }}">@csrf
                     <button class="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm hover:bg-gray-100">
                         <span class="truncate">{{ $ws->name }}</span>
-                        @if ($ws->id === $workspace->id)<x-icon name="check" class="h-4 w-4 text-coral-500" />@endif
+                        @if ($ws->id === $workspace->id)<x-icon name="check" class="h-4 w-4 text-accent-500" />@endif
                     </button>
                 </form>
             @endforeach
@@ -29,7 +29,7 @@
         <a href="{{ route('projects.index') }}" wire:navigate class="nav-link {{ $route === 'projects.index' ? 'nav-link-active' : '' }}"><x-icon name="folder" /> Projects</a>
         <a href="{{ route('reports') }}" wire:navigate class="nav-link {{ $route === 'reports' ? 'nav-link-active' : '' }}"><x-icon name="chart" /> Reports</a>
 
-        <p class="px-2.5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-ink-400">Projects</p>
+        <p class="px-2.5 pb-1 pt-5 text-xs font-medium text-ink-500">Projects</p>
         @forelse ($sidebarProjects as $p)
             <a href="{{ route('projects.show', $p) }}" wire:navigate
                class="nav-link {{ $currentProjectId === $p->id ? 'nav-link-active' : '' }}">
@@ -37,11 +37,11 @@
                 <span class="truncate">{{ $p->name }}</span>
             </a>
         @empty
-            <p class="px-2.5 text-xs text-ink-400">No projects yet.</p>
+            <p class="px-2.5 text-xs text-ink-500">No projects yet.</p>
         @endforelse
 
         @if ($me->isAdmin())
-            <p class="px-2.5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-ink-400">Workspace</p>
+            <p class="px-2.5 pb-1 pt-5 text-xs font-medium text-ink-500">Workspace</p>
             <a href="{{ route('teams') }}" wire:navigate class="nav-link {{ $route === 'teams' ? 'nav-link-active' : '' }}"><x-icon name="users" /> Teams</a>
             <a href="{{ route('members') }}" wire:navigate class="nav-link {{ $route === 'members' ? 'nav-link-active' : '' }}"><x-icon name="user" /> Members</a>
             <a href="{{ route('clients') }}" wire:navigate class="nav-link {{ $route === 'clients' ? 'nav-link-active' : '' }}"><x-icon name="briefcase" /> Clients</a>
@@ -50,13 +50,13 @@
         @endif
     </nav>
 
-    <div class="border-t border-ink-800 p-3" x-data="{ open: false }">
+    <div class="border-t border-gray-200 p-3" x-data="{ open: false }">
         <div class="relative">
-            <button type="button" x-on:click="open = !open" class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-ink-800">
+            <button type="button" x-on:click="open = !open" class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-white">
                 <x-avatar :user="$me" size="sm" />
                 <span class="min-w-0 flex-1 text-left">
-                    <span class="block truncate text-sm font-medium text-white">{{ $me->name }}</span>
-                    <span class="block truncate text-xs text-ink-300">{{ \App\Models\Workspace::ROLES[$me->role()] ?? '' }}</span>
+                    <span class="block truncate text-sm font-medium text-ink-900">{{ $me->name }}</span>
+                    <span class="block truncate text-xs text-ink-500">{{ \App\Models\Workspace::ROLES[$me->role()] ?? '' }}</span>
                 </span>
             </button>
             <div x-cloak x-show="open" x-on:click.outside="open = false" class="absolute bottom-12 left-0 z-50 w-full rounded-lg bg-white p-1.5 shadow-xl ring-1 ring-black/5">

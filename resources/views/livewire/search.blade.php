@@ -4,10 +4,10 @@
         <input wire:model.live.debounce.300ms="q" placeholder="Search…" autofocus class="input mb-6">
 
         @if ($ticket)
-            <button wire:click="$dispatch('open-task', { id: {{ $ticket->id }} })" data-peek-title="{{ $ticket->title }}" class="mb-6 flex w-full items-center gap-3 rounded-lg border border-coral-200 bg-coral-50 px-4 py-3 text-left hover:border-coral-400">
-                <span class="rounded bg-white px-2 py-1 font-mono text-sm font-semibold text-coral-700 ring-1 ring-coral-200">{{ $ticket->ticket() }}</span>
+            <button wire:click="$dispatch('open-task', { id: {{ $ticket->id }} })" data-peek-title="{{ $ticket->title }}" class="mb-6 flex w-full items-center gap-3 rounded-lg border border-accent-200 bg-accent-50 px-4 py-3 text-left hover:border-accent-400">
+                <span class="rounded bg-white px-2 py-1 font-mono text-sm font-semibold text-accent-700 ring-1 ring-accent-200">{{ $ticket->ticket() }}</span>
                 <span class="min-w-0 flex-1"><span class="block truncate font-medium">{{ $ticket->title }}</span><span class="text-xs text-ink-500">{{ $ticket->project->name }}{{ $ticket->assignee ? ' · '.$ticket->assignee->name : '' }}{{ $ticket->isCompleted() ? ' · Completed' : '' }}</span></span>
-                <span class="text-sm font-medium text-coral-700">Open →</span>
+                <span class="text-sm font-medium text-accent-700">Open →</span>
             </button>
         @endif
 

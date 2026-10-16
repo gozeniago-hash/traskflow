@@ -21,7 +21,7 @@
         <section class="card p-5" x-data="{ dragging: false }"
                  @if ($canEdit) x-on:dragover.prevent="dragging = true" x-on:dragleave.prevent="dragging = false"
                  x-on:drop.prevent="dragging = false; if ($event.dataTransfer.files.length) $wire.uploadMultiple('resourceFiles', $event.dataTransfer.files)" @endif
-                 :class="dragging && 'ring-2 ring-coral-300 ring-offset-2'">
+                 :class="dragging && 'ring-2 ring-accent-300 ring-offset-2'">
             <div class="mb-3 flex items-center justify-between gap-2">
                 <h2 class="font-semibold">Key resources</h2>
                 @if ($canEdit)
@@ -53,7 +53,7 @@
                     </div>
                     <div class="flex items-center justify-between gap-2">
                         @if ($hasClient)
-                            <label class="flex items-center gap-2 text-xs text-ink-700"><input type="checkbox" wire:model="resourceInternal" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Internal only (hide from client)</label>
+                            <label class="flex items-center gap-2 text-xs text-ink-700"><input type="checkbox" wire:model="resourceInternal" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Internal only (hide from client)</label>
                         @else
                             <span></span>
                         @endif
@@ -137,7 +137,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     @if ($p->portal_enabled)
                         <label class="flex items-center gap-2 text-sm text-ink-700">
-                            <input type="checkbox" wire:model="updateShare" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Share with {{ $p->client?->name ?? 'client' }}
+                            <input type="checkbox" wire:model="updateShare" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Share with {{ $p->client?->name ?? 'client' }}
                         </label>
                     @else
                         <span class="text-xs text-ink-500">Internal only — client portal is off for this project.</span>

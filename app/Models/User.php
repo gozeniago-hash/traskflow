@@ -17,7 +17,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    public const AVATAR_COLORS = ['#f06a5a', '#4573d2', '#5da283', '#aa62e3', '#e8384f', '#fd9a00', '#37c5ab', '#8d84e8', '#e362e3', '#62d26f'];
+    public const AVATAR_COLORS = ['#b4685c', '#4e6a9e', '#5e8c6e', '#80659e', '#a9555e', '#b07d3e', '#3f8a80', '#7570a8', '#9a6390', '#5e8c5f'];
 
     protected $fillable = ['name', 'email', 'password', 'title', 'avatar_color', 'current_workspace_id'];
 

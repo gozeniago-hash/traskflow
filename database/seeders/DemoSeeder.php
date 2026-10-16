@@ -22,11 +22,11 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $owner = User::create(['name' => 'Alex Rivera', 'email' => 'admin@taskflow.test', 'password' => 'password', 'title' => 'Operations Lead', 'avatar_color' => '#f06a5a']);
-        $maya = User::create(['name' => 'Maya Santos', 'email' => 'maya@taskflow.test', 'password' => 'password', 'title' => 'Product Designer', 'avatar_color' => '#4573d2']);
-        $leo = User::create(['name' => 'Leo Tan', 'email' => 'leo@taskflow.test', 'password' => 'password', 'title' => 'Full-stack Developer', 'avatar_color' => '#5da283']);
-        $jo = User::create(['name' => 'Jo Bautista', 'email' => 'jo@taskflow.test', 'password' => 'password', 'title' => 'Marketing Manager', 'avatar_color' => '#aa62e3']);
-        $clientUser = User::create(['name' => 'Dana Cruz', 'email' => 'client@brightside.test', 'password' => 'password', 'title' => 'Head of Marketing, Brightside', 'avatar_color' => '#fd9a00']);
+        $owner = User::create(['name' => 'Alex Rivera', 'email' => 'admin@taskflow.test', 'password' => 'password', 'title' => 'Operations Lead', 'avatar_color' => '#b4685c']);
+        $maya = User::create(['name' => 'Maya Santos', 'email' => 'maya@taskflow.test', 'password' => 'password', 'title' => 'Product Designer', 'avatar_color' => '#4e6a9e']);
+        $leo = User::create(['name' => 'Leo Tan', 'email' => 'leo@taskflow.test', 'password' => 'password', 'title' => 'Full-stack Developer', 'avatar_color' => '#5e8c6e']);
+        $jo = User::create(['name' => 'Jo Bautista', 'email' => 'jo@taskflow.test', 'password' => 'password', 'title' => 'Marketing Manager', 'avatar_color' => '#80659e']);
+        $clientUser = User::create(['name' => 'Dana Cruz', 'email' => 'client@brightside.test', 'password' => 'password', 'title' => 'Head of Marketing, Brightside', 'avatar_color' => '#b07d3e']);
 
         $ws = Workspace::create(['name' => 'Acme Studio', 'owner_id' => $owner->id]);
         $client = $ws->clients()->create([
@@ -54,7 +54,7 @@ class DemoSeeder extends Seeder
         // ------------------------------------------------ Client project (portal on)
         $web = $this->project($ws, [
             'name' => 'Brightside Website Redesign', 'team_id' => $product->id, 'client_id' => $client->id, 'owner_id' => $owner->id,
-            'color' => '#4573d2', 'status' => 'on_track', 'privacy' => 'team', 'default_view' => 'board', 'portal_enabled' => true,
+            'color' => '#4e6a9e', 'status' => 'on_track', 'privacy' => 'team', 'default_view' => 'board', 'portal_enabled' => true,
             'start_date' => now()->subWeeks(3), 'due_date' => now()->addWeeks(6),
             'description' => "Redesign brightside.example with a faster, conversion-focused site.\n\nGoals: lift demo requests 30%, cut page load under 2s, make content editable by the marketing team.",
         ], [$owner, $maya, $leo], [
@@ -97,7 +97,7 @@ class DemoSeeder extends Seeder
         // ---------------------------------------------------- Internal project
         $this->project($ws, [
             'name' => 'Mobile App v2 Launch', 'team_id' => $product->id, 'owner_id' => $maya->id,
-            'color' => '#37c5ab', 'status' => 'at_risk', 'privacy' => 'team', 'default_view' => 'list',
+            'color' => '#3f8a80', 'status' => 'at_risk', 'privacy' => 'team', 'default_view' => 'list',
             'due_date' => now()->addWeeks(4), 'description' => 'Ship v2 of the companion app to the App Store and Google Play.',
         ], [$maya, $leo, $owner], [
             'To do' => [
@@ -119,7 +119,7 @@ class DemoSeeder extends Seeder
         // --------------------------------------------------- Marketing project
         $this->project($ws, [
             'name' => 'Q4 Marketing Campaign', 'team_id' => $marketing->id, 'owner_id' => $jo->id,
-            'color' => '#ea4e9d', 'status' => 'on_track', 'privacy' => 'workspace', 'default_view' => 'list',
+            'color' => '#a55e7b', 'status' => 'on_track', 'privacy' => 'workspace', 'default_view' => 'list',
             'due_date' => now()->addWeeks(8), 'description' => 'Holiday campaign across email, social and paid search.',
         ], [$jo, $owner], [
             'Planning' => [

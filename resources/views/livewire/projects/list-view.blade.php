@@ -40,11 +40,11 @@
                                  class="group grid cursor-pointer grid-cols-[minmax(0,1fr)] items-center gap-2 border-b border-gray-100 px-2 py-2.5 hover:bg-gray-50 md:grid-cols-[minmax(0,1fr)_140px_110px_90px_104px_60px] md:py-2"
                                  wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}">
                                 {{-- Phones: title on its own line, tags and due date wrap underneath. --}}
-                                <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 md:flex-nowrap">
+                                <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 md:flex-nowrap md:overflow-hidden">
                                     <button wire:click.stop="toggleComplete({{ $task->id }})" class="check {{ $task->isCompleted() ? 'check-done' : '' }}" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}"><x-icon name="check" class="h-3 w-3" /></button>
                                     <span class="shrink-0 font-mono text-[11px] text-ink-500">{{ $project->key }}-{{ $task->number }}</span>
-                                    <span class="min-w-0 flex-1 truncate text-sm md:flex-none {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</span>
-                                    <span class="flex min-w-0 basis-full flex-wrap items-center gap-2 pl-7 text-xs text-ink-500 empty:hidden md:basis-auto md:flex-nowrap md:pl-0">
+                                    <span class="min-w-0 flex-1 truncate text-sm md:flex-initial {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</span>
+                                    <span class="flex min-w-0 basis-full flex-wrap items-center gap-2 pl-7 text-xs text-ink-500 empty:hidden md:shrink-[2] md:basis-auto md:flex-nowrap md:overflow-hidden md:pl-0">
                                         @if ($task->due_date)<span class="md:hidden {{ $task->dueClass() }}">{{ $task->dueLabel() }}</span>@endif
                                         @if ($task->assignee)<span class="flex items-center gap-1 md:hidden"><x-avatar :user="$task->assignee" size="xs" />{{ $task->assignee->firstName() }}</span>@endif
                                         @if ($task->subtasks_count)<span class="flex items-center gap-0.5" title="Subtasks"><x-icon name="subtask" class="h-3.5 w-3.5" />{{ $task->completed_subtasks_count }}/{{ $task->subtasks_count }}</span>@endif

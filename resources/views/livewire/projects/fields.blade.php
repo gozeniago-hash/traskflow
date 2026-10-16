@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div>
-                <label class="label">Help text <span class="normal-case text-ink-300">(optional)</span></label>
+                <label class="label">Help text <span class="font-normal text-ink-500">(optional)</span></label>
                 <input wire:model="form.description" maxlength="200" class="input" placeholder="Shown as a hint when filling in the field">
             </div>
 
@@ -97,10 +97,10 @@
             @endif
 
             <div class="space-y-2 rounded-lg bg-gray-50 p-3 text-sm">
-                <label class="flex items-center gap-2"><input type="checkbox" wire:model="form.required" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Required when creating a task</label>
-                <label class="flex items-center gap-2"><input type="checkbox" wire:model="form.show_on_card" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Show on board cards and list rows</label>
+                <label class="flex items-center gap-2"><input type="checkbox" wire:model="form.required" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Required when creating a task</label>
+                <label class="flex items-center gap-2"><input type="checkbox" wire:model="form.show_on_card" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Show on board cards and list rows</label>
                 @if ($project->portal_enabled)
-                    <label class="flex items-center gap-2"><input type="checkbox" wire:model="form.client_visible" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Show to the client on shared tasks</label>
+                    <label class="flex items-center gap-2"><input type="checkbox" wire:model="form.client_visible" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Show to the client on shared tasks</label>
                 @endif
             </div>
 

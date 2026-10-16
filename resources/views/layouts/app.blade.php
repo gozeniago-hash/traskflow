@@ -15,7 +15,7 @@
     <div x-cloak x-show="nav" x-on:click="nav = false" class="fixed inset-0 z-30 bg-ink-950/50 lg:hidden"></div>
 
     {{-- Sidebar --}}
-    <aside class="print:hidden fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-ink-950 transition-transform lg:static lg:translate-x-0"
+    <aside class="print:hidden fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-gray-200 bg-sidebar transition-transform lg:static lg:translate-x-0"
            :class="nav && 'translate-x-0'">
         <livewire:sidebar :route="(string) request()->route()?->getName()" :current-project-id="$currentProjectId" />
     </aside>
@@ -26,7 +26,7 @@
             <button type="button" class="btn-ghost btn px-1.5 lg:hidden" x-on:click="nav = true" aria-label="Open menu"><x-icon name="menu" class="h-5 w-5" /></button>
             <form action="{{ route('search') }}" method="GET" class="relative mx-auto w-full max-w-md">
                 <x-icon name="search" class="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <input name="q" value="{{ request('q') }}" placeholder="Search, or jump to a ticket (e.g. BWR-12)" class="h-8 w-full rounded-full border border-gray-200 bg-gray-50 pl-8 pr-3 text-sm focus:border-coral-400 focus:bg-white focus:ring-2 focus:ring-coral-100 focus:outline-none">
+                <input name="q" value="{{ request('q') }}" placeholder="Search, or jump to a ticket (e.g. BWR-12)" class="h-8 w-full rounded-full border border-gray-200 bg-gray-50 pl-8 pr-3 text-sm focus:border-accent-400 focus:bg-white focus:ring-2 focus:ring-accent-100 focus:outline-none">
             </form>
             @if (\App\Support\Realtime::enabled())
                 <span data-live-indicator data-state="connecting" class="live-indicator hidden items-center gap-1.5 text-xs text-ink-500 sm:inline-flex" title="Live updates">

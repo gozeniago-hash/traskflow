@@ -13,10 +13,10 @@
             </div>
             <button class="btn-primary btn w-full py-2">Verify and sign in</button>
         </form>
-        <button type="button" x-on:click="recovery = !recovery; $nextTick(() => document.getElementById('code').focus())" class="mt-4 text-sm font-medium text-coral-700 hover:underline"
+        <button type="button" x-on:click="recovery = !recovery; $nextTick(() => document.getElementById('code').focus())" class="mt-4 text-sm font-medium text-accent-700 hover:underline"
                 x-text="recovery ? 'Use my authenticator app instead' : 'Lost your phone? Use a recovery code'">Lost your phone? Use a recovery code</button>
     </div>
     @slot('footer')
-        <a href="{{ route('login') }}" class="font-medium text-coral-700 hover:underline">← Back to sign in</a>
+        <a href="{{ route('login') }}" class="font-medium text-accent-700 hover:underline">← Back to sign in</a>
     @endslot
 @endcomponent

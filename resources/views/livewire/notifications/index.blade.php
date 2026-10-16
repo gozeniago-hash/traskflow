@@ -19,7 +19,7 @@
                 </select>
             </div>
             <label class="mb-1.5 flex items-center gap-2 text-sm text-ink-700">
-                <input type="checkbox" wire:model.live="mine" class="rounded border-gray-300 text-coral-600 focus:ring-coral-400"> Include my own changes
+                <input type="checkbox" wire:model.live="mine" class="rounded border-gray-300 text-accent-600 focus:ring-accent-400"> Include my own changes
             </label>
         </div>
 
@@ -27,7 +27,7 @@
             <div class="mt-8"><x-empty icon="bell" title="Nothing new" text="When people add, change or delete things in your projects, you’ll see it here." /></div>
         @else
             @foreach ($groups as $day => $items)
-                <h2 class="mb-2 mt-6 text-xs font-semibold uppercase tracking-wide text-ink-500">{{ $day }}</h2>
+                <h2 class="mb-2 mt-6 text-xs font-semibold text-ink-500">{{ $day }}</h2>
                 <ul class="card divide-y divide-gray-100 overflow-hidden">
                     @foreach ($items as $a)
                         @include('livewire.notifications.item', ['a' => $a, 'feed' => $feed, 'isNew' => $a->created_at->greaterThan($since)])

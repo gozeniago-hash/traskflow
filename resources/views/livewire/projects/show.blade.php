@@ -156,7 +156,7 @@
                     </select>
                     @if (! empty($form['client_id']))
                         <label class="mt-3 flex items-start gap-2 text-sm">
-                            <input type="checkbox" wire:model="form.portal_enabled" class="mt-0.5 rounded border-gray-300 text-coral-500 focus:ring-coral-400">
+                            <input type="checkbox" wire:model="form.portal_enabled" class="mt-0.5 rounded border-gray-300 text-accent-500 focus:ring-accent-400">
                             <span><span class="font-medium">Show in the client portal.</span> <span class="text-ink-500">Client contacts see the project, its shared status updates, and only the tasks and files you mark as visible to the client.</span></span>
                         </label>
                     @endif

@@ -71,7 +71,7 @@
                     <p class="mt-1 text-[11px] text-ink-500">Tickets will be numbered {{ $form['key'] ?: 'KEY' }}-1, {{ $form['key'] ?: 'KEY' }}-2, …</p>
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="label">Description <span class="normal-case text-ink-300">(optional)</span></label>
+                    <label class="label">Description <span class="font-normal text-ink-500">(optional)</span></label>
                     <textarea wire:model="form.description" rows="2" class="input"></textarea>
                 </div>
                 <div class="sm:col-span-2">
@@ -82,7 +82,7 @@
                             'client' => ['Client delivery', 'Discovery · Design · Build · Client review · Launch'],
                             'list' => ['Simple list', 'One section — add your own'],
                         ] as $key => [$label, $hint])
-                            <button type="button" wire:click="$set('form.layout', '{{ $key }}')" class="rounded-lg border p-3 text-left text-sm {{ $form['layout'] === $key ? 'border-coral-500 bg-coral-50 ring-1 ring-coral-500' : 'border-gray-200 hover:border-gray-300' }}">
+                            <button type="button" wire:click="$set('form.layout', '{{ $key }}')" class="rounded-lg border p-3 text-left text-sm {{ $form['layout'] === $key ? 'border-accent-500 bg-accent-50 ring-1 ring-accent-500' : 'border-gray-200 hover:border-gray-300' }}">
                                 <span class="block font-medium">{{ $label }}</span><span class="text-xs text-ink-500">{{ $hint }}</span>
                             </button>
                         @endforeach
@@ -114,7 +114,7 @@
                 </div>
                 @if ($form['client_id'])
                     <label class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 text-sm sm:col-span-2">
-                        <input type="checkbox" wire:model="form.portal_enabled" class="mt-0.5 rounded border-gray-300 text-coral-500 focus:ring-coral-400">
+                        <input type="checkbox" wire:model="form.portal_enabled" class="mt-0.5 rounded border-gray-300 text-accent-500 focus:ring-accent-400">
                         <span><span class="font-medium">Show in the client portal</span> — clients only see tasks and files you mark as shared.</span>
                     </label>
                 @endif

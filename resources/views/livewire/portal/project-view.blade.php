@@ -214,7 +214,7 @@
                             @if ($f->type === 'select' && ($o = $f->option($vals[$f->id])))
                                 <span class="pill {{ \App\Models\ProjectField::COLORS[$o['color']] ?? '' }}">{{ $o['label'] }}</span>
                             @elseif ($f->type === 'url')
-                                <a href="{{ $vals[$f->id] }}" target="_blank" rel="noopener noreferrer" class="text-coral-600 hover:underline">{{ \Illuminate\Support\Str::limit($vals[$f->id], 50) }}</a>
+                                <a href="{{ $vals[$f->id] }}" target="_blank" rel="noopener noreferrer" class="text-accent-600 hover:underline">{{ \Illuminate\Support\Str::limit($vals[$f->id], 50) }}</a>
                             @elseif ($f->type === 'person')
                                 {{ $team->firstWhere('id', (int) $vals[$f->id])?->name ?? '—' }}
                             @else
@@ -288,7 +288,7 @@
                       x-on:dragover.prevent="drag = true" x-on:dragleave.prevent="drag = false"
                       x-on:drop.prevent="drag = false; $refs.pcpicker.files = $event.dataTransfer.files; $refs.pcpicker.dispatchEvent(new Event('change'))"
                       x-on:paste="if ($event.clipboardData.files.length) { $refs.pcpicker.files = $event.clipboardData.files; $refs.pcpicker.dispatchEvent(new Event('change')) }">
-                    <div class="rounded-md border transition" :class="drag ? 'border-coral-400 ring-2 ring-coral-100' : 'border-gray-300'">
+                    <div class="rounded-md border transition" :class="drag ? 'border-accent-400 ring-2 ring-accent-100' : 'border-gray-300'">
                         <textarea wire:model="comment" rows="2" placeholder="Write a message to the team… (drop or paste images here)" class="block w-full resize-none rounded-t-md border-0 px-3 py-2 text-sm focus:ring-0 focus:outline-none"></textarea>
                         <x-upload-queue :files="$commentFiles" remove="removeCommentFile" class="px-3 pb-2" />
                         <div class="flex items-center gap-2 border-t border-gray-100 px-2 py-1">
@@ -322,7 +322,7 @@
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
-                        <label class="label">Needed by <span class="normal-case text-ink-300">(optional)</span></label>
+                        <label class="label">Needed by <span class="font-normal text-ink-500">(optional)</span></label>
                         <input type="date" wire:model="requestDue" class="input">
                         @error('requestDue')<p class="error">{{ $message }}</p>@enderror
                     </div>

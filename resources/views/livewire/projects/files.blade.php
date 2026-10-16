@@ -6,7 +6,7 @@
         </label>
         @if ($project->portal_enabled && $canManage)
             <label class="flex items-center gap-2 text-sm text-ink-700">
-                <input type="checkbox" wire:model="shareWithClient" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Share new uploads with the client
+                <input type="checkbox" wire:model="shareWithClient" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Share new uploads with the client
             </label>
         @endif
         <span wire:loading wire:target="uploads" class="text-sm text-ink-500">Uploading…</span>
@@ -18,7 +18,7 @@
     @else
         <div class="card overflow-hidden">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 text-left text-xs uppercase tracking-wide text-ink-500">
+                <thead class="bg-gray-50 text-left text-xs text-ink-500">
                     <tr><th class="px-4 py-2.5 font-semibold">Name</th><th class="hidden px-4 py-2.5 font-semibold md:table-cell">Task</th><th class="hidden px-4 py-2.5 font-semibold sm:table-cell">Uploaded</th><th class="px-4 py-2.5 font-semibold">Client</th><th></th></tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -32,7 +32,7 @@
                                     </a>
                                 @else
                                     <a href="{{ $f->isPdf() ? $f->viewUrl() : $f->downloadUrl() }}" @if ($f->isPdf()) target="_blank" rel="noopener" @endif class="flex items-center gap-2.5 hover:underline">
-                                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded text-[10px] font-bold {{ $f->isPdf() ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-ink-500' }}">{{ \Illuminate\Support\Str::limit($f->extension(), 4, '') }}</span>
+                                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded text-[10px] font-semibold {{ $f->isPdf() ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-ink-500' }}">{{ \Illuminate\Support\Str::limit($f->extension(), 4, '') }}</span>
                                         <span class="min-w-0"><span class="block truncate font-medium">{{ $f->original_name }}</span><span class="text-xs text-ink-500">{{ $f->humanSize() }}</span></span>
                                     </a>
                                 @endif

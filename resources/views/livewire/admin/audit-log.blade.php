@@ -36,7 +36,7 @@
         @else
             <div class="card overflow-x-auto">
                 <table class="w-full min-w-[640px] text-sm">
-                    <thead class="bg-gray-50 text-left text-xs uppercase tracking-wide text-ink-500">
+                    <thead class="bg-gray-50 text-left text-xs text-ink-500">
                         <tr><th class="px-4 py-2.5 font-semibold">When</th><th class="px-4 py-2.5 font-semibold">Who</th><th class="px-4 py-2.5 font-semibold">What happened</th><th class="hidden px-4 py-2.5 font-semibold md:table-cell">IP address</th></tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">

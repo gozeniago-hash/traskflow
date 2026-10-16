@@ -370,7 +370,7 @@ class AccessTest extends TestCase
         $outsider = User::create(['name' => 'Other Owner', 'email' => 'owner@othercorp.test', 'password' => 'Secret123!']);
         $other = \App\Models\Workspace::create(['name' => 'OtherCorp', 'owner_id' => $outsider->id]);
         $other->users()->attach($outsider->id, ['role' => 'owner']);
-        $project = Project::create(['workspace_id' => $other->id, 'name' => 'Secret Merger', 'owner_id' => $outsider->id, 'privacy' => 'workspace', 'color' => '#4573d2', 'status' => 'on_track']);
+        $project = Project::create(['workspace_id' => $other->id, 'name' => 'Secret Merger', 'owner_id' => $outsider->id, 'privacy' => 'workspace', 'color' => '#4e6a9e', 'status' => 'on_track']);
         $section = $project->sections()->create(['name' => 'Todo', 'position' => 1]);
         $secret = $project->tasks()->create(['title' => 'Confidential price', 'section_id' => $section->id, 'creator_id' => $outsider->id, 'position' => 1]);
         $secret->comments()->create(['user_id' => $outsider->id, 'body' => 'Board-only comment', 'is_internal' => true]);
@@ -399,7 +399,7 @@ class AccessTest extends TestCase
         $leo = User::where('email', 'leo@taskflow.test')->first();
         $ws = $leo->currentWorkspace;
         $private = $ws->teams()->create(['name' => 'Leadership']);
-        $project = Project::create(['workspace_id' => $ws->id, 'name' => 'Leadership Salaries', 'owner_id' => $ws->owner_id, 'team_id' => $private->id, 'privacy' => 'team', 'color' => '#e8384f', 'status' => 'on_track']);
+        $project = Project::create(['workspace_id' => $ws->id, 'name' => 'Leadership Salaries', 'owner_id' => $ws->owner_id, 'team_id' => $private->id, 'privacy' => 'team', 'color' => '#a9555e', 'status' => 'on_track']);
         $anyTeam = $ws->teams()->whereHas('users', fn ($q) => $q->whereKey($leo->id))->first() ?? $private;
 
         $this->actingAs($leo);
@@ -492,8 +492,8 @@ class AccessTest extends TestCase
         $jo = User::where('email', 'jo@taskflow.test')->first();
         $admin = User::where('email', 'admin@taskflow.test')->first();
         $ws = $leo->currentWorkspace;
-        $project = Project::create(['workspace_id' => $ws->id, 'name' => 'Roles Project', 'owner_id' => $admin->id, 'privacy' => 'workspace', 'color' => '#4573d2', 'status' => 'on_track']);
-        $other = Project::create(['workspace_id' => $ws->id, 'name' => 'Not Jo\'s Project', 'owner_id' => $admin->id, 'privacy' => 'workspace', 'color' => '#4573d2', 'status' => 'on_track']);
+        $project = Project::create(['workspace_id' => $ws->id, 'name' => 'Roles Project', 'owner_id' => $admin->id, 'privacy' => 'workspace', 'color' => '#4e6a9e', 'status' => 'on_track']);
+        $other = Project::create(['workspace_id' => $ws->id, 'name' => 'Not Jo\'s Project', 'owner_id' => $admin->id, 'privacy' => 'workspace', 'color' => '#4e6a9e', 'status' => 'on_track']);
         foreach ([$project, $other] as $p) {
             $section = $p->sections()->create(['name' => 'Todo', 'position' => 1]);
             $task = $p->tasks()->create(['title' => 'Shared task '.$p->id, 'section_id' => $section->id, 'creator_id' => $admin->id, 'position' => 1, 'assignee_id' => $admin->id]);

@@ -43,8 +43,8 @@ class ProjectField extends Model
     ];
 
     public const SWATCHES = [
-        'gray' => 'bg-gray-400', 'red' => 'bg-red-500', 'orange' => 'bg-orange-500', 'amber' => 'bg-amber-400', 'green' => 'bg-emerald-500',
-        'teal' => 'bg-teal-500', 'blue' => 'bg-sky-500', 'indigo' => 'bg-indigo-500', 'purple' => 'bg-violet-500', 'pink' => 'bg-pink-500',
+        'gray' => 'bg-gray-400', 'red' => 'bg-red-400', 'orange' => 'bg-orange-400', 'amber' => 'bg-amber-400', 'green' => 'bg-emerald-400',
+        'teal' => 'bg-teal-400', 'blue' => 'bg-sky-400', 'indigo' => 'bg-indigo-400', 'purple' => 'bg-violet-400', 'pink' => 'bg-pink-400',
     ];
 
     /** Ready-made fields offered when setting up a project. */

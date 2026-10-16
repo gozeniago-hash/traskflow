@@ -108,7 +108,7 @@ window.tfTabScroll = function (el) {
 // QR code for setting up two-step verification (library loaded only when needed).
 window.tfQr = async function (canvas, text) {
     const QRCode = (await import('qrcode')).default;
-    QRCode.toCanvas(canvas, text, { width: 176, margin: 1, color: { dark: '#16161d', light: '#ffffff' } });
+    QRCode.toCanvas(canvas, text, { width: 176, margin: 1, color: { dark: '#15232a', light: '#ffffff' } });
 };
 
 // ---------------------------------------------------------------- dialogs + toasts

@@ -5,8 +5,8 @@
             <form wire:submit="save" class="card space-y-4 p-5">
                 <h2 class="font-semibold">General</h2>
                 <div>
-                    <label class="label">Workspace name</label>
-                    <input wire:model="name" class="input">
+                    <label class="label" for="ws-name">Workspace name</label>
+                    <input id="ws-name" wire:model="name" class="input">
                     @error('name')<p class="error">{{ $message }}</p>@enderror
                 </div>
                 <div class="flex justify-end"><button class="btn-primary btn">Save</button></div>
@@ -16,7 +16,7 @@
             <div class="card p-5">
                 <h2 class="flex items-center gap-2 font-semibold"><x-icon name="lock" class="h-5 w-5 text-ink-700" /> Security</h2>
                 <label class="mt-3 flex items-start gap-3">
-                    <input type="checkbox" class="mt-0.5 rounded border-gray-300 text-coral-600 focus:ring-coral-400" @checked($security['required'])
+                    <input type="checkbox" class="mt-0.5 rounded border-gray-300 text-accent-600 focus:ring-accent-400" @checked($security['required'])
                            wire:change="setRequireTwoFactor($event.target.checked)" aria-describedby="tfa-req-help">
                     <span>
                         <span class="text-sm font-medium">Require two-step verification for the team</span>
@@ -24,7 +24,7 @@
                         <span class="mt-1 block text-sm {{ $security['without'] ? 'text-amber-800' : 'text-emerald-700' }}">{{ $security['without'] ? $security['without'].' '.\Illuminate\Support\Str::plural('teammate', $security['without']).' haven’t turned it on yet.' : 'Everyone on the team has it on.' }}</span>
                     </span>
                 </label>
-                <a href="{{ route('audit-log') }}" wire:navigate class="mt-4 inline-flex text-sm font-medium text-coral-700 hover:underline">View the audit log →</a>
+                <a href="{{ route('audit-log') }}" wire:navigate class="mt-4 inline-flex text-sm font-medium text-accent-700 hover:underline">View the audit log →</a>
             </div>
 
             {{-- GitHub --}}
@@ -49,7 +49,7 @@
                         <details class="rounded-lg bg-gray-50 px-3 py-2 text-sm text-ink-700">
                             <summary class="cursor-pointer font-medium">How to create a token</summary>
                             <ol class="mt-2 list-decimal space-y-1 pl-5 text-ink-700">
-                                <li>On GitHub, open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" class="text-coral-600 hover:underline">Settings → Developer settings → Fine-grained tokens → Generate new token</a>.</li>
+                                <li>On GitHub, open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" class="text-accent-600 hover:underline">Settings → Developer settings → Fine-grained tokens → Generate new token</a>.</li>
                                 <li>Pick the account or organization that owns your repositories, and choose the repositories to share.</li>
                                 <li>Under <strong>Repository permissions</strong>, set <strong>Pull requests</strong> to <em>Read-only</em>. Optionally set <strong>Webhooks</strong> to <em>Read and write</em> so TaskFlow can set up live updates for you.</li>
                                 <li>Generate the token and paste it here. It's stored encrypted and never shown again.</li>
@@ -92,7 +92,7 @@
                                 @endif
                                 @if ($showWebhookFor === $repo->id)
                                     <div class="mt-2 space-y-2 rounded-lg bg-amber-50 p-3 text-xs text-ink-800">
-                                        <p>TaskFlow couldn't add the webhook itself. In GitHub, open <a href="{{ $repo->htmlUrl() }}/settings/hooks/new" target="_blank" rel="noopener" class="font-medium text-coral-600 hover:underline">{{ $repo->full_name }} → Settings → Webhooks → Add webhook</a> and enter:</p>
+                                        <p>TaskFlow couldn't add the webhook itself. In GitHub, open <a href="{{ $repo->htmlUrl() }}/settings/hooks/new" target="_blank" rel="noopener" class="font-medium text-accent-600 hover:underline">{{ $repo->full_name }} → Settings → Webhooks → Add webhook</a> and enter:</p>
                                         @foreach (['Payload URL' => $repo->webhookUrl(), 'Secret' => $repo->webhook_secret] as $label => $value)
                                             <div class="flex items-center gap-2">
                                                 <span class="w-24 shrink-0 font-medium">{{ $label }}</span>
@@ -143,7 +143,7 @@
                 @if ($storage['quota'])
                     @php($pct = min(100, round($storage['used'] / $storage['quota'] * 100)))
                     <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-gray-100" role="progressbar" aria-label="File storage used" aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100">
-                        <div class="h-full rounded-full {{ $pct >= 90 ? 'bg-red-500' : 'bg-coral-500' }}" style="width: {{ $pct }}%"></div>
+                        <div class="h-full rounded-full {{ $pct >= 90 ? 'bg-red-500' : 'bg-accent-500' }}" style="width: {{ $pct }}%"></div>
                     </div>
                 @endif
             </div>

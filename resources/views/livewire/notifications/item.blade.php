@@ -1,5 +1,5 @@
 @php($href = $feed->link($a))
-<li wire:key="n-{{ $a->id }}" class="{{ $isNew ? 'bg-coral-50/50' : '' }} {{ ($fadeIn ?? false) ? 'tf-fade-in' : '' }}">
+<li wire:key="n-{{ $a->id }}" class="{{ $isNew ? 'bg-accent-50/50' : '' }} {{ ($fadeIn ?? false) ? 'tf-fade-in' : '' }}">
     <{{ $href ? 'a' : 'div' }} @if ($href) href="{{ $href }}" wire:navigate @endif class="flex gap-3 px-4 py-3 {{ $href ? 'hover:bg-gray-50' : '' }}">
         <span class="relative shrink-0">
             <x-avatar :user="$a->user" size="md" />
@@ -12,6 +12,6 @@
                 <time datetime="{{ $a->created_at->toIso8601String() }}" title="{{ $a->created_at->timezone(config('taskflow.timezone'))->toDayDateTimeString() }}" class="shrink-0">{{ $a->created_at->diffForHumans(short: true) }}</time>
             </span>
         </span>
-        @if ($isNew)<span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-coral-600" aria-label="New"></span>@endif
+        @if ($isNew)<span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-accent-600" aria-label="New"></span>@endif
     </{{ $href ? 'a' : 'div' }}>
 </li>

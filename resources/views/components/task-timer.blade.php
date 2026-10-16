@@ -13,13 +13,13 @@
      {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5']) }}>
     @if ($isRunning)
         <button type="button" wire:click.stop="stopTimer" title="Stop timer"
-                class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-coral-600 text-white shadow-sm ring-4 ring-coral-100 hover:bg-coral-600">
+                class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-600 text-white shadow-sm ring-4 ring-accent-100 hover:bg-accent-600">
             <x-icon name="stop" class="h-2.5 w-2.5" />
         </button>
-        <span class="text-xs font-semibold tabular-nums text-coral-600" x-text="clock">{{ \App\Models\TimeEntry::formatClock($base) }}</span>
+        <span class="text-xs font-semibold tabular-nums text-accent-600" x-text="clock">{{ \App\Models\TimeEntry::formatClock($base) }}</span>
     @else
         <button type="button" wire:click.stop="startTimer({{ $task->id }})" title="Start timer"
-                class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white text-ink-500 hover:border-coral-400 hover:text-coral-600">
+                class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white text-ink-500 hover:border-accent-400 hover:text-accent-600">
             <x-icon name="play" class="ml-px h-2.5 w-2.5" />
         </button>
         @if ($base > 0)

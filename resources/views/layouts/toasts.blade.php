@@ -9,7 +9,7 @@
             <svg class="h-4 w-4 shrink-0 text-emerald-400" x-show="t.type !== 'error'" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
             <span x-text="t.m"></span>
             <button type="button" x-show="t.undo" x-on:click="undo(t)" :disabled="t.busy"
-                    class="-my-1 -mr-2 ml-1 shrink-0 rounded-md px-2.5 py-1.5 font-semibold text-coral-300 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">Undo</button>
+                    class="-my-1 -mr-2 ml-1 shrink-0 rounded-md px-2.5 py-1.5 font-semibold text-accent-300 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">Undo</button>
         </div>
     </template>
 </div>

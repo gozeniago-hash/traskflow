@@ -58,10 +58,10 @@
             <div x-data="{ drag: false }"
                  x-on:dragover.prevent="drag = true" x-on:dragleave.prevent="drag = false"
                  x-on:drop.prevent="drag = false; $refs.picker.files = $event.dataTransfer.files; $refs.picker.dispatchEvent(new Event('change'))"
-                 class="rounded-lg border-2 border-dashed p-4 text-center transition" :class="drag ? 'border-coral-400 bg-coral-50' : 'border-gray-200'">
+                 class="rounded-lg border-2 border-dashed p-4 text-center transition" :class="drag ? 'border-accent-400 bg-accent-50' : 'border-gray-200'">
                 <label class="inline-flex cursor-pointer items-center gap-2 text-sm text-ink-700">
                     <x-icon name="paperclip" class="h-4 w-4" />
-                    <span><span class="font-medium text-coral-600 hover:underline">Attach files or images</span> or drag them here</span>
+                    <span><span class="font-medium text-accent-600 hover:underline">Attach files or images</span> or drag them here</span>
                     <input type="file" accept="{{ \App\Rules\SafeUpload::accept() }}" x-ref="picker" wire:model="newFiles" multiple class="hidden">
                 </label>
                 <p wire:loading wire:target="newFiles" class="mt-1 text-xs text-ink-500">Uploading…</p>
@@ -73,9 +73,9 @@
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex flex-wrap gap-4 text-sm text-ink-700">
                     @if ($project->portal_enabled)
-                        <label class="flex items-center gap-2"><input type="checkbox" wire:model="client_visible" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Visible to client</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" wire:model="client_visible" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Visible to client</label>
                     @endif
-                    <label class="flex items-center gap-2"><input type="checkbox" wire:model="openAfter" class="rounded border-gray-300 text-coral-500 focus:ring-coral-400"> Open task after creating</label>
+                    <label class="flex items-center gap-2"><input type="checkbox" wire:model="openAfter" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Open task after creating</label>
                 </div>
                 <div class="flex gap-2">
                     <button type="button" wire:click="$set('show', false)" class="btn-secondary btn">Cancel</button>

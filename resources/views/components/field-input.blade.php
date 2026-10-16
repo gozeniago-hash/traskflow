@@ -42,7 +42,7 @@
         @break
     @case('checkbox')
         <label class="inline-flex items-center gap-2 text-sm">
-            <input type="checkbox" {{ $now }}="{{ $model }}" @disabled($disabled) class="rounded border-gray-300 text-coral-500 focus:ring-coral-400">
+            <input type="checkbox" {{ $now }}="{{ $model }}" @disabled($disabled) class="rounded border-gray-300 text-accent-500 focus:ring-accent-400">
             <span class="text-ink-700">{{ $field->description ?: 'Yes' }}</span>
         </label>
         @break
