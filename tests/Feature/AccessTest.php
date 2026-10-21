@@ -435,7 +435,14 @@ class AccessTest extends TestCase
         $page()->call('edit', $client->id)->assertForbidden();
         $page()->set('form.name', 'Made by a member')->call('save')->assertForbidden();
         $page()->call('openInvite', $client->id)->assertForbidden();
-        $page()->set('inviteFor', $client->id)->set('inviteEmail', 'outsider@evil.test')->call('sendInvite')->assertForbidden();
+        // Planting the client id from the browser is refused outright (locked property)…
+        try {
+            $page()->set('inviteFor', $client->id);
+            $this->fail('inviteFor should be locked');
+        } catch (\Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException) {
+        }
+        // …and sending without a client picked by an admin is refused too.
+        $page()->set('inviteEmail', 'outsider@evil.test')->call('sendInvite')->assertForbidden();
         $this->assertDatabaseMissing('clients', ['name' => 'Made by a member']);
         $this->assertDatabaseMissing('invitations', ['email' => 'outsider@evil.test']);
 
