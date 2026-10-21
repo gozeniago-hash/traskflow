@@ -76,6 +76,29 @@ window.taskflowSortable = function (el, wire, method = 'reorder') {
 };
 
 /**
+ * Drag whole sections (board columns / list sections) by their grip.
+ * Usage: x-init="tfSectionSort($el, $wire)" on the container; children carry data-section-key,
+ * the grip carries data-section-grip. Like taskflowSortable, the DOM move is undone and Livewire re-renders.
+ */
+window.tfSectionSort = function (el, wire) {
+    return Sortable.create(el, {
+        animation: 150,
+        draggable: '[data-section-key]',
+        handle: '[data-section-grip]',
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        onEnd(e) {
+            if (e.oldIndex === e.newIndex) return;
+            const ids = [...el.querySelectorAll(':scope > [data-section-key]')].map((n) => Number(n.dataset.sectionKey));
+            const items = [...el.querySelectorAll(':scope > [data-section-key]')];
+            items.splice(e.newIndex, 1);
+            el.insertBefore(e.item, items[e.oldIndex] ?? items[items.length - 1]?.nextSibling ?? null);
+            wire.call('reorderSections', ids);
+        },
+    });
+};
+
+/**
  * Live timer display. `running` ticks every second from `base` seconds;
  * otherwise it just shows `base`. Server re-renders replace the element (via wire:key),
  * so the starting value is always fresh.

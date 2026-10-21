@@ -48,6 +48,12 @@ trait ManagesProjectTasks
         $this->authorize('update', $this->project);
     }
 
+    /** Sections: project managers and the project's owner. */
+    protected function ensureCanManageSections(): void
+    {
+        $this->authorize('manageSections', $this->project);
+    }
+
     /** Working on tasks: anyone on the team who can see the project. */
     protected function ensureCanContribute(): void
     {
@@ -149,7 +155,7 @@ trait ManagesProjectTasks
 
     public function addSection(): void
     {
-        $this->ensureCanEdit();
+        $this->ensureCanManageSections();
         $name = trim($this->newSection);
         if ($name === '') {
             return;
@@ -163,13 +169,14 @@ trait ManagesProjectTasks
 
     public function editSection(int $id): void
     {
+        $this->ensureCanManageSections();
         $this->editingSection = $id;
         $this->sectionName = $this->section($id)->name;
     }
 
     public function renameSection(): void
     {
-        $this->ensureCanEdit();
+        $this->ensureCanManageSections();
         if ($this->editingSection && trim($this->sectionName) !== '') {
             $this->section($this->editingSection)->update(['name' => mb_substr(trim($this->sectionName), 0, 120)]);
         }
@@ -178,7 +185,7 @@ trait ManagesProjectTasks
 
     public function moveSection(int $id, int $direction): void
     {
-        $this->ensureCanEdit();
+        $this->ensureCanManageSections();
         $sections = $this->project->sections()->get()->values();
         $index = $sections->search(fn ($s) => $s->id === $id);
         $swap = $index + ($direction < 0 ? -1 : 1);
@@ -192,6 +199,22 @@ trait ManagesProjectTasks
         }
     }
 
+    /** Drag and drop: $ids is every section of the project in its new order. */
+    public function reorderSections(array $ids): void
+    {
+        $this->ensureCanManageSections();
+        $ids = array_values(array_map('intval', $ids));
+        $current = $this->project->sections()->pluck('id')->map(fn ($id) => (int) $id)->all();
+        if (count($ids) !== count($current) || array_diff($current, $ids)) {
+            return; // stale page or someone else added/removed a section meanwhile; the re-render shows the real order
+        }
+        DB::transaction(function () use ($ids) {
+            foreach ($ids as $i => $id) {
+                Section::whereKey($id)->where('project_id', $this->project->id)->update(['position' => $i + 1]);
+            }
+        });
+    }
+
     public function cancelSectionEdit(): void
     {
         $this->editingSection = null;
@@ -199,7 +222,7 @@ trait ManagesProjectTasks
 
     public function deleteSection(int $id): void
     {
-        $this->ensureCanEdit();
+        $this->ensureCanManageSections();
         $section = $this->section($id);
         $fallback = $this->project->sections()->where('id', '!=', $section->id)->first();
 

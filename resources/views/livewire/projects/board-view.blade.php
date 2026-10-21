@@ -1,18 +1,21 @@
-@php($canManage = auth()->user()->can('update', $project))
+@php($canSections = auth()->user()->can('manageSections', $project))
 <div>
     @include('livewire.projects.partials-toolbar')
 
-    <div class="flex items-start gap-3 overflow-x-auto px-6 pb-10">
+    <div class="flex items-start gap-3 overflow-x-auto px-6 pb-10" @if ($canSections) x-data x-init="tfSectionSort($el, $wire)" @endif>
         @foreach ($sections as $section)
-            <div wire:key="col-{{ $section->id }}" class="flex w-72 shrink-0 flex-col rounded-xl bg-gray-50 p-2">
+            <div wire:key="col-{{ $section->id }}" data-section-key="{{ $section->id }}" class="flex w-72 shrink-0 flex-col rounded-xl bg-gray-50 p-2">
                 <div class="group flex items-center gap-1.5 px-1.5 pb-2 pt-1" x-data="{ menu: false }">
+                    @if ($canSections && $sections->count() > 1)
+                        <span data-section-grip title="Drag to reorder columns" class="-ml-1 cursor-grab text-ink-300 hover:text-ink-500 active:cursor-grabbing"><x-icon name="grip" class="h-4 w-4" /></span>
+                    @endif
                     @if ($editingSection === $section->id)
                         <input wire:model="sectionName" wire:keydown.enter="renameSection" wire:keydown.escape="cancelSectionEdit" x-init="$el.focus(); $el.select()" x-on:blur="$wire.renameSection()" class="input input-sm font-semibold">
                     @else
-                        <h3 @if ($canManage) wire:dblclick="editSection({{ $section->id }})" @endif class="truncate text-sm font-semibold">{{ $section->name }}</h3>
+                        <h3 @if ($canSections) wire:dblclick="editSection({{ $section->id }})" @endif class="truncate text-sm font-semibold">{{ $section->name }}</h3>
                         <span class="text-xs text-ink-500">{{ $section->tasks->count() }}</span>
                     @endif
-                    @if ($canManage)
+                    @if ($canSections)
                     <div class="relative ml-auto">
                         <button x-on:click="menu = !menu" aria-label="Column options" :aria-expanded="menu" class="rounded p-0.5 text-ink-500 hover:bg-gray-200"><x-icon name="dots" /></button>
                         <div x-cloak x-show="menu" x-on:click.outside="menu = false" x-on:click="menu = false" class="absolute right-0 z-20 mt-1 w-44 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
@@ -70,7 +73,7 @@
             </div>
         @endforeach
 
-        @if ($canManage)
+        @if ($canSections)
         <form wire:submit="addSection" class="w-72 shrink-0 rounded-xl border border-dashed border-gray-300 p-2">
             <input wire:model="newSection" placeholder="+ Add section" class="w-full border-0 bg-transparent px-2 py-1.5 text-sm font-medium placeholder:text-ink-500 focus:ring-0 focus:outline-none">
         </form>

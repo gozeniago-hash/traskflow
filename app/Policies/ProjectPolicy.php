@@ -32,6 +32,13 @@ class ProjectPolicy
         return ! $user->isClient() && $project->isManagedBy($user);
     }
 
+    /** Add, rename, reorder and delete sections: whoever manages the project, and its owner. */
+    public function manageSections(User $user, Project $project): bool
+    {
+        return $this->update($user, $project)
+            || (! $user->isClient() && $project->owner_id === $user->id && $project->isVisibleTo($user));
+    }
+
     /** See everyone's time and workload in this project (members see only their own). */
     public function viewTeamData(User $user, Project $project): bool
     {
