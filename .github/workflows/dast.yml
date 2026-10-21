@@ -1,0 +1,86 @@
+name: DAST
+
+# Dynamic scan (OWASP ZAP) against a throwaway copy of the app booted inside the CI runner
+# with debug off and demo data. Never points at the live site.
+#  - every push / PR: passive baseline scan (fast, read-only)
+#  - weekly + manual: full active scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '30 2 * * 1'
+  workflow_dispatch:
+    inputs:
+      full:
+        description: Run the full active scan
+        type: boolean
+        default: true
+
+jobs:
+  zap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_sqlite, sqlite3, intl, zip, gd
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build the app
+        run: |
+          composer install --no-interaction --no-progress --prefer-dist --no-dev
+          npm ci && npm run build
+          cp .env.example .env
+          php artisan key:generate
+          touch database/dast.sqlite
+
+      - name: Start the app (debug off, demo data)
+        env:
+          APP_ENV: ci   # 'production' forces https, which the runner doesn't have
+          APP_DEBUG: 'false'
+          APP_URL: http://127.0.0.1:8000
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ${{ github.workspace }}/database/dast.sqlite
+          SEED_DEMO_DATA: 'true'
+          BROADCAST_CONNECTION: 'null'
+          MAIL_MAILER: log
+          TASKFLOW_REQUESTS_PER_MINUTE: '100000'
+          PHP_CLI_SERVER_WORKERS: '4'
+        run: |
+          php artisan migrate --force --seed
+          nohup php artisan serve --host=127.0.0.1 --port=8000 > serve.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/login > /dev/null && break; sleep 1; done
+
+      - name: ZAP baseline (passive)
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        run: |
+          docker run --rm --network host -u root -v "$PWD:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://127.0.0.1:8000 -c .zap/rules.tsv -r zap-report.html -J zap-report.json -m 3 -I -a
+          python3 .zap/gate.py zap-report.json
+
+      - name: ZAP full scan (active)
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full)
+        run: |
+          docker run --rm --network host -u root -v "$PWD:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:stable \
+            zap-full-scan.py -t http://127.0.0.1:8000 -c .zap/rules.tsv -r zap-report.html -J zap-report.json -m 5 -T 30 -I -a
+          python3 .zap/gate.py zap-report.json
+
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: |
+            zap-report.html
+            zap-report.json
+            serve.log
+          if-no-files-found: ignore

@@ -1,0 +1,2 @@
+# ZAP rule overrides: <rule id>\t<IGNORE|INFO|WARN|FAIL>\t<reason>
+# Filled in from the DAST triage (docs/SECURE-CODING.md).
