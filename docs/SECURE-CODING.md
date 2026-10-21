@@ -47,3 +47,27 @@ line. The reason is required and gets reviewed like code.
 - Security-relevant actions write to the audit log via `App\Support\Audit::log()`.
 - New features get a test in `tests/Feature` that proves another workspace, a member and a client
   can't reach them.
+
+## Dynamic testing (DAST)
+
+`.github/workflows/dast.yml` boots a throwaway copy of the app inside the CI runner (debug off,
+demo data) and scans it with OWASP ZAP. It never points at the live site.
+
+- Every push and pull request: passive baseline scan.
+- Weekly (Monday) and on demand: full active scan.
+- The job fails on any High-risk alert. Reviewed alerts are listed in `.zap/rules.tsv` with the reason.
+
+Last full run: 21 Oct 2026, ZAP 2.16.1, against a local copy. It was signed in as admin, member and
+client, including Livewire traffic. 6,293 requests across 44 active rules found **0 High**.
+
+| Alert | Risk | Verdict |
+|---|---|---|
+| CSP allows `unsafe-eval` (script-src) | Medium | Accepted for now. Alpine evaluates inline `x-data`/`x-on` expressions. Livewire's CSP-safe build was tried and breaks about 20 inline components, drag and drop and doc images. Removing it means moving those into `Alpine.data()` components (a planned refactor). Injected scripts are already blocked by the nonce. |
+| CSP allows inline styles (style-src) | Medium | Accepted. Needed for per-project colours and Livewire transitions. Inline styles can't run script. |
+| No CSP on `/build` | Medium | Not the app. That 404 comes from PHP's local test server for a folder. App pages, 404s included, all send the policy. |
+| `XSRF-TOKEN` cookie not HttpOnly | Low | By design. JavaScript must read it to send the CSRF header. The session cookie is HttpOnly and SameSite=Lax. |
+| `X-Content-Type-Options` missing on `/build/*` | Low | Static files are served by the web server, not Laravel, so the header must be added there (Cloudflare transform rule once the domain is in front). Files are hashed and served with the right type. |
+| Big redirect, Unix timestamp, suspicious comments | Low/Info | False positives. The standard Laravel "Redirecting to" body, a doc's edit time, and comments inside bundled third-party JS. |
+
+Access control is not something a scanner can judge. That is covered by `AccessTest`,
+`NotificationsTest` and `SecurityReviewTest`.

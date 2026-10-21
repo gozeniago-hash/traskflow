@@ -118,6 +118,30 @@ class SecurityReviewTest extends TestCase
         $this->assertFalse($check($client->id), 'a client contact');
     }
 
+    /** What the DAST scan confirmed, pinned so a config change can't quietly undo it. */
+    public function test_cookies_and_headers_match_the_dast_baseline(): void
+    {
+        $response = $this->get('/login')->assertOk();
+
+        $session = collect($response->headers->getCookies())->firstWhere(fn ($c) => $c->getName() === config('session.cookie'));
+        $this->assertNotNull($session);
+        $this->assertTrue($session->isHttpOnly(), 'session cookie must be HttpOnly');
+        $this->assertSame('lax', strtolower((string) $session->getSameSite()));
+
+        foreach (['/login', '/this-page-does-not-exist'] as $path) {
+            $r = $this->get($path);
+            $r->assertHeader('X-Content-Type-Options', 'nosniff')->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+            $csp = (string) $r->headers->get('Content-Security-Policy');
+            $this->assertStringContainsString("default-src 'self'", $csp, $path);
+            $this->assertMatchesRegularExpression("/script-src 'self' 'nonce-[^']+'/", $csp, $path);
+            $this->assertStringNotContainsString("'unsafe-inline'", explode(';', explode('script-src', $csp)[1])[0], 'no inline scripts');
+        }
+
+        // Guests sent to sign in get a bare redirect, nothing from the page they asked for.
+        $this->get('/projects')->assertRedirect('/login');
+        $this->assertStringNotContainsString('Brightside', $this->get('/projects')->getContent());
+    }
+
     public function test_audit_log_rows_only_accept_known_columns(): void
     {
         $row = new \App\Models\AuditLog(['action' => 'x.y', 'description' => 'd', 'id' => 999, 'created_at' => '2000-01-01']);

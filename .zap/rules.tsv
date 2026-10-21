@@ -1,2 +1,9 @@
-# ZAP rule overrides: <rule id>\t<IGNORE|INFO|WARN|FAIL>\t<reason>
-# Filled in from the DAST triage (docs/SECURE-CODING.md).
+# ZAP rule overrides: <rule id>	<IGNORE|INFO|WARN|FAIL>	<reason>. Triage in docs/SECURE-CODING.md (DAST section).
+10055	WARN	CSP unsafe-eval / style unsafe-inline: accepted until Alpine components move to Alpine.data()
+10038	WARN	CSP missing only on the dev server's own 404 for /build
+10021	WARN	nosniff on static /build files must be added at the web server / Cloudflare
+10010	IGNORE	XSRF-TOKEN must be readable by JavaScript; the session cookie is HttpOnly
+10044	IGNORE	Standard Laravel "Redirecting to" body
+10096	IGNORE	Timestamps are record dates, not secrets
+10027	IGNORE	Comments inside bundled third-party JS
+10031	IGNORE	Reflected values are escaped; informational
