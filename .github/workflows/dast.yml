@@ -56,7 +56,8 @@ jobs:
           TASKFLOW_REQUESTS_PER_MINUTE: '100000'
           PHP_CLI_SERVER_WORKERS: '4'
         run: |
-          php artisan migrate --force --seed
+          php artisan migrate --force   # loads the demo workspace when SEED_DEMO_DATA=true
+          php artisan db:seed --force --class=Database\\Seeders\\DemoSeederOnce
           nohup php artisan serve --host=127.0.0.1 --port=8000 > serve.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/login > /dev/null && break; sleep 1; done
 
