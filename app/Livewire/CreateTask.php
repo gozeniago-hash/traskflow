@@ -23,6 +23,7 @@ class CreateTask extends Component
     use InteractsWithWorkspace, WithFileUploads;
 
     public bool $show = false;
+    #[\Livewire\Attributes\Locked] // set only by open(), after the permission check
     public ?int $projectId = null;
 
     public string $title = '';
@@ -132,7 +133,10 @@ class CreateTask extends Component
 
     public function render()
     {
-        $project = $this->show && $this->projectId ? Project::with('sections')->find($this->projectId) : null;
+        $project = $this->show && $this->projectId ? Project::query()->visibleTo($this->me())->with('sections')->find($this->projectId) : null;
+        if ($project && ! $this->me()->can('contribute', $project)) {
+            $project = null;
+        }
 
         return view('livewire.create-task', [
             'project' => $project,

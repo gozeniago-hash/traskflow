@@ -127,6 +127,7 @@ return [
     |
     */
 
+    // nosemgrep: laravel-cookie-null-domain -- SESSION_DOMAIN unset = host-only cookie, the strictest setting
     'cookie' => env(
         'SESSION_COOKIE',
         Str::slug((string) env('APP_NAME', 'laravel')).'-session'

@@ -15,6 +15,7 @@ class Fields extends Component
 
     public Project $project;
 
+    #[\Livewire\Attributes\Locked] // set only by server actions that check access
     public ?int $editingId = null;
     public bool $showForm = false;
     public array $form = [];

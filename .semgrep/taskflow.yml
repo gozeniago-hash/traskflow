@@ -1,0 +1,102 @@
+# TaskFlow secure-coding rules (run in CI with the open-source Semgrep rules; see docs/SECURE-CODING.md).
+# Each rule encodes a mistake we have fixed once and never want back.
+rules:
+  - id: taskflow-blade-unescaped-output
+    languages: [generic]
+    severity: ERROR
+    paths: { include: ["*.blade.php"] }
+    pattern-regex: '\{!!(?!\s*\\App\\Support\\HtmlSanitizer::clean\()'
+    message: >-
+      Unescaped Blade output. Use {{ }} for text; rich text must go through
+      {!! \App\Support\HtmlSanitizer::clean(...) !!}.
+
+  - id: taskflow-alpine-x-html
+    languages: [generic]
+    severity: ERROR
+    paths: { include: ["*.blade.php"] }
+    pattern-regex: '\sx-html\s*='
+    message: x-html renders HTML without escaping. Use x-text, or sanitize on the server.
+
+  - id: taskflow-blade-text-in-js-expression
+    languages: [generic]
+    severity: ERROR
+    paths: { include: ["*.blade.php"] }
+    # Alpine/Livewire attributes are run as JavaScript after the browser decodes HTML escaping,
+    # so {{ $model->text }} inside them is script injection. Pass values with @js(...) instead.
+    pattern-regex: '\s(x-(data|init|on:[\w.-]+|bind:[\w-]+|effect|show|if|model[\w.-]*)|@[\w.:-]+|:[\w-]+|wire:(click|change|submit|keydown[\w.-]*|blur|dblclick|init)[\w.-]*)="[^"]*\{\{\s*\$(?!\w+(?:->\w+)*->(?:id|\w+_id)\s*\}\})\w+(->|\[)[^"}]*\}\}'
+    message: >-
+      Model text interpolated into a JavaScript expression. Use @js($value) (or pass only integer ids).
+
+  - id: taskflow-raw-sql-with-variables
+    languages: [php]
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          - pattern: $Q->$RAW("..." . $X, ...)
+          - pattern: $Q->$RAW($X . "...", ...)
+          - pattern: $Q->$RAW("...$X...", ...)
+      - metavariable-regex:
+          metavariable: $RAW
+          regex: ^(whereRaw|orWhereRaw|selectRaw|orderByRaw|havingRaw|groupByRaw|fromRaw)$
+    message: Raw SQL built from variables. Use bindings (?) or the query builder.
+
+  - id: taskflow-db-raw-with-variables
+    languages: [php]
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          - pattern: DB::$DB("..." . $X, ...)
+          - pattern: DB::$DB($X . "...", ...)
+          - pattern: DB::$DB("...$X...", ...)
+      - metavariable-regex:
+          metavariable: $DB
+          regex: ^(raw|statement|unprepared|select|selectOne|insert|update|delete|affectingStatement)$
+    message: Raw SQL built from variables. Use bindings (?) or the query builder.
+
+  - id: taskflow-model-unguarded
+    languages: [generic]
+    severity: ERROR
+    paths: { include: ["app/**/*.php"] }
+    pattern-regex: 'protected\s+\$guarded\s*=\s*\[\s*\]'
+    message: List the assignable columns in $fillable instead of unguarding the model.
+
+  - id: taskflow-livewire-unlocked-id
+    languages: [generic]
+    severity: ERROR
+    paths: { include: ["app/Livewire/*.php", "app/Livewire/**/*.php"] }
+    # A public id can be changed from the browser console. Lock it (#[Locked]) and set it only in
+    # actions that check access, or (for #[Url] ids) re-check access wherever it is used.
+    pattern-regex: '(?m)^(?![^\n]*(Locked|#\[Url))[^\n]*\n\s*public \??int \$\w*(Id|For)\b'
+    message: Public id property without #[Locked] (or a re-validated #[Url]).
+
+  - id: taskflow-redirect-to-request-input
+    languages: [php]
+    severity: ERROR
+    pattern-either:
+      - pattern: redirect($REQ->$M(...))
+      - pattern: redirect()->to($REQ->$M(...))
+      - pattern: redirect()->away(...)
+    message: Redirect target comes from the request (open redirect). Redirect to a named route instead.
+
+  - id: taskflow-weak-random-for-secrets
+    languages: [php]
+    severity: ERROR
+    pattern-either:
+      - pattern: rand(...)
+      - pattern: mt_rand(...)
+      - pattern: uniqid(...)
+      - pattern: md5(...)
+      - pattern: sha1(...)
+    message: Not suitable for tokens or secrets. Use Str::random(), random_bytes() or hash('sha256', ...).
+
+  - id: taskflow-unsafe-http-target
+    languages: [php]
+    severity: WARNING
+    patterns:
+      - pattern-either:
+          - pattern: Http::$M($URL, ...)
+          - pattern: file_get_contents($URL)
+      - pattern-not: Http::$M("...", ...)
+      - pattern-not: file_get_contents("...")
+      - metavariable-regex: { metavariable: $M, regex: ^(get|post|put|patch|delete|head|send)$ }
+    message: Outbound request to a computed URL (SSRF risk). Pin the host (Http::baseUrl) and validate input.

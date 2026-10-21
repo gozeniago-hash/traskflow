@@ -1,5 +1,5 @@
 @component('layouts.guest', ['title' => 'Two-step verification'])
-    <div x-data="{ recovery: {{ $errors->has('code') && strlen(old('code', '')) > 8 ? 'true' : 'false' }} }">
+    <div x-data="{ recovery: @js($errors->has('code') && strlen(old('code', '')) > 8) }">
         <h1 class="text-2xl font-semibold tracking-tight">Two-step verification</h1>
         <p class="mt-1 text-sm text-ink-500" x-show="!recovery">Enter the 6-digit code from your authenticator app.</p>
         <p class="mt-1 text-sm text-ink-500" x-show="recovery" x-cloak>Enter one of the recovery codes you saved when you turned this on. Each code works once.</p>

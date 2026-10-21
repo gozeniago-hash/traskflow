@@ -30,6 +30,7 @@ trait ManagesProjectTasks
     public string $assigneeFilter = '';     // '' | me | unassigned
     public array $newTask = [];             // [sectionId => title]
     public string $newSection = '';
+    #[\Livewire\Attributes\Locked] // set only by server actions that check access
     public ?int $editingSection = null;
     public string $sectionName = '';
 
@@ -187,6 +188,11 @@ trait ManagesProjectTasks
         foreach ($ordered as $i => $section) {
             $section->update(['position' => $i + 1]);
         }
+    }
+
+    public function cancelSectionEdit(): void
+    {
+        $this->editingSection = null;
     }
 
     public function deleteSection(int $id): void

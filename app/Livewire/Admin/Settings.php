@@ -20,6 +20,7 @@ class Settings extends Component
 
     public string $githubToken = '';
     public string $newRepo = '';
+    #[\Livewire\Attributes\Locked] // set only by server actions that check access
     public ?int $showWebhookFor = null;
 
     public function mount(): void
@@ -163,7 +164,7 @@ class Settings extends Component
         $name = trim(preg_replace('#^(https?://)?(www\.)?github\.com/#i', '', trim($this->newRepo)), '/ ');
         $name = preg_replace('#\.git$#', '', $name);
         $this->newRepo = $name;
-        $this->validate(['newRepo' => ['required', 'regex:#^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$#']], ['newRepo.regex' => 'Use the owner/repository form, e.g. appyugo/taskflow.'], ['newRepo' => 'repository']);
+        $this->validate(['newRepo' => ['required', 'regex:#^(?!\.)[A-Za-z0-9_.-]{1,100}/(?!\.)[A-Za-z0-9_.-]{1,100}$#']], ['newRepo.regex' => 'Use the owner/repository form, e.g. appyugo/taskflow.'], ['newRepo' => 'repository']);
 
         $gh = GitHub::for($ws);
         if (! $gh->connected()) {

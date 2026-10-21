@@ -224,7 +224,8 @@ document.addEventListener('alpine:init', () => {
         hide() {
             if (!this.shown) return;
             this.shown = false;
-            setTimeout(() => this.$wire.set(property, closedValue), 150);
+            // "closeSomething()" calls a server action (for locked properties); otherwise clear the property.
+            setTimeout(() => property.endsWith('()') ? this.$wire.call(property.slice(0, -2)) : this.$wire.set(property, closedValue), 150);
         },
     }));
 

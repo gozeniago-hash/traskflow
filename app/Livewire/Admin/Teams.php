@@ -15,6 +15,7 @@ class Teams extends Component
     use InteractsWithWorkspace;
 
     public bool $showForm = false;
+    #[\Livewire\Attributes\Locked] // set only by server actions that check access
     public ?int $editingId = null;
     public string $name = '';
     public string $description = '';

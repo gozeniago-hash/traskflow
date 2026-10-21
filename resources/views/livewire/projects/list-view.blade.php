@@ -15,7 +15,7 @@
                         <x-icon name="chevron-down" class="h-4 w-4 transition {{ $isCollapsed ? '-rotate-90' : '' }}" />
                     </button>
                     @if ($editingSection === $section->id)
-                        <input wire:model="sectionName" wire:keydown.enter="renameSection" wire:keydown.escape="$set('editingSection', null)" x-init="$el.focus(); $el.select()" x-on:blur="$wire.renameSection()" class="input input-sm max-w-xs font-semibold">
+                        <input wire:model="sectionName" wire:keydown.enter="renameSection" wire:keydown.escape="cancelSectionEdit" x-init="$el.focus(); $el.select()" x-on:blur="$wire.renameSection()" class="input input-sm max-w-xs font-semibold">
                     @else
                         <h3 @if ($canManage) wire:dblclick="editSection({{ $section->id }})" @endif class="cursor-default font-semibold">{{ $section->name }}</h3>
                     @endif

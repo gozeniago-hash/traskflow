@@ -35,7 +35,7 @@
                     <x-icon name="check" /> {{ $task->isCompleted() ? 'Completed' : 'Mark complete' }}
                 </button>
             @endif
-            <button type="button" x-data x-on:click="navigator.clipboard.writeText(@js($task->ticketUrl())); $dispatch('toast', { message: 'Link to {{ $task->ticket() }} copied' })"
+            <button type="button" x-data x-on:click="navigator.clipboard.writeText(@js($task->ticketUrl())); $dispatch('toast', { message: @js('Link to '.$task->ticket().' copied') })"
                     class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-1 font-mono text-xs font-medium text-ink-700 hover:bg-gray-200" title="Copy link to this ticket">
                 {{ $task->ticket() }} <x-icon name="link" class="h-3 w-3" />
             </button>

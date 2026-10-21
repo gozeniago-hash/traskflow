@@ -103,7 +103,7 @@
     @endif
 
     @if ($inviteFor)
-        <x-modal title="Invite to client portal" close="inviteFor" close-value="null">
+        <x-modal title="Invite to client portal" close="closeInvite()">
             <p class="mb-4 text-sm text-ink-500">They'll see projects linked to this client that have the portal turned on — only the tasks, files and updates you share.</p>
             <form wire:submit="sendInvite" class="space-y-4">
                 <div>
@@ -122,7 +122,7 @@
                     </div>
                 @endif
                 <div class="flex justify-end gap-2">
-                    <button type="button" wire:click="$set('inviteFor', null)" class="btn-secondary btn">Done</button>
+                    <button type="button" wire:click="closeInvite" class="btn-secondary btn">Done</button>
                     <button class="btn-primary btn"><x-icon name="mail" /> Send invite</button>
                 </div>
             </form>

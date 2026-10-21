@@ -27,7 +27,7 @@ class Search extends Component
             $task = Task::query()->inVisibleProjects($this->me())->where('number', (int) $m[2])
                 ->whereHas('project', fn ($q) => $q->where('key', strtoupper($m[1])))->with('project')->first();
             if ($task) {
-                $this->redirect($task->ticketUrl());
+                $this->redirect($task->ticketUrl()); // nosemgrep: symfony-non-literal-redirect -- our own route for a task the user can see
             }
         }
     }

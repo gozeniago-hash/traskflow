@@ -20,11 +20,12 @@ class EnsureAccountSecure
         }
 
         if ($user->needsToVerifyEmail()) {
-            return $this->redirect($request, route('verification.notice'));
+            return $this->redirect($request, route('verification.notice')); // nosemgrep: symfony-non-literal-redirect -- named route, not user input
         }
 
         $workspace = $user->currentWorkspace;
         if ($workspace?->require_two_factor && ! $user->isClient() && ! $user->hasTwoFactor() && ! $request->routeIs('profile')) {
+            // nosemgrep: symfony-non-literal-redirect -- named route, not user input
             return $this->redirect($request, route('profile'), 'Your workspace requires two-step verification. Turn it on below to continue.');
         }
 

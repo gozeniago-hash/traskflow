@@ -53,7 +53,7 @@ class SecurityHeaders
             $secure = config('taskflow.realtime.scheme') === 'https';
             $port = (int) config('taskflow.realtime.port');
             $suffix = in_array($port, [0, 80, 443], true) ? '' : ':'.$port;
-            $realtime[] = ($secure ? 'wss://' : 'ws://').$host.$suffix;
+            $realtime[] = ($secure ? 'wss://' : 'ws://').$host.$suffix; // nosemgrep: detect-insecure-websocket -- ws:// only when the server itself is configured without TLS (local dev)
         }
 
         return implode('; ', [

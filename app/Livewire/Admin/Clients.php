@@ -16,9 +16,11 @@ class Clients extends Component
     use InteractsWithWorkspace;
 
     public bool $showForm = false;
+    #[\Livewire\Attributes\Locked] // set only by server actions that check access
     public ?int $editingId = null;
     public array $form = ['name' => '', 'contact_name' => '', 'email' => '', 'phone' => '', 'website' => '', 'notes' => ''];
 
+    #[\Livewire\Attributes\Locked] // set only by server actions that check access
     public ?int $inviteFor = null;
     public string $inviteEmail = '';
     public ?string $lastInviteUrl = null;
@@ -133,6 +135,11 @@ class Clients extends Component
         $client->delete();
         \App\Support\Audit::log('client.deleted', 'Deleted client “'.$client->name.'”', $client);
         $this->toast('Client deleted. Their projects were kept.');
+    }
+
+    public function closeInvite(): void
+    {
+        $this->inviteFor = null;
     }
 
     protected function client(?int $id): Client

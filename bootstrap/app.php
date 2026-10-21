@@ -22,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // Railway (and most PaaS hosts) terminate HTTPS at a proxy.
         $middleware->trustProxies(at: '*');
+        // …but read the visitor's address from the last hop only (see the middleware).
+        $middleware->prepend(\App\Http\Middleware\UseNearestForwardedIp::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         // Every page and live action counts against the per-person limit (config taskflow.requests_per_minute).
         $middleware->web(append: ['throttle:web']);

@@ -63,7 +63,7 @@ class AuditLog extends Component
             $out = fopen('php://output', 'w');
             fputcsv($out, ['When ('.$tz.')', 'Who', 'Email', 'Action', 'What happened', 'IP address']);
             foreach ($rows as $r) {
-                fputcsv($out, array_map(fn ($v) => preg_match('/^[=+\-@\t\r]/', (string) $v) ? "'".$v : $v, [
+                fputcsv($out, \App\Support\Export\Csv::row([
                     $r->created_at->timezone($tz)->format('Y-m-d H:i:s'), $r->user?->name ?? 'Deleted user', $r->user?->email, $r->action, $r->description, $r->ip,
                 ]));
             }

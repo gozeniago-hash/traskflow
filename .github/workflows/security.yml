@@ -1,0 +1,60 @@
+name: Security (SAST)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 1 * * 1'   # Mondays 09:00 Manila: catches new advisories even without code changes
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semgrep:
+    name: Static analysis (Semgrep)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: python3 -m pip install --quiet semgrep==1.182.0
+
+      - name: Fetch the open-source rule set (pinned)
+        run: |
+          git clone --quiet https://github.com/semgrep/semgrep-rules.git /tmp/semgrep-rules
+          git -C /tmp/semgrep-rules checkout --quiet 17e31e11ebac99fb7dfe1cd288f7a32151b6f3f9
+
+      - name: Scan (fails on any finding)
+        run: |
+          R=/tmp/semgrep-rules
+          semgrep scan --metrics=off --error \
+            --config $R/php --config $R/javascript/browser --config $R/javascript/lang/security \
+            --config $R/generic/secrets --config $R/html \
+            --config .semgrep/taskflow.yml \
+            --exclude vendor --exclude node_modules --exclude public/build --exclude storage --exclude tests \
+            .
+
+  dependencies:
+    name: Known-vulnerable dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: PHP packages (composer audit)
+        run: composer audit --locked --no-interaction
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: JavaScript packages (npm audit)
+        run: npm audit --audit-level=high

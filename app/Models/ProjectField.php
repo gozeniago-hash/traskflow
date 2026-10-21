@@ -137,7 +137,9 @@ class ProjectField extends Model
             'select' => [...$base, 'in:'.implode(',', array_column($this->optionList(), 'id'))],
             'multiselect' => [...($this->required ? ['required'] : ['nullable']), 'array'],
             'checkbox' => ['nullable', 'boolean', ...($this->required ? ['accepted'] : [])],
-            'person' => [...$base, 'integer'],
+            // Only someone on this workspace's team (not an id from elsewhere).
+            'person' => [...$base, 'integer', \Illuminate\Validation\Rule::exists('workspace_user', 'user_id')
+                ->where('workspace_id', (int) Project::whereKey($this->project_id)->value('workspace_id'))->whereNot('role', 'client')],
             'textarea' => [...$base, 'string', 'max:5000'],
             default => [...$base, 'string', 'max:500'],
         };

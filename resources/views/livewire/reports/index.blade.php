@@ -99,7 +99,7 @@
 
                 @forelse ($data['rows'] as $row)
                     <div wire:key="inc-{{ $row['key'] }}" class="border-b border-gray-100 last:border-0">
-                        <button wire:click="toggle('{{ $row['key'] }}')" class="grid w-full grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto] items-center gap-4 px-4 py-2.5 text-left hover:bg-gray-50">
+                        <button wire:click="toggle(@js($row['key']))" class="grid w-full grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto] items-center gap-4 px-4 py-2.5 text-left hover:bg-gray-50">
                             <span class="flex min-w-0 items-center gap-2">
                                 <x-icon name="chevron-right" class="h-3.5 w-3.5 shrink-0 text-ink-500 transition {{ $isOpen($row['key']) ? 'rotate-90' : '' }}" />
                                 <x-avatar :user="$row['user']" size="sm" />
@@ -157,7 +157,7 @@
                 </div>
                 @forelse ($data['rows'] as $row)
                     <div wire:key="up-{{ $row['key'] }}" class="border-b border-gray-100 last:border-0">
-                        <button wire:click="toggle('{{ $row['key'] }}')" class="grid w-full grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto] items-center gap-4 px-4 py-2.5 text-left hover:bg-gray-50">
+                        <button wire:click="toggle(@js($row['key']))" class="grid w-full grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto] items-center gap-4 px-4 py-2.5 text-left hover:bg-gray-50">
                             <span class="flex min-w-0 items-center gap-2">
                                 <x-icon name="chevron-right" class="h-3.5 w-3.5 shrink-0 text-ink-500 transition {{ $isOpen($row['key']) ? 'rotate-90' : '' }}" />
                                 <x-avatar :user="$row['user']" size="sm" />
@@ -259,7 +259,7 @@
                 </div>
                 @forelse ($data['rows'] as $row)
                     <div wire:key="cp-{{ $row['key'] }}" class="border-b border-gray-100 last:border-0">
-                        <button wire:click="toggle('{{ $row['key'] }}')" class="grid w-full grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto] items-center gap-4 px-4 py-2.5 text-left hover:bg-gray-50">
+                        <button wire:click="toggle(@js($row['key']))" class="grid w-full grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto] items-center gap-4 px-4 py-2.5 text-left hover:bg-gray-50">
                             <span class="flex min-w-0 items-center gap-2">
                                 <x-icon name="chevron-right" class="h-3.5 w-3.5 shrink-0 text-ink-500 transition {{ $isOpen($row['key']) ? 'rotate-90' : '' }}" />
                                 <x-avatar :user="$row['user']" size="sm" />
@@ -301,7 +301,7 @@
                 </div>
                 @forelse ($data['rows'] as $row)
                     <div wire:key="ts-{{ $row['key'] }}" class="border-b border-gray-100 last:border-0">
-                        <button wire:click="toggle('{{ $row['key'] }}')" class="grid w-full grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto] items-center gap-4 px-4 py-2.5 text-left hover:bg-gray-50">
+                        <button wire:click="toggle(@js($row['key']))" class="grid w-full grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto] items-center gap-4 px-4 py-2.5 text-left hover:bg-gray-50">
                             <span class="flex min-w-0 items-center gap-2">
                                 <x-icon name="chevron-right" class="h-3.5 w-3.5 shrink-0 text-ink-500 transition {{ $isOpen($row['key']) ? 'rotate-90' : '' }}" />
                                 <x-avatar :user="$row['user']" size="sm" />

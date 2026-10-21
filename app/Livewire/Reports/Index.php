@@ -406,9 +406,9 @@ class Index extends Component
         return response()->streamDownload(function () use ($header, $lines) {
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM so Excel reads accents correctly
-            fputcsv($out, $header);
+            fputcsv($out, \App\Support\Export\Csv::row($header));
             foreach ($lines as $line) {
-                fputcsv($out, $line);
+                fputcsv($out, \App\Support\Export\Csv::row($line)); // no spreadsheet formulas from user text
             }
             fclose($out);
         }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);

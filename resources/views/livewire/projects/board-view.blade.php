@@ -7,7 +7,7 @@
             <div wire:key="col-{{ $section->id }}" class="flex w-72 shrink-0 flex-col rounded-xl bg-gray-50 p-2">
                 <div class="group flex items-center gap-1.5 px-1.5 pb-2 pt-1" x-data="{ menu: false }">
                     @if ($editingSection === $section->id)
-                        <input wire:model="sectionName" wire:keydown.enter="renameSection" wire:keydown.escape="$set('editingSection', null)" x-init="$el.focus(); $el.select()" x-on:blur="$wire.renameSection()" class="input input-sm font-semibold">
+                        <input wire:model="sectionName" wire:keydown.enter="renameSection" wire:keydown.escape="cancelSectionEdit" x-init="$el.focus(); $el.select()" x-on:blur="$wire.renameSection()" class="input input-sm font-semibold">
                     @else
                         <h3 @if ($canManage) wire:dblclick="editSection({{ $section->id }})" @endif class="truncate text-sm font-semibold">{{ $section->name }}</h3>
                         <span class="text-xs text-ink-500">{{ $section->tasks->count() }}</span>

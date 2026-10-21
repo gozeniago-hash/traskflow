@@ -5,7 +5,6 @@ namespace App\Livewire\Projects;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Attachment;
-use App\Models\DocRevision;
 use App\Models\Project;
 use App\Models\ProjectDoc;
 use App\Support\DocTemplates;
@@ -41,6 +40,7 @@ class Docs extends Component
 
     public bool $showTemplates = false;
     public bool $showHistory = false;
+    #[\Livewire\Attributes\Locked] // set only by previewRevision(), which checks it belongs to this doc
     public ?int $previewRevisionId = null;
 
     /** Image/file dropped into the editor (uploaded via $wire.upload). */
@@ -306,7 +306,7 @@ class Docs extends Component
             'canManage' => $this->me()->can('update', $this->project),
             'canDelete' => $doc && ((int) $doc->created_by === (int) $this->me()->id || $this->me()->can('update', $this->project) || (int) $this->project->owner_id === (int) $this->me()->id),
             'revisions' => $doc && $this->showHistory ? $doc->revisions()->with('user')->get() : collect(),
-            'preview' => $this->previewRevisionId ? DocRevision::with('user')->find($this->previewRevisionId) : null,
+            'preview' => $doc && $this->previewRevisionId ? $doc->revisions()->with('user')->find($this->previewRevisionId) : null,
             'templates' => DocTemplates::LIST,
         ]);
     }

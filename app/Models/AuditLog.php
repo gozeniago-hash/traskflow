@@ -9,7 +9,7 @@ class AuditLog extends Model
 {
     public const UPDATED_AT = null;
 
-    protected $guarded = [];
+    protected $fillable = ['workspace_id', 'user_id', 'action', 'description', 'subject_type', 'subject_id', 'meta', 'ip', 'user_agent'];
 
     /** Groups shown in the audit log filter. */
     public const GROUPS = [
