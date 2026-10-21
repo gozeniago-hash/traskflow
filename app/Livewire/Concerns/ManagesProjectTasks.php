@@ -87,7 +87,9 @@ trait ManagesProjectTasks
     public function toggleComplete(int $taskId): void
     {
         $this->ensureCanContribute();
-        $this->projectTask($taskId)->toggleComplete($this->me());
+        $task = $this->projectTask($taskId);
+        $task->toggleComplete($this->me());
+        $this->completedToast($task);
         $this->dispatch('task-saved');
     }
 
@@ -237,8 +239,8 @@ trait ManagesProjectTasks
             ])->withSum(['timeEntries as tracked_seconds' => fn (Builder $t) => $t->whereNotNull('ended_at')], 'duration_seconds');
 
             match ($this->filter) {
-                // Keep just-completed tasks visible for a few minutes so the click feels right.
-                'incomplete' => $q->where(fn ($w) => $w->whereNull('completed_at')->orWhere('completed_at', '>=', now()->subMinutes(5))),
+                // Completed tasks leave at once; the toast's Undo brings one back.
+                'incomplete' => $q->whereNull('completed_at'),
                 'completed' => $q->whereNotNull('completed_at'),
                 default => null,
             };

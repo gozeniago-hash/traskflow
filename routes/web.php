@@ -36,6 +36,7 @@ Route::post('/invitations/{token}', [InvitationController::class, 'accept'])->mi
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/undo/{token}', \App\Http\Controllers\UndoController::class)->name('undo');
+    Route::post('/tasks/{task}/reopen', \App\Http\Controllers\TaskReopenController::class)->whereNumber('task')->name('tasks.reopen');
 
     Route::get('/email/verify', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'notice'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'verify'])

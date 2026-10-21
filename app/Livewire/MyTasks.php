@@ -62,6 +62,7 @@ class MyTasks extends Component
         $task = Task::findOrFail($taskId);
         $this->authorize('update', $task);
         $task->toggleComplete($this->me());
+        $this->completedToast($task);
     }
 
     public function addTask(): void
@@ -126,7 +127,7 @@ class MyTasks extends Component
             $tasks = $query->whereNotNull('completed_at')->latest('completed_at')->limit(100)->get();
             $groups = ['Completed' => $tasks->all()];
         } else {
-            $tasks = $query->where(fn ($q) => $q->whereNull('completed_at')->orWhere('completed_at', '>=', now()->subMinutes(5)))
+            $tasks = $query->whereNull('completed_at')
                 ->orderByRaw('due_date is null')->orderBy('due_date')->orderBy('id')->get();
             $groups = $this->groups($tasks);
         }

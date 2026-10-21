@@ -33,6 +33,7 @@ class Home extends Component
         $task = Task::findOrFail($taskId);
         $this->authorize('update', $task);
         $task->toggleComplete($this->me());
+        $this->completedToast($task);
     }
 
     public function render()
@@ -56,7 +57,7 @@ class Home extends Component
                 'overdue' => (clone $mine)->open()->whereDate('due_date', '<', today())->count(),
                 'doneThisWeek' => (clone $mine)->where('completed_at', '>=', now()->startOfWeek())->count(),
             ],
-            'upcoming' => (clone $mine)->where(fn ($q) => $q->whereNull('completed_at')->orWhere('completed_at', '>=', now()->subMinutes(5)))
+            'upcoming' => (clone $mine)->whereNull('completed_at')
                 ->with('project')->orderByRaw('due_date is null')->orderBy('due_date')->limit(8)->get(),
             'projects' => $projects,
             'updates' => StatusUpdate::query()->whereIn('project_id', Project::query()->visibleTo($me)->select('projects.id'))
