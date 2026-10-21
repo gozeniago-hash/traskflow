@@ -87,7 +87,11 @@ class CreateTask extends Component
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:20000'],
             'section_id' => ['required', Rule::exists('sections', 'id')->where('project_id', $project->id)],
-            'assignee_id' => ['nullable', Rule::exists('workspace_user', 'user_id')->where('workspace_id', $ws->id)->whereNot('role', 'client')],
+            'assignee_id' => ['nullable', 'integer', function ($attribute, $value, $fail) use ($project) {
+                if (! $project->canBeAssigned((int) $value)) {
+                    $fail('Only people who can open this project can be assigned. Add them to the project first.');
+                }
+            }],
             'due_date' => ['nullable', 'date'],
             'priority' => ['required', Rule::in(array_keys(Task::PRIORITIES))],
             'files.*' => \App\Models\Attachment::rules(),
@@ -140,7 +144,7 @@ class CreateTask extends Component
 
         return view('livewire.create-task', [
             'project' => $project,
-            'people' => $project ? $this->workspace()->members()->orderBy('name')->get() : collect(),
+            'people' => $project ? $project->assignableUsers() : collect(),
             'fields' => $project ? $project->fields : collect(),
         ]);
     }

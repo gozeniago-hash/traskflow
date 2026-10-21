@@ -27,6 +27,9 @@
                         @foreach ($people as $p)<option value="{{ $p->id }}">{{ $p->name }}{{ $p->id === auth()->id() ? ' (me)' : '' }}</option>@endforeach
                     </select>
                     @error('assignee_id')<p class="error">{{ $message }}</p>@enderror
+                    @if ($project && $project->privacy !== 'workspace')
+                        <p class="mt-1 text-xs text-ink-500">Only people on this project. Add others under Overview › Members.</p>
+                    @endif
                 </div>
                 <div>
                     <label class="label">Due date</label>

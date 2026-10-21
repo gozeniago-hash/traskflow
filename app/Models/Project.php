@@ -253,10 +253,38 @@ class Project extends Model
         return self::STATUSES[$this->status] ?? ucfirst($this->status);
     }
 
-    /** People who can be assigned work in this project. */
+    /**
+     * Internal people who can open this project, the same rule as visibleTo(): everyone for
+     * workspace-wide projects; otherwise the owner, project members, the team (for team
+     * projects) and workspace admins. Only these can be assigned work or picked in person fields,
+     * so assigning a task never hands someone access to a project they can't see.
+     */
+    public function people(): BelongsToMany
+    {
+        $query = $this->workspace->members();
+        if ($this->privacy === 'workspace') {
+            return $query;
+        }
+
+        return $query->where(function (Builder $q) {
+            $q->whereIn('workspace_user.role', ['owner', 'admin'])
+                ->orWhere('users.id', $this->owner_id)
+                ->orWhereIn('users.id', fn ($m) => $m->select('user_id')->from('project_user')->where('project_id', $this->id));
+            if ($this->privacy === 'team' && $this->team_id) {
+                $q->orWhereIn('users.id', fn ($t) => $t->select('user_id')->from('team_user')->where('team_id', $this->team_id));
+            }
+        });
+    }
+
+    /** People who can be assigned work in this project, by name. */
     public function assignableUsers()
     {
-        return $this->workspace->members()->orderBy('name')->get();
+        return $this->people()->orderBy('name')->get();
+    }
+
+    public function canBeAssigned(?int $userId): bool
+    {
+        return $userId === null || $this->people()->whereKey($userId)->exists();
     }
 
     /** ['total' => int, 'completed' => int, 'overdue' => int, 'percent' => int] for top-level tasks. */

@@ -76,4 +76,10 @@ class CustomFields
     {
         return $project->workspace->members()->pluck('name', 'users.id')->all();
     }
+
+    /** Choices for a person field: people who can open the project. */
+    public static function assignableMap(Project $project): array
+    {
+        return $project->people()->orderBy('name')->pluck('name', 'users.id')->all();
+    }
 }

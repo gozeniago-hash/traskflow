@@ -247,7 +247,7 @@ class TaskPanel extends Component
 
             case 'assignee_id':
                 $userId = $this->assignee_id === '' ? null : (int) $this->assignee_id;
-                if ($userId && ! $this->workspace()->members()->whereKey($userId)->exists()) {
+                if ($userId && ! $task->project->canBeAssigned($userId)) {
                     $this->assignee_id = (string) $task->assignee_id;
 
                     return;
@@ -526,7 +526,9 @@ class TaskPanel extends Component
 
         return view('livewire.task-panel', [
             'task' => $task,
-            'people' => $this->workspace()->members()->orderBy('name')->get(),
+            // People who can open the project, plus the current assignee if they've since lost access.
+            'people' => $task->project->assignableUsers()
+                ->when($task->assignee && ! $task->project->canBeAssigned($task->assignee_id), fn ($c) => $c->push($task->assignee)->sortBy('name')->values()),
             'timeline' => $timeline,
             'canEdit' => $this->me()->can('update', $task),
             'githubEnabled' => $task->pullRequests->isNotEmpty() || $this->workspace()->githubRepositories()->exists(),
@@ -534,7 +536,10 @@ class TaskPanel extends Component
             'trackedTotal' => TimeTracker::totalFor($task),
             'running' => TimeTracker::running($this->me()),
             'fields' => $task->project->fields,
-            'fieldPeople' => $task->project->fields->contains('type', 'person') ? CustomFields::peopleMap($task->project) : [],
+            // Person-field choices: people who can open the project, plus anyone already picked.
+            'fieldPeople' => $task->project->fields->contains('type', 'person')
+                ? CustomFields::assignableMap($task->project) + array_intersect_key(CustomFields::peopleMap($task->project), array_flip(array_map('intval', array_filter($task->fieldValues->pluck('value')->all(), 'is_numeric'))))
+                : [],
             'clientUserIds' => $this->workspace()->clientUsers()->pluck('users.id')->map(fn ($id) => (int) $id)->all(),
         ]);
     }
