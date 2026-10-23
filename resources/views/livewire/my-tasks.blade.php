@@ -28,7 +28,7 @@
                 <ul class="divide-y divide-gray-100 border-y border-gray-100">
                     @foreach ($tasks as $task)
                         <li wire:key="mt-{{ $task->id }}" class="flex cursor-pointer items-center gap-2.5 px-2 py-2 hover:bg-gray-50" wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}">
-                            <button wire:click.stop="toggleComplete({{ $task->id }})" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}" class="check {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
+                            <button wire:click.stop="setComplete({{ $task->id }}, {{ $task->isCompleted() ? 'false' : 'true' }})" wire:loading.attr="disabled" wire:target="setComplete" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}" class="check {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
                             <span class="min-w-0 flex-1">
                                 <span class="block truncate text-sm {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}"><span class="mr-1.5 font-mono text-[11px] text-ink-500">{{ $task->ticket() }}</span>{{ $task->title }}</span>
                                 @if ($task->parent)<span class="block truncate text-xs text-ink-500">↳ {{ $task->parent->title }}</span>@endif

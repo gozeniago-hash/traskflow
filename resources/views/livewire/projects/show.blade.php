@@ -4,7 +4,7 @@
         @if ($project->archived_at)
             <div class="mb-3 flex items-center gap-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
                 <x-icon name="archive" /> This project is archived.
-                @if ($canDelete)<button wire:click="archive" class="ml-auto font-medium underline">Restore</button>@endif
+                @if ($canDelete)<button wire:click="archive(false)" wire:loading.attr="disabled" wire:target="archive" class="ml-auto font-medium underline">Restore</button>@endif
             </div>
         @endif
         <div class="flex flex-wrap items-center gap-3">
@@ -57,7 +57,7 @@
                             <button wire:click="openFields" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Custom fields</button>
                         @endif
                         @if ($canDelete)
-                            <button wire:click="archive" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $project->archived_at ? 'Restore project' : 'Archive project' }}</button>
+                            <button wire:click="archive({{ $project->archived_at ? 'false' : 'true' }})" wire:loading.attr="disabled" wire:target="archive" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $project->archived_at ? 'Restore project' : 'Archive project' }}</button>
                             <button wire:click="deleteProject" wire:confirm="Permanently delete “{{ $project->name }}” and all of its tasks and files?" class="block w-full rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">Delete project</button>
                         @endif
                     </div>

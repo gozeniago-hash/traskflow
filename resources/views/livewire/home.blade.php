@@ -17,7 +17,7 @@
             <ul class="flex-1 divide-y divide-gray-100">
                 @forelse ($upcoming as $task)
                     <li wire:key="h-{{ $task->id }}" class="flex cursor-pointer items-center gap-2.5 px-5 py-2.5 hover:bg-gray-50" wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}">
-                        <button wire:click.stop="toggleComplete({{ $task->id }})" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}" class="check {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
+                        <button wire:click.stop="setComplete({{ $task->id }}, {{ $task->isCompleted() ? 'false' : 'true' }})" wire:loading.attr="disabled" wire:target="setComplete" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}" class="check {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
                         <span class="flex-1 truncate text-sm {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}"><span class="mr-1.5 font-mono text-[11px] text-ink-500">{{ $task->ticket() }}</span>{{ $task->title }}</span>
                         <span class="hidden max-w-32 truncate rounded px-1.5 py-0.5 text-[11px] font-medium text-white sm:inline" style="background-color: {{ \App\Support\Color::forWhiteText($task->project->color) }}">{{ $task->project->name }}</span>
                         <span class="w-16 text-right text-xs {{ $task->dueClass() }}">{{ $task->dueLabel() }}</span>

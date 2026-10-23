@@ -34,7 +34,7 @@
                              wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}"
                              class="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition hover:border-gray-300 hover:shadow">
                             <div class="flex items-start gap-2">
-                                <button wire:click.stop="toggleComplete({{ $task->id }})" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}" class="check mt-0.5 {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
+                                <button wire:click.stop="setComplete({{ $task->id }}, {{ $task->isCompleted() ? 'false' : 'true' }})" wire:loading.attr="disabled" wire:target="setComplete" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}" class="check mt-0.5 {{ $task->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
                                 <div class="min-w-0">
                                     <p class="font-mono text-[11px] text-ink-500">{{ $project->key }}-{{ $task->number }}</p>
                                     <p class="text-sm font-medium leading-snug {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</p>

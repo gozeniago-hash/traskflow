@@ -346,7 +346,7 @@ class AccessTest extends TestCase
 
         // …until marked internal.
         $this->actingAs($admin);
-        Livewire::test(Overview::class, ['project' => $web])->call('toggleResourceShare', $file->id);
+        Livewire::test(Overview::class, ['project' => $web])->call('shareResource', $file->id, false);
         $this->actingAs($client)->get($file->attachment->fresh()->downloadUrl())->assertForbidden();
         Livewire::test(ProjectView::class, ['project' => $web])->assertDontSee('Brief')->assertSee('Figma');
     }

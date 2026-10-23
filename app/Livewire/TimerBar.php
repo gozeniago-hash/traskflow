@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Actions\Time\StopTimer;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\TimeEntry;
 use App\Support\TimeTracker;
@@ -16,9 +17,9 @@ class TimerBar extends Component
     #[On('timer-changed')]
     public function refreshTimer(): void {}
 
-    public function stop(): void
+    public function stop(StopTimer $stopTimer): void
     {
-        $entry = TimeTracker::stop($this->me());
+        $entry = $stopTimer->handle($this->me());
         $this->dispatch('timer-changed');
         $this->dispatch('task-saved');
         if ($entry) {

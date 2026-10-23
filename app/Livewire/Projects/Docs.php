@@ -2,14 +2,18 @@
 
 namespace App\Livewire\Projects;
 
+use App\Actions\Docs\CreateDoc;
+use App\Actions\Docs\RestoreDocRevision;
+use App\Actions\Docs\SaveDoc;
+use App\Actions\Docs\ShareDocWithClient;
+use App\Actions\Files\StoreUploads;
+use App\Actions\Ordering\MoveItem;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Attachment;
 use App\Models\Project;
 use App\Models\ProjectDoc;
 use App\Support\DocTemplates;
-use App\Support\HtmlSanitizer;
-use Illuminate\Support\Carbon;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Url;
@@ -33,8 +37,9 @@ class Docs extends Component
 
     public string $title = '';
 
-    /** updated_at of the doc when this edit session started (conflict detection). */
-    public ?string $editingSince = null;
+    /** The doc's version when this edit session started, or after its own last save (conflict detection). */
+    #[Locked]
+    public ?int $editingVersion = null;
 
     public bool $snapshotTaken = false;
 
@@ -93,34 +98,22 @@ class Docs extends Component
 
     // ------------------------------------------------------------- creating
 
-    public function create(string $template = 'blank'): void
+    public function create(CreateDoc $createDoc, string $template = 'blank'): void
     {
         $this->authorize('contribute', $this->project);
         $template = array_key_exists($template, DocTemplates::LIST) ? $template : 'blank';
 
-        $doc = $this->project->docs()->create([
-            'title' => DocTemplates::title($template),
-            'content' => DocTemplates::content($template, $this->project->name),
-            'position' => (int) $this->project->docs()->max('position') + 1,
-            'created_by' => $this->me()->id,
-            'updated_by' => $this->me()->id,
-        ]);
+        $doc = $createDoc->handle($this->project, $this->me(), DocTemplates::title($template), DocTemplates::content($template, $this->project->name));
 
         $this->showTemplates = false;
         $this->select($doc->id);
         $this->startEdit();
     }
 
-    public function duplicate(): void
+    public function duplicate(CreateDoc $createDoc): void
     {
         $doc = $this->editableDoc();
-        $copy = $this->project->docs()->create([
-            'title' => mb_substr($doc->title.' (copy)', 0, 255),
-            'content' => $doc->content,
-            'position' => (int) $this->project->docs()->max('position') + 1,
-            'created_by' => $this->me()->id,
-            'updated_by' => $this->me()->id,
-        ]);
+        $copy = $createDoc->handle($this->project, $this->me(), $doc->title.' (copy)', $doc->content);
         $this->select($copy->id);
         $this->toast('Doc duplicated.');
     }
@@ -132,7 +125,7 @@ class Docs extends Component
         $doc = $this->editableDoc();
         $this->editing = true;
         $this->title = $doc->title;
-        $this->editingSince = $doc->updated_at?->toIso8601String();
+        $this->editingVersion = $doc->version;
         $this->snapshotTaken = false;
         $this->showHistory = false;
         $this->previewRevisionId = null;
@@ -144,30 +137,23 @@ class Docs extends Component
      * Renderless so the editor isn't re-rendered while someone is typing.
      */
     #[Renderless]
-    public function autosave(string $html, string $title, bool $force = false): array
+    public function autosave(string $html, string $title, SaveDoc $saveDoc, bool $force = false): array
     {
         $doc = $this->editableDoc();
 
-        // Someone else saved since this session started: don't silently overwrite them.
-        if (! $force && $this->editingSince && (int) $doc->updated_by !== (int) $this->me()->id
-            && $doc->updated_at && $doc->updated_at->gt(Carbon::parse($this->editingSince))) {
-            return ['ok' => false, 'conflict' => true, 'by' => $doc->editor?->name ?? 'Someone'];
+        $result = $saveDoc->handle($doc, $this->me(), $html, $title, (int) $this->editingVersion, $force, keepPrevious: ! $this->snapshotTaken);
+        if ($result['conflict'] !== null) {
+            // Someone else saved since this session started: don't silently overwrite them.
+            return ['ok' => false, 'conflict' => true, 'by' => $result['conflict']];
         }
 
-        $title = trim($title) === '' ? 'Untitled doc' : mb_substr(trim($title), 0, 255);
-        $clean = HtmlSanitizer::clean($html);
-
-        if ($clean === (string) $doc->content && $title === $doc->title) {
-            return ['ok' => true, 'savedAt' => $doc->updated_at?->format('g:i A')];
+        if ($result['saved']) {
+            $this->snapshotTaken = true;
+            $this->editingVersion = $result['version'];
+            $this->title = $doc->title;
         }
 
-        $this->snapshotBeforeChange($doc);
-
-        $doc->forceFill(['title' => $title, 'content' => $clean, 'updated_by' => $this->me()->id])->save();
-        $this->editingSince = $doc->updated_at->toIso8601String();
-        $this->title = $title;
-
-        return ['ok' => true, 'savedAt' => $doc->updated_at->format('g:i A')];
+        return ['ok' => true, 'savedAt' => $doc->updated_at?->format('g:i A')];
     }
 
     /** Leaves edit mode. The browser saves first, so this only switches the view. */
@@ -184,40 +170,15 @@ class Docs extends Component
         $this->startEdit();
     }
 
-    /** Keep one revision of the previous state per edit session, so history can restore it. */
-    protected function snapshotBeforeChange(ProjectDoc $doc): void
-    {
-        if ($this->snapshotTaken) {
-            return;
-        }
-        $this->snapshotTaken = true;
-
-        if (trim((string) $doc->content) === '' && $doc->revisions()->doesntExist()) {
-            return; // brand-new empty doc, nothing worth keeping
-        }
-
-        $revision = $doc->revisions()->create([
-            'user_id' => $doc->updated_by,
-            'title' => $doc->title,
-            'content' => $doc->content,
-        ]);
-        // Date the revision when that version was actually written.
-        $revision->forceFill(['created_at' => $doc->updated_at, 'updated_at' => $doc->updated_at])->save();
-
-        // Keep history bounded.
-        $keep = $doc->revisions()->limit(50)->pluck('id');
-        $doc->revisions()->whereNotIn('id', $keep)->delete();
-    }
-
     // ----------------------------------------------------- uploads in editor
 
     /** Called from the editor after $wire.upload('docUpload', file). */
-    public function storeDocUpload(): array
+    public function storeDocUpload(StoreUploads $storeUploads): array
     {
         $doc = $this->editableDoc();
         $this->validate(['docUpload' => Attachment::rules(required: true)], [], ['docUpload' => 'file']);
 
-        $attachment = Attachment::storeUpload($this->docUpload, $this->project, $this->me(), null, false, null, $doc);
+        $attachment = $storeUploads->handle([$this->docUpload], $this->project, $this->me(), null, false, null, $doc)->first();
         $this->docUpload = null;
 
         return [
@@ -229,44 +190,40 @@ class Docs extends Component
 
     // ------------------------------------------------------------- settings
 
-    public function toggleShare(): void
+    public function share(bool $shared, ShareDocWithClient $shareDocWithClient): void
     {
-        $this->authorize('update', $this->project); // what clients see is a project setting
+        $this->authorize('shareWithClient', $this->project);
         $doc = $this->editableDoc();
-        if (! $doc->client_visible && ! $this->project->portal_enabled) {
+        if ($shared && ! $this->project->portal_enabled) {
             $this->toast('Turn on the client portal for this project first (project details).', 'error');
 
             return;
         }
-        $doc->forceFill(['client_visible' => ! $doc->client_visible])->saveQuietly();
-        $this->toast($doc->client_visible ? 'Doc shared with the client.' : 'Doc is now internal only.');
+        $shareDocWithClient->handle($doc, $shared);
+        $this->toast($shared ? 'Doc shared with the client.' : 'Doc is now internal only.');
     }
 
-    public function move(int $direction): void
+    public function move(int $direction, MoveItem $moveItem): void
     {
         $doc = $this->editableDoc();
-        $docs = $this->project->docs()->get()->values();
-        $i = $docs->search(fn ($d) => $d->id === $doc->id);
-        $j = $i + ($direction < 0 ? -1 : 1);
-        if ($i === false || ! isset($docs[$j])) {
-            return;
-        }
-        $ordered = $docs->all();
-        [$ordered[$i], $ordered[$j]] = [$ordered[$j], $ordered[$i]];
-        foreach ($ordered as $pos => $d) {
-            $d->forceFill(['position' => $pos + 1])->saveQuietly();
-        }
+        $moveItem->handle($this->project->docs(), $doc->id, $direction);
     }
 
     public function delete(): void
     {
         $doc = $this->editableDoc();
-        abort_unless((int) $doc->created_by === (int) $this->me()->id || $this->me()->can('update', $this->project) || (int) $this->project->owner_id === (int) $this->me()->id, 403, 'Only the doc author, the project owner or an admin can delete it.');
+        abort_unless($this->canDelete($doc), 403, 'Only the doc author, the project owner or a manager can delete it.');
         $doc->delete();
         $this->docId = $this->project->docs()->value('id');
         $this->title = (string) $this->doc()?->title;
         $this->editing = false;
         $this->toast('Doc deleted.');
+    }
+
+    /** The doc's author deletes it, and so does whoever manages the project, and its owner. */
+    protected function canDelete(ProjectDoc $doc): bool
+    {
+        return (int) $doc->created_by === (int) $this->me()->id || $this->me()->can('manageContent', $this->project);
     }
 
     // -------------------------------------------------------------- history
@@ -283,14 +240,12 @@ class Docs extends Component
         $this->previewRevisionId = $id;
     }
 
-    public function restoreRevision(int $id): void
+    public function restoreRevision(int $id, RestoreDocRevision $restoreDocRevision): void
     {
         $doc = $this->editableDoc();
         $revision = $doc->revisions()->findOrFail($id);
 
-        $this->snapshotTaken = false;
-        $this->snapshotBeforeChange($doc); // current version stays restorable
-        $doc->forceFill(['title' => $revision->title, 'content' => $revision->content, 'updated_by' => $this->me()->id])->save();
+        $restoreDocRevision->handle($doc, $revision, $this->me());
 
         $this->title = $doc->title;
         $this->previewRevisionId = null;
@@ -308,8 +263,8 @@ class Docs extends Component
             'docs' => $this->project->docs()->with('editor')->get(['id', 'title', 'client_visible', 'updated_at', 'updated_by', 'position']),
             'doc' => $doc,
             'canEdit' => $this->me()->can('contribute', $this->project),
-            'canManage' => $this->me()->can('update', $this->project),
-            'canDelete' => $doc && ((int) $doc->created_by === (int) $this->me()->id || $this->me()->can('update', $this->project) || (int) $this->project->owner_id === (int) $this->me()->id),
+            'canManage' => $this->me()->can('shareWithClient', $this->project),
+            'canDelete' => $doc && $this->canDelete($doc),
             'revisions' => $doc && $this->showHistory ? $doc->revisions()->with('user')->get() : collect(),
             'preview' => $doc && $this->previewRevisionId ? $doc->revisions()->with('user')->find($this->previewRevisionId) : null,
             'templates' => DocTemplates::LIST,

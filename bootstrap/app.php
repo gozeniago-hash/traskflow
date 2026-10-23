@@ -27,7 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureAdmin::class,
             'secure' => EnsureAccountSecure::class,
         ]);
-        // Railway (and most PaaS hosts) terminate HTTPS at a proxy.
+        // Most hosts terminate HTTPS at a proxy.
         $middleware->trustProxies(at: '*');
         // …but read the visitor's address from the last hop only (see the middleware).
         $middleware->prepend(UseNearestForwardedIp::class);

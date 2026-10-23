@@ -2,12 +2,11 @@
 
 namespace App\Livewire\Projects;
 
+use App\Actions\Projects\CreateProject;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
 use App\Models\ProjectField;
-use App\Support\ProjectLog;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -105,7 +104,7 @@ class Index extends Component
         $this->new = true;
     }
 
-    public function create()
+    public function create(CreateProject $createProject)
     {
         $this->authorize('create', Project::class);
         $ws = $this->workspace();
@@ -132,56 +131,8 @@ class Index extends Component
             'form.key.unique' => 'Another project in this workspace already uses that ID.',
         ])['form'];
 
-        $project = DB::transaction(function () use ($data, $ws) {
-            $project = $ws->projects()->create([
-                'name' => $data['name'],
-                'key' => $data['key'] ?: null,
-                'description' => $data['description'] ?: null,
-                'color' => $data['color'],
-                'team_id' => $data['team_id'] ?: null,
-                'client_id' => $data['client_id'] ?: null,
-                'owner_id' => $this->me()->id,
-                'privacy' => $data['privacy'],
-                'default_view' => $data['layout'] === 'board' ? 'board' : 'list',
-                'portal_enabled' => $data['client_id'] ? (bool) $data['portal_enabled'] : false,
-                'due_date' => $data['due_date'] ?: null,
-            ]);
-            $project->members()->attach($this->me()->id);
-
-            $sections = match ($data['layout']) {
-                'board' => ['To do', 'In progress', 'In review', 'Done'],
-                'client' => ['Discovery', 'Design', 'Build', 'Client review', 'Launch'],
-                default => ['To do'],
-            };
-            foreach ($sections as $i => $name) {
-                ProjectLog::quietly(fn () => $project->sections()->create(['name' => $name, 'position' => $i + 1])); // starter sections aren't news
-            }
-
-            foreach (array_values($data['fields'] ?? []) as $i => $row) {
-                $hasOptions = in_array($row['type'], ['select', 'multiselect'], true);
-                $presetColors = ProjectField::PRESETS[$this->form['fields'][$i]['preset'] ?? '']['options'] ?? [];
-                $labels = array_values(array_unique(array_filter(array_map('trim', preg_split('/[,\n]+/', (string) ($row['options'] ?? ''))))));
-
-                // Keep preset colours where the label matches; other options get automatic colours.
-                $options = [];
-                foreach ($labels as $label) {
-                    if (isset($presetColors[$label])) {
-                        $options[$label] = $presetColors[$label];
-                    } else {
-                        $options[] = $label;
-                    }
-                }
-
-                $project->fields()->create([
-                    'name' => trim($row['name']),
-                    'type' => $hasOptions && ! $labels ? 'text' : $row['type'],
-                    'options' => $hasOptions && $labels ? ProjectField::makeOptions($options) : null,
-                    'position' => $i + 1,
-                ]);
-            }
-
-            return $project;
-        });
+        $fields = array_map(fn (array $row, int $i): array => [...$row, 'preset' => $this->form['fields'][$i]['preset'] ?? null], $data['fields'] ?? [], array_keys($data['fields'] ?? []));
+        $project = $createProject->handle($ws, $this->me(), $data, $fields);
 
         $this->new = false;
         session()->flash('status', 'Project created. Add your first tasks!');
@@ -199,7 +150,7 @@ class Index extends Component
                 'topLevelTasks as tasks_total',
                 'topLevelTasks as tasks_done' => fn ($q) => $q->whereNotNull('completed_at'),
             ])
-            ->when($this->search !== '', fn ($q) => $q->where('name', 'like', '%'.$this->search.'%'))
+            ->when($this->search !== '', fn ($q) => $q->where('name', 'like', '%'.str_replace(['%', '_'], ['\%', '\_'], $this->search).'%'))
             ->when($this->status !== '', fn ($q) => $q->where('status', $this->status))
             ->when($this->team !== '', fn ($q) => $q->where('team_id', $this->team))
             ->when($this->scope === 'mine', fn ($q) => $q->where(fn ($w) => $w->where('owner_id', $me->id)

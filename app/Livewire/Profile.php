@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Actions\Profile\UpdateProfile;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\User;
 use App\Support\Audit;
@@ -11,7 +12,6 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Throwable;
 
 #[Title('Profile')]
 class Profile extends Component
@@ -50,31 +50,20 @@ class Profile extends Component
         $this->avatar_color = (string) $me->avatar_color;
     }
 
-    public function saveProfile(): void
+    public function saveProfile(UpdateProfile $updateProfile): void
     {
+        $this->email = strtolower(trim($this->email));
         $data = $this->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:190', Rule::unique('users', 'email')->ignore($this->me()->id)],
             'title' => ['nullable', 'string', 'max:120'],
             'avatar_color' => ['required', Rule::in(User::AVATAR_COLORS)],
         ]);
-        $me = $this->me();
-        $emailChanged = strtolower($data['email']) !== strtolower($me->email);
-        $me->update($data);
-        if ($emailChanged) {
-            Audit::log('auth.email_changed', $me->name.' changed their email to '.$me->email, $me);
-            if (config('taskflow.verify_email')) {
-                // The new address has to be confirmed too.
-                $me->forceFill(['email_verified_at' => null])->save();
-                try {
-                    $me->sendEmailVerificationNotification();
-                } catch (Throwable $e) {
-                    report($e);
-                }
-                $this->redirectRoute('verification.notice');
 
-                return;
-            }
+        if ($updateProfile->handle($this->me(), $data)) {
+            $this->redirectRoute('verification.notice');
+
+            return;
         }
         $this->dispatch('profile-updated');
         $this->toast('Profile saved.');

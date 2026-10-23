@@ -3,11 +3,16 @@
 namespace App\Models;
 
 use App\Support\ProjectLog;
+use Database\Factories\ActivityFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Activity extends Model
 {
+    /** @use HasFactory<ActivityFactory> */
+    use HasFactory;
+
     protected $fillable = ['project_id', 'task_id', 'user_id', 'kind', 'subject_id', 'action', 'meta'];
 
     protected function casts(): array
@@ -45,16 +50,19 @@ class Activity extends Model
         ]);
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Task, $this> */
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);
@@ -81,7 +89,7 @@ class Activity extends Model
             'description_changed' => 'edited the description',
             'priority_changed' => 'set the priority to '.($m['to'] ?? '—'),
             'start_changed' => isset($m['to']) ? 'changed the start date to '.$m['to'] : 'removed the start date',
-            'field_changed' => isset($m['to']) && $m['to'] !== null && $m['to'] !== '' ? 'set '.($m['field'] ?? 'a field').' to '.$m['to'] : 'cleared '.($m['field'] ?? 'a field'),
+            'field_changed' => isset($m['to']) && $m['to'] !== '' ? 'set '.($m['field'] ?? 'a field').' to '.$m['to'] : 'cleared '.($m['field'] ?? 'a field'),
             default => str_replace('_', ' ', $this->action),
         };
     }

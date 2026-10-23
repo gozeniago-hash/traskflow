@@ -85,7 +85,16 @@ Attachments are stored privately in `storage/app/private/attachments` and served
 
 - App limit: `TASKFLOW_MAX_UPLOAD_KB` in `.env` (default 20 MB).
 - PHP limits must allow it too: raise `upload_max_filesize` and `post_max_size` in `php.ini`.
-- To use S3, configure the `s3` disk and change `'local'` in `App\Models\Attachment::storeUpload()`.
+- Where new uploads go: `TASKFLOW_UPLOADS_DISK` (default `local`, this server's drive). On a host whose drive is wiped on deploy (e.g. Railway without a volume), mount a volume at `storage/`.
+
+### Moving files to a bucket (e.g. Laravel Cloud object storage)
+
+Each file remembers its own disk, so old and new files keep working during the move.
+
+1. Fill in the bucket's credentials for the `s3` disk (`AWS_*` variables, plus `AWS_ENDPOINT` for S3-compatible storage).
+2. On the **old** server, which can reach both its drive and the bucket, run `php artisan files:move-to s3`. It copies each file, checks it arrived, switches the row, then removes the old copy. It is safe to run again; files it can't find are listed and left alone.
+3. Set `TASKFLOW_UPLOADS_DISK=s3` so new uploads go to the bucket.
+4. With more than one app server, also keep Livewire's temporary uploads in the bucket: set `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK=s3`, allow `PUT` and `GET` from the app's domain in the bucket's CORS settings, and run `php artisan livewire:configure-s3-upload-cleanup` once.
 
 ## Changing styles
 
@@ -131,7 +140,7 @@ Policies build on that scope, and client views additionally filter by `client_vi
 
 ## Deploying
 
-Standard Laravel deployment applies. For example, with Forge, Ploi, Laravel Cloud, a VPS with Nginx + PHP-FPM, or Railway:
+Standard Laravel deployment applies. For example, with Forge, Ploi, Laravel Cloud, or a VPS with Nginx + PHP-FPM:
 
 ```bash
 composer install --no-dev --optimize-autoloader

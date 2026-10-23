@@ -2,6 +2,10 @@
 
 namespace App\Livewire\Projects;
 
+use App\Actions\Ordering\MoveItem;
+use App\Actions\Projects\AddProjectMember;
+use App\Actions\Resources\ShareResourceWithClient;
+use App\Enums\ApprovalStatus;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Attachment;
@@ -12,7 +16,6 @@ use App\Models\TimeEntry;
 use App\Models\User;
 use App\Support\Audit;
 use App\Support\ProjectLog;
-use App\Support\Realtime;
 use App\Support\Undo;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -117,15 +120,12 @@ class Overview extends Component
         $update->delete();
     }
 
-    public function addProjectMember(): void
+    public function addProjectMember(AddProjectMember $addProjectMember): void
     {
         $this->authorize('update', $this->project);
-        $userId = (int) $this->addMember;
-        if ($userId && $this->workspace()->members()->whereKey($userId)->exists()) {
-            if ($this->project->members()->syncWithoutDetaching([$userId])['attached']) {
-                ProjectLog::member($this->project, 'added', User::find($userId)?->name);
-            }
-            Audit::log('project.member_added', 'Added '.User::find($userId)?->name.' to project “'.$this->project->name.'”', $this->project, ['user_id' => $userId]);
+        $member = User::find((int) $this->addMember);
+        if ($member && $this->workspace()->members()->whereKey($member->id)->exists()) {
+            $addProjectMember->handle($this->project, $member);
         }
         $this->addMember = '';
     }
@@ -175,13 +175,10 @@ class Overview extends Component
         $this->resourceFiles = [];
     }
 
-    public function toggleResourceShare(int $id): void
+    public function shareResource(int $id, bool $shared, ShareResourceWithClient $shareResourceWithClient): void
     {
-        $this->authorize('update', $this->project);
-        $resource = $this->resource($id);
-        $resource->update(['client_visible' => ! $resource->client_visible]);
-        // A shared file must be downloadable from the portal, so the file follows the resource.
-        $resource->attachment?->update(['client_visible' => $resource->client_visible]);
+        $this->authorize('shareWithClient', $this->project);
+        $shareResourceWithClient->handle($this->resource($id), $shared);
     }
 
     public function renameResource(int $id, string $title): void
@@ -193,21 +190,10 @@ class Overview extends Component
         }
     }
 
-    public function moveResource(int $id, int $direction): void
+    public function moveResource(int $id, int $direction, MoveItem $moveItem): void
     {
         $this->authorize('update', $this->project);
-        $items = $this->project->resources()->get()->values();
-        $from = $items->search(fn ($r) => $r->id === $id);
-        $to = $from + ($direction < 0 ? -1 : 1);
-        if ($from === false || ! isset($items[$to])) {
-            return;
-        }
-        $order = $items->pluck('id')->all();
-        [$order[$from], $order[$to]] = [$order[$to], $order[$from]];
-        foreach ($order as $pos => $rid) {
-            ProjectResource::whereKey($rid)->update(['position' => $pos + 1]);
-        }
-        Realtime::touch($this->project->id);
+        $moveItem->handle($this->project->resources(), $id, $direction);
     }
 
     public function removeResource(int $id): void
@@ -255,7 +241,7 @@ class Overview extends Component
             'canSeeTeam' => $canSeeTeam,
             'hasClient' => (bool) $project->client_id,
             'portalOn' => (bool) $project->portal_enabled && $project->client_id,
-            'pendingApprovals' => $project->tasks()->where('approval_status', 'pending')->count(),
+            'pendingApprovals' => $project->tasks()->where('approval_status', ApprovalStatus::Pending)->count(),
             // Members see only their own time; managers and admins see everyone's.
             'timeTotal' => (int) TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')->when(! $canSeeTeam, fn ($q) => $q->where('user_id', $this->me()->id))->sum('duration_seconds'),
             'timeByPerson' => TimeEntry::where('project_id', $project->id)->whereNotNull('ended_at')->when(! $canSeeTeam, fn ($q) => $q->where('user_id', $this->me()->id))

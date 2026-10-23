@@ -52,3 +52,46 @@ jobs:
 
       - name: Run tests
         run: php artisan test
+
+  test-mysql:
+    name: Tests on MySQL (production database)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: taskflow_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_mysql, pcntl, intl, zip, gd
+          coverage: none
+
+      - name: Install PHP dependencies (from composer.lock)
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          # phpunit.xml pins SQLite; force MySQL for this run so local-only SQLite leniency can't hide failures.
+          sed -e 's#<env name="DB_CONNECTION" value="sqlite"/>#<env name="DB_CONNECTION" value="mysql" force="true"/>#' \
+              -e 's#<env name="DB_DATABASE" value=":memory:"/>#<env name="DB_DATABASE" value="taskflow_test" force="true"/>#' \
+              phpunit.xml > phpunit.mysql.xml
+          grep -q 'value="mysql" force="true"' phpunit.mysql.xml
+
+      - name: Run tests
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USERNAME: root
+          DB_PASSWORD: ''
+        run: vendor/bin/phpunit -c phpunit.mysql.xml

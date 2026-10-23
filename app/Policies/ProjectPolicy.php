@@ -35,8 +35,20 @@ class ProjectPolicy
     /** Add, rename, reorder and delete sections: whoever manages the project, and its owner. */
     public function manageSections(User $user, Project $project): bool
     {
+        return $this->manageContent($user, $project);
+    }
+
+    /** Delete anyone's tasks, files and docs: whoever manages the project, and its owner. Others delete only their own. */
+    public function manageContent(User $user, Project $project): bool
+    {
         return $this->update($user, $project)
             || (! $user->isClient() && $project->owner_id === $user->id && $project->isVisibleTo($user));
+    }
+
+    /** Choose what the client sees in the portal: tasks, files, docs and key resources. */
+    public function shareWithClient(User $user, Project $project): bool
+    {
+        return $this->update($user, $project);
     }
 
     /** See everyone's time and workload in this project (members see only their own). */

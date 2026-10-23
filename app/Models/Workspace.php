@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Database\Factories\WorkspaceFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Workspace extends Model
+class Workspace extends BaseModel
 {
+    /** @use HasFactory<WorkspaceFactory> */
+    use HasFactory;
+
     public const ROLES = [
         'owner' => 'Owner',
         'admin' => 'Admin',
@@ -33,16 +37,19 @@ class Workspace extends Model
         return ['github_token' => 'encrypted', 'require_two_factor' => 'boolean'];
     }
 
+    /** @return HasMany<GithubRepository, $this> */
     public function githubRepositories(): HasMany
     {
         return $this->hasMany(GithubRepository::class)->orderBy('full_name');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
 
+    /** @return BelongsToMany<User, $this> */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'workspace_user')->withPivot(['role', 'client_id'])->withTimestamps();
@@ -59,21 +66,25 @@ class Workspace extends Model
         return $this->users()->wherePivot('role', 'client');
     }
 
+    /** @return HasMany<Client, $this> */
     public function clients(): HasMany
     {
         return $this->hasMany(Client::class);
     }
 
+    /** @return HasMany<Team, $this> */
     public function teams(): HasMany
     {
         return $this->hasMany(Team::class);
     }
 
+    /** @return HasMany<Project, $this> */
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
     }
 
+    /** @return HasMany<Invitation, $this> */
     public function invitations(): HasMany
     {
         return $this->hasMany(Invitation::class);

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Actions\Invitations\SendInvitation;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Support\Audit;
 use App\Support\Invites;
@@ -34,7 +35,7 @@ class Members extends Component
         $this->showInvite = true;
     }
 
-    public function invite(): void
+    public function invite(SendInvitation $sendInvitation): void
     {
         $this->requireAdmin();
         $this->validate([
@@ -60,7 +61,7 @@ class Members extends Component
         }
         $this->sentLinks = [];
         foreach ($list->diff($existing) as $email) {
-            $invitation = Invites::send($this->workspace(), $this->me(), $email, $this->role, null, $this->inviteTeams);
+            $invitation = $sendInvitation->handle($this->workspace(), $this->me(), $email, $this->role, null, $this->inviteTeams);
             $this->sentLinks[$email] = $invitation->url();
             Audit::log('invitation.sent', 'Invited '.$email.' as '.$this->role, $invitation, ['role' => $this->role, 'teams' => $this->inviteTeams]);
         }

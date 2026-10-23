@@ -3,13 +3,10 @@
 namespace App\Support;
 
 use App\Models\Attachment;
-use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Throwable;
 
 /**
  * Makes deletes undoable for a few minutes.
@@ -24,7 +21,7 @@ class Undo
     public const MINUTES = 10;
 
     /** Insert order matters: parents before the rows that point at them. */
-    protected const ORDER = ['sections', 'tasks', 'comments', 'attachments', 'project_resources', 'activities', 'time_entries', 'task_field_values', 'pull_request_task'];
+    public const ORDER = ['sections', 'tasks', 'comments', 'attachments', 'project_resources', 'activities', 'time_entries', 'task_field_values', 'pull_request_task'];
 
     /**
      * @param array<string, array<int, array>> $rows table => rows
@@ -97,53 +94,8 @@ class Undo
         }
     }
 
-    /**
-     * Put the rows back. Returns the snapshot's project id on success, or an error message.
-     *
-     * @return array{ok:bool, message:string, project_id:?int}
-     */
-    public static function restore(string $id, User $user): array
-    {
-        $snap = DB::table('undo_snapshots')->where('id', $id)->where('user_id', $user->id)->first();
-        if (! $snap || now()->greaterThan($snap->expires_at)) {
-            return ['ok' => false, 'message' => 'This can no longer be undone.', 'project_id' => null];
-        }
-
-        $payload = json_decode($snap->payload, true);
-        try {
-            DB::transaction(function () use ($payload, $snap): void {
-                foreach (self::ORDER as $table) {
-                    foreach ($payload['rows'][$table] ?? [] as $row) {
-                        $row = static::repair($table, $row, $snap->project_id);
-                        if ($row !== null) {
-                            DB::table($table)->insert($row);
-                        }
-                    }
-                }
-                foreach ($payload['moves'] ?? [] as [$taskId, $sectionId, $position]) {
-                    DB::table('tasks')->where('id', $taskId)->where('project_id', $snap->project_id)
-                        ->update(['section_id' => $sectionId, 'position' => $position]);
-                }
-                DB::table('undo_snapshots')->where('id', $snap->id)->delete();
-            });
-        } catch (Throwable $e) {
-            Log::warning('Undo failed: '.$e->getMessage());
-
-            return ['ok' => false, 'message' => 'Couldn’t undo: something it depended on was changed or removed.', 'project_id' => null];
-        }
-
-        if ($snap->project_id) {
-            Realtime::touch((int) $snap->project_id);
-            if (Project::whereKey($snap->project_id)->exists()) {
-                ProjectLog::restored((int) $snap->project_id, $snap->label);
-            }
-        }
-
-        return ['ok' => true, 'message' => 'Restored.', 'project_id' => $snap->project_id ? (int) $snap->project_id : null];
-    }
-
     /** Point restored rows at things that may have gone in the meantime; skip rows that can't be restored. */
-    protected static function repair(string $table, array $row, ?int $projectId): ?array
+    public static function repair(string $table, array $row, ?int $projectId, string $deletedAt): ?array
     {
         $userColumns = ['user_id', 'creator_id', 'assignee_id', 'completed_by', 'approval_by'];
         foreach ($userColumns as $col) {
@@ -154,6 +106,12 @@ class Undo
 
         if ($table === 'tasks' && ! empty($row['section_id']) && ! DB::table('sections')->where('id', $row['section_id'])->exists()) {
             $row['section_id'] = DB::table('sections')->where('project_id', $row['project_id'])->orderBy('position')->value('id');
+        }
+        // A timer that was running when its task was deleted comes back stopped at that moment,
+        // so the restore never leaves someone with two running timers.
+        if ($table === 'time_entries' && empty($row['ended_at'])) {
+            $row['ended_at'] = $deletedAt;
+            $row['duration_seconds'] = max(0, strtotime($deletedAt) - strtotime((string) $row['started_at']));
         }
         if ($table === 'pull_request_task' && ! DB::table('pull_requests')->where('id', $row['pull_request_id'])->exists()) {
             return null;
@@ -171,15 +129,22 @@ class Undo
     /** Forget snapshots whose window has passed and remove the files they were keeping. */
     public static function purgeExpired(): void
     {
-        $expired = DB::table('undo_snapshots')->where('expires_at', '<', now())->limit(100)->get();
-        foreach ($expired as $snap) {
-            foreach (json_decode($snap->files ?? '[]', true) ?: [] as $file) {
-                // Only remove the file if nothing (e.g. a later restore of another snapshot) uses it.
-                if (! DB::table('attachments')->where('path', $file['path'])->exists()) {
-                    Storage::disk($file['disk'])->delete($file['path']);
+        $expired = DB::table('undo_snapshots')->where('expires_at', '<', now())->limit(100)->pluck('id');
+        foreach ($expired as $id) {
+            // Lock the snapshot first: if an undo of it is running, wait for it, and skip it once it's restored.
+            DB::transaction(function () use ($id): void {
+                $snap = DB::table('undo_snapshots')->where('id', $id)->where('expires_at', '<', now())->lockForUpdate()->first();
+                if (! $snap) {
+                    return;
                 }
-            }
-            DB::table('undo_snapshots')->where('id', $snap->id)->delete();
+                foreach (json_decode($snap->files ?? '[]', true) ?: [] as $file) {
+                    // Only remove the file if nothing (e.g. a later restore of another snapshot) uses it.
+                    if (! DB::table('attachments')->where('path', $file['path'])->exists()) {
+                        Storage::disk($file['disk'])->delete($file['path']);
+                    }
+                }
+                DB::table('undo_snapshots')->where('id', $snap->id)->delete();
+            });
         }
     }
 }

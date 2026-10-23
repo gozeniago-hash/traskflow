@@ -70,7 +70,7 @@
                     </p>
                     <div class="ml-auto flex items-center gap-1.5">
                         @if ($project->client_id)
-                            <button @if ($canManage) wire:click="toggleShare" @endif class="pill {{ $doc->client_visible ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-gray-100 text-ink-500' }}" title="{{ $canManage ? 'Click to change' : '' }}">
+                            <button @if ($canManage) wire:click="share({{ $doc->client_visible ? 'false' : 'true' }})" wire:loading.attr="disabled" wire:target="share" @endif class="pill {{ $doc->client_visible ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-gray-100 text-ink-500' }}" title="{{ $canManage ? 'Click to change' : '' }}">
                                 <x-icon :name="$doc->client_visible ? 'eye' : 'eye-off'" class="h-3 w-3" /> {{ $doc->client_visible ? 'Shared with client' : 'Internal' }}
                             </button>
                         @endif
@@ -81,8 +81,8 @@
                                 <button x-on:click="open = !open" aria-label="Doc options" :aria-expanded="open" class="btn-ghost btn px-1.5"><x-icon name="dots" class="h-5 w-5" /></button>
                                 <div x-cloak x-show="open" x-on:click.outside="open = false" x-on:click="open = false" class="absolute right-0 z-30 mt-1 w-44 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
                                     <button wire:click="duplicate" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Duplicate</button>
-                                    <button wire:click="move(-1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move up</button>
-                                    <button wire:click="move(1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move down</button>
+                                    <button wire:click="move(-1)" wire:loading.attr="disabled" wire:target="move" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move up</button>
+                                    <button wire:click="move(1)" wire:loading.attr="disabled" wire:target="move" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move down</button>
                                     <button x-data x-on:click="window.print()" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Print / save as PDF</button>
                                     @if ($canDelete)
                                         <button wire:click="delete" wire:confirm="Delete “{{ $doc->title }}”? Its history and images are deleted too." class="block w-full rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">Delete doc</button>

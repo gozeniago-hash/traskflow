@@ -38,7 +38,7 @@ line. The reason is required and gets reviewed like code.
 - Tokens and secrets come from `Str::random()` or `random_bytes()`. No `rand`, `mt_rand`,
   `uniqid`, `md5` or `sha1`.
 - Compare secrets with `hash_equals()`.
-- Secrets live in Railway variables, never in the repository.
+- Secrets live in the host's environment variables, never in the repository.
 - Models list `$fillable`; never `$guarded = []`.
 
 **Platform**

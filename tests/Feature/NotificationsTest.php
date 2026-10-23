@@ -50,7 +50,7 @@ class NotificationsTest extends TestCase
         $this->actingAs($leo);
 
         $task = $web->tasks()->whereNull('parent_id')->first();
-        $task->update(['title' => 'Homepage hero, final']);
+        $task->update(['title' => 'Homepage hero, final', 'creator_id' => $leo->id]); // members delete only their own tasks
         $section = $web->sections()->create(['name' => 'QA', 'position' => 99]);
         $section->update(['name' => 'Quality checks']);
         $doc = $web->docs()->create(['title' => 'Launch checklist', 'content' => '<p>a</p>', 'created_by' => $leo->id]);

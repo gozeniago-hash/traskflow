@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Workspaces\CreateWorkspace;
+use App\Http\Requests\CreateWorkspaceRequest;
 use App\Models\Workspace;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class WorkspaceController extends Controller
 {
@@ -23,20 +24,9 @@ class WorkspaceController extends Controller
         return redirect()->route('dashboard')->with('status', 'Switched to '.$workspace->name.'.');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(CreateWorkspaceRequest $request, CreateWorkspace $createWorkspace): RedirectResponse
     {
-        $data = $request->validate(['name' => ['required', 'string', 'max:120']]);
-        $user = $request->user();
-
-        $workspace = DB::transaction(function () use ($data, $user) {
-            $workspace = Workspace::create(['name' => $data['name'], 'owner_id' => $user->id]);
-            $workspace->users()->attach($user->id, ['role' => 'owner']);
-            $workspace->teams()->create(['name' => 'General'])->users()->attach($user->id);
-
-            return $workspace;
-        });
-
-        $user->switchWorkspace($workspace);
+        $createWorkspace->handle($request->user(), $request->validated('name'));
 
         return redirect()->route('home')->with('status', 'Workspace created.');
     }

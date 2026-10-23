@@ -2,9 +2,13 @@
 
 namespace App\Livewire\Portal;
 
+use App\Actions\Comments\AddComment;
+use App\Actions\Files\StoreUploads;
+use App\Actions\Tasks\AnswerApproval;
+use App\Actions\Tasks\SubmitClientRequest;
+use App\Enums\ApprovalStatus;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
-use App\Models\Activity;
 use App\Models\Attachment;
 use App\Models\Project;
 use App\Models\Task;
@@ -109,7 +113,7 @@ class ProjectView extends Component
         $this->commentFiles = array_values($this->commentFiles);
     }
 
-    public function addComment(): void
+    public function addComment(AddComment $addComment): void
     {
         $task = $this->sharedTask($this->openTaskId);
         $this->authorize('comment', $task);
@@ -124,52 +128,44 @@ class ProjectView extends Component
             return;
         }
 
-        $comment = $task->comments()->create(['user_id' => $this->me()->id, 'body' => trim($this->comment), 'is_internal' => false]);
-        foreach ($this->commentFiles as $file) {
-            Attachment::storeUpload($file, $this->project, $this->me(), $task, false, $comment);
-        }
+        $addComment->handle($task, $this->me(), $this->comment, false, $this->commentFiles);
 
         $this->reset(['comment', 'commentFiles', 'newCommentFiles']);
         $this->toast('Message sent to the team.');
     }
 
-    public function approve(): void
+    public function approve(AnswerApproval $answerApproval): void
     {
         $task = $this->sharedTask($this->openTaskId);
         $this->authorize('approve', $task);
-        $task->update(['approval_status' => 'approved', 'approval_by' => $this->me()->id, 'approval_at' => now()]);
-        Activity::record($task, $this->me(), 'approved');
-        if (trim($this->feedback) !== '') {
-            $task->comments()->create(['user_id' => $this->me()->id, 'body' => trim($this->feedback), 'is_internal' => false]);
+        $this->validate(['feedback' => ['nullable', 'string', 'max:5000']]);
+        if ($answerApproval->handle($task, $this->me(), ApprovalStatus::Approved, $this->feedback)) {
+            $this->toast('Approved — thank you!');
         }
         $this->feedback = '';
-        $this->toast('Approved — thank you!');
     }
 
-    public function requestChanges(): void
+    public function requestChanges(AnswerApproval $answerApproval): void
     {
         $task = $this->sharedTask($this->openTaskId);
         $this->authorize('approve', $task);
         $this->validate(['feedback' => ['required', 'string', 'max:5000']], ['feedback.required' => 'Tell the team what you would like changed.']);
-        $task->update(['approval_status' => 'changes_requested', 'approval_by' => $this->me()->id, 'approval_at' => now()]);
-        $task->comments()->create(['user_id' => $this->me()->id, 'body' => trim($this->feedback), 'is_internal' => false]);
-        Activity::record($task, $this->me(), 'changes_requested');
+        if ($answerApproval->handle($task, $this->me(), ApprovalStatus::ChangesRequested, $this->feedback)) {
+            $this->toast('Your feedback was sent to the team.');
+        }
         $this->feedback = '';
-        $this->toast('Your feedback was sent to the team.');
     }
 
-    public function updatedUploads(): void
+    public function updatedUploads(StoreUploads $storeUploads): void
     {
         $task = $this->sharedTask($this->openTaskId);
         $this->validate(['uploads.*' => Attachment::rules()]);
-        foreach ($this->uploads as $file) {
-            Attachment::storeUpload($file, $this->project, $this->me(), $task);
-        }
+        $storeUploads->handle($this->uploads, $this->project, $this->me(), $task);
         $this->uploads = [];
         $this->toast('File uploaded.');
     }
 
-    public function submitRequest(): void
+    public function submitRequest(SubmitClientRequest $submitClientRequest): void
     {
         $this->authorize('view', $this->project);
         $this->validate([
@@ -179,26 +175,11 @@ class ProjectView extends Component
             'requestFiles.*' => Attachment::rules(),
         ]);
 
-        $section = $this->project->sections()->firstOrCreate(
-            ['name' => 'Client requests'],
-            ['position' => 0],
-        );
-
-        $task = $this->project->tasks()->create([
-            'section_id' => $section->id,
+        $submitClientRequest->handle($this->project, $this->me(), [
             'title' => $this->requestTitle,
-            'description' => $this->requestDetails ?: null,
-            'due_date' => $this->requestDue ?: null,
-            'creator_id' => $this->me()->id,
-            'client_visible' => true,
-            'requested_by_client' => true,
-            'position' => $this->project->nextTaskPosition($section->id),
-        ]);
-        Activity::record($task, $this->me(), 'client_request');
-
-        foreach ($this->requestFiles as $file) {
-            Attachment::storeUpload($file, $this->project, $this->me(), $task);
-        }
+            'description' => $this->requestDetails,
+            'due_date' => $this->requestDue,
+        ], $this->requestFiles);
 
         $this->reset(['requestTitle', 'requestDetails', 'requestDue', 'requestFiles', 'showRequest']);
         $this->tab = 'tasks';
@@ -241,7 +222,7 @@ class ProjectView extends Component
             'progress' => $project->progress(clientOnly: true),
             'updates' => $project->statusUpdates()->where('client_visible', true)->with('user')->limit(20)->get(),
             'sections' => $sections,
-            'approvals' => $project->tasks()->where('client_visible', true)->where('approval_status', 'pending')->orderBy('due_date')->get(),
+            'approvals' => $project->tasks()->where('client_visible', true)->where('approval_status', ApprovalStatus::Pending)->orderBy('due_date')->get(),
             'upcoming' => $project->tasks()->whereNull('parent_id')->where('client_visible', true)->open()->whereNotNull('due_date')->orderBy('due_date')->limit(5)->get(),
             'openTask' => $openTask,
             'files' => $projectFiles->concat($taskFiles)->sortByDesc('created_at')->values(),

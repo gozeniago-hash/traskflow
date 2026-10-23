@@ -2,6 +2,16 @@
 
 namespace App\Livewire;
 
+use App\Actions\Comments\AddComment;
+use App\Actions\Files\StoreUploads;
+use App\Actions\Tasks\CancelApproval;
+use App\Actions\Tasks\DeleteTask;
+use App\Actions\Tasks\RequestApproval;
+use App\Actions\Tasks\SetTaskCompletion;
+use App\Actions\Tasks\ShareTaskWithClient;
+use App\Actions\Tasks\UpdateTaskDetail;
+use App\Actions\Time\StartTimer;
+use App\Actions\Time\StopTimer;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Activity;
@@ -9,7 +19,6 @@ use App\Models\Attachment;
 use App\Models\Task;
 use App\Models\TimeEntry;
 use App\Support\CustomFields;
-use App\Support\ProjectLog;
 use App\Support\TimeTracker;
 use App\Support\Undo;
 use Carbon\Carbon;
@@ -239,22 +248,21 @@ class TaskPanel extends Component
         }
 
         $task = $this->task();
-        $me = $this->me();
+        $update = app(UpdateTaskDetail::class);
 
         switch ($property) {
             case 'title':
-                $title = trim($this->title);
-                if ($title === '') {
+                if (trim($this->title) === '') {
                     $this->title = $task->title;
 
                     return;
                 }
-                $task->update(['title' => mb_substr($title, 0, 255)]);
+                $update->handle($task, $this->me(), 'title', $this->title);
                 break;
 
             case 'description':
                 $this->validateOnly('description', ['description' => ['nullable', 'string', 'max:20000']]);
-                $task->update(['description' => $this->description ?: null]);
+                $update->handle($task, $this->me(), 'description', $this->description);
                 break;
 
             case 'assignee_id':
@@ -264,25 +272,18 @@ class TaskPanel extends Component
 
                     return;
                 }
-                $task->update(['assignee_id' => $userId]);
-                if ($userId) {
-                    $task->project->members()->syncWithoutDetaching([$userId]);
-                }
-                Activity::record($task, $me, 'assigned', ['to' => $task->fresh('assignee')->assignee?->name]);
+                $update->handle($task, $this->me(), 'assignee_id', $userId);
                 break;
 
             case 'start_date':
             case 'due_date':
-                $value = $this->{$property};
-                if ($value !== '' && ! strtotime($value)) {
+                // The date picker sends Y-m-d; anything else is put back to the saved date.
+                if (Validator::make(['date' => $this->{$property}], ['date' => ['nullable', 'date_format:Y-m-d']])->fails()) {
                     $this->{$property} = $task->{$property}?->toDateString() ?? '';
 
                     return;
                 }
-                $task->update([$property => $value ?: null]);
-                if ($property === 'due_date') {
-                    Activity::record($task, $me, 'due_changed', ['to' => $value ? Carbon::parse($value)->format('M j') : null]);
-                }
+                $update->handle($task, $this->me(), $property, $this->{$property});
                 break;
 
             case 'priority':
@@ -291,7 +292,7 @@ class TaskPanel extends Component
 
                     return;
                 }
-                $task->update(['priority' => $this->priority]);
+                $update->handle($task, $this->me(), 'priority', $this->priority);
                 break;
 
             case 'section_id':
@@ -301,30 +302,34 @@ class TaskPanel extends Component
 
                     return;
                 }
-                $task->update(['section_id' => $section->id, 'position' => $task->project->nextTaskPosition($section->id)]);
-                Activity::record($task, $me, 'moved', ['to' => $section->name]);
+                $update->handle($task, $this->me(), 'section_id', $section);
                 break;
 
             case 'client_visible':
+                if (! $this->me()->can('shareWithClient', $task->project)) {
+                    $this->client_visible = $task->client_visible;
+
+                    abort(403);
+                }
                 if ($this->client_visible && ! $task->project->portal_enabled) {
                     $this->client_visible = false;
                     $this->toast('Turn on the client portal for this project first (project settings).', 'error');
 
                     return;
                 }
-                $task->update(['client_visible' => $this->client_visible]);
-                Activity::record($task, $me, $this->client_visible ? 'shared' : 'unshared');
+                app(ShareTaskWithClient::class)->handle($task, $this->me(), $this->client_visible);
                 break;
         }
 
         $this->saved();
     }
 
-    public function toggleComplete(?int $id = null): void
+    /** Completes or reopens the open task, or one of its subtasks when $id is given. */
+    public function setComplete(bool $complete, ?int $id, SetTaskCompletion $setTaskCompletion): void
     {
         $task = $this->task();
         $target = $id ? $task->subtasks()->findOrFail($id) : $task;
-        $target->toggleComplete($this->me());
+        $setTaskCompletion->handle($target, $this->me(), $complete);
         $this->saved();
     }
 
@@ -346,9 +351,12 @@ class TaskPanel extends Component
         $this->saved();
     }
 
-    public function deleteSubtask(int $id): void
+    public function deleteSubtask(int $id, DeleteTask $deleteTask): void
     {
-        $this->task()->subtasks()->findOrFail($id)->delete();
+        $subtask = $this->task()->subtasks()->findOrFail($id);
+        $this->authorize('delete', $subtask);
+        $undo = $deleteTask->handle($subtask, $this->me());
+        $this->toast('Subtask deleted.', undo: $undo);
         $this->saved();
     }
 
@@ -365,7 +373,7 @@ class TaskPanel extends Component
         $this->commentFiles = array_values($this->commentFiles);
     }
 
-    public function addComment(): void
+    public function addComment(AddComment $addComment): void
     {
         $task = Task::with('project')->findOrFail($this->taskId);
         $this->authorize('comment', $task);
@@ -380,15 +388,7 @@ class TaskPanel extends Component
             return;
         }
 
-        $comment = $task->comments()->create([
-            'user_id' => $this->me()->id,
-            'body' => trim($this->comment),
-            'is_internal' => ! ($this->commentForClient && $task->client_visible),
-        ]);
-
-        foreach ($this->commentFiles as $file) {
-            Attachment::storeUpload($file, $task->project, $this->me(), $task, false, $comment);
-        }
+        $addComment->handle($task, $this->me(), $this->comment, ! ($this->commentForClient && $task->client_visible), $this->commentFiles);
 
         $this->reset(['comment', 'commentFiles', 'newCommentFiles']);
         $this->commentForClient = false;
@@ -404,13 +404,11 @@ class TaskPanel extends Component
         $this->saved();
     }
 
-    public function updatedUploads(): void
+    public function updatedUploads(StoreUploads $storeUploads): void
     {
         $task = $this->task();
         $this->validate(['uploads.*' => Attachment::rules()]);
-        foreach ($this->uploads as $file) {
-            Attachment::storeUpload($file, $task->project, $this->me(), $task);
-        }
+        $storeUploads->handle($this->uploads, $task->project, $this->me(), $task);
         $this->uploads = [];
         $this->saved();
     }
@@ -426,15 +424,15 @@ class TaskPanel extends Component
         $this->saved();
     }
 
-    public function startTimer(): void
+    public function startTimer(StartTimer $startTimer): void
     {
-        TimeTracker::start($this->task(), $this->me());
+        $startTimer->handle($this->task(), $this->me());
         $this->dispatch('timer-changed');
     }
 
-    public function stopTimer(): void
+    public function stopTimer(StopTimer $stopTimer): void
     {
-        $entry = TimeTracker::stop($this->me());
+        $entry = $stopTimer->handle($this->me());
         $this->dispatch('timer-changed');
         if ($entry) {
             $this->toast('Logged '.TimeEntry::formatShort($entry->duration_seconds).'.');
@@ -471,41 +469,34 @@ class TaskPanel extends Component
         $this->dispatch('timer-changed');
     }
 
-    public function requestApproval(): void
+    public function requestApproval(RequestApproval $requestApproval): void
     {
         $task = $this->task();
+        $this->authorize('shareWithClient', $task->project);
         if (! $task->client_visible) {
             $this->toast('Share the task with the client before asking for approval.', 'error');
 
             return;
         }
-        $task->update(['approval_status' => 'pending', 'approval_by' => null, 'approval_at' => null]);
-        Activity::record($task, $this->me(), 'approval_requested');
+        $requestApproval->handle($task, $this->me());
         $this->toast('Approval requested. The client will see it in their portal.');
         $this->saved();
     }
 
-    public function cancelApproval(): void
+    public function cancelApproval(CancelApproval $cancelApproval): void
     {
         $task = $this->task();
-        $task->update(['approval_status' => null, 'approval_by' => null, 'approval_at' => null]);
+        $this->authorize('shareWithClient', $task->project);
+        $cancelApproval->handle($task);
         $this->saved();
     }
 
-    public function deleteTask(): void
+    public function deleteTask(DeleteTask $deleteTask): void
     {
         $task = $this->task();
         $this->authorize('delete', $task);
 
-        // Keep everything for a few minutes so the delete can be undone.
-        $rows = Undo::taskRows([$task->id]);
-        $undo = Undo::capture($this->me(), $task->project_id, 'task '.$task->title, $rows, Undo::filesOf($rows['attachments']));
-
-        Undo::keepingFiles(function () use ($task): void {
-            $ids = Task::where('parent_id', $task->id)->pluck('id')->push($task->id);
-            ProjectLog::quietly(fn () => Attachment::whereIn('task_id', $ids)->get()->each->delete());
-            $task->delete();
-        });
+        $undo = $deleteTask->handle($task, $this->me());
 
         if ($task->parent_id) {
             $this->open($task->parent_id);
@@ -543,6 +534,7 @@ class TaskPanel extends Component
                 ->when($task->assignee && ! $task->project->canBeAssigned($task->assignee_id), fn ($c) => $c->push($task->assignee)->sortBy('name')->values()),
             'timeline' => $timeline,
             'canEdit' => $this->me()->can('update', $task),
+            'canShare' => $this->me()->can('shareWithClient', $task->project),
             'githubEnabled' => $task->pullRequests->isNotEmpty() || $this->workspace()->githubRepositories()->exists(),
             'timeEntries' => $task->timeEntries()->with('user')->latest('started_at')->limit(50)->get(),
             'trackedTotal' => TimeTracker::totalFor($task),

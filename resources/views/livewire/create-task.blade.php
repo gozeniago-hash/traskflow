@@ -75,7 +75,7 @@
 
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex flex-wrap gap-4 text-sm text-ink-700">
-                    @if ($project->portal_enabled)
+                    @if ($project->portal_enabled && auth()->user()->can('shareWithClient', $project))
                         <label class="flex items-center gap-2"><input type="checkbox" wire:model="client_visible" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Visible to client</label>
                     @endif
                     <label class="flex items-center gap-2"><input type="checkbox" wire:model="openAfter" class="rounded border-gray-300 text-accent-500 focus:ring-accent-400"> Open task after creating</label>

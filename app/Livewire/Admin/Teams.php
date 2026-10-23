@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Admin;
 
+use App\Actions\Teams\AddTeamMember;
+use App\Actions\Teams\RemoveTeamMember;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Team;
-use App\Models\User;
 use App\Support\Audit;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
@@ -74,25 +75,21 @@ class Teams extends Component
         $this->showForm = false;
     }
 
-    public function addMember(int $teamId): void
+    public function addMember(int $teamId, AddTeamMember $addTeamMember): void
     {
         $this->requireAdmin();
         $userId = (int) ($this->addUser[$teamId] ?? 0);
         if (! $userId || ! $this->workspace()->members()->whereKey($userId)->exists()) {
             return;
         }
-        $team = $this->team($teamId);
-        $team->users()->syncWithoutDetaching([$userId]);
-        Audit::log('team.member_added', 'Added '.User::find($userId)?->name.' to team “'.$team->name.'”', $team, ['user_id' => $userId]);
+        $addTeamMember->handle($this->team($teamId), $userId);
         $this->addUser[$teamId] = '';
     }
 
-    public function removeMember(int $teamId, int $userId): void
+    public function removeMember(int $teamId, int $userId, RemoveTeamMember $removeTeamMember): void
     {
         $this->requireAdmin();
-        $team = $this->team($teamId);
-        $team->users()->detach($userId);
-        Audit::log('team.member_removed', 'Removed '.User::find($userId)?->name.' from team “'.$team->name.'”', $team, ['user_id' => $userId]);
+        $removeTeamMember->handle($this->team($teamId), $userId);
     }
 
     public function delete(int $id): void

@@ -2,9 +2,12 @@
 
 namespace App\Livewire;
 
+use App\Actions\Tasks\CreateTask;
+use App\Actions\Tasks\SetTaskCompletion;
+use App\Actions\Time\StartTimer;
+use App\Actions\Time\StopTimer;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
-use App\Models\Activity;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\TimeEntry;
@@ -31,46 +34,48 @@ class MyTasks extends Component
 
     public string $newDue = '';
 
-    #[On('task-saved')]
-    #[On('timer-changed')]
     protected function getListeners(): array
     {
         return [$this->workspaceChannel() => 'onRemoteChange'];
     }
 
+    #[On('task-saved')]
+    #[On('timer-changed')]
     public function onTaskSaved(): void {}
 
-    public function startTimer(int $taskId): void
+    public function startTimer(int $taskId, StartTimer $startTimer): void
     {
         $task = Task::findOrFail($taskId);
         $this->authorize('update', $task);
-        TimeTracker::start($task, $this->me());
+        $startTimer->handle($task, $this->me());
         $this->dispatch('timer-changed');
     }
 
-    public function stopTimer(): void
+    public function stopTimer(StopTimer $stopTimer): void
     {
-        $entry = TimeTracker::stop($this->me());
+        $entry = $stopTimer->handle($this->me());
         $this->dispatch('timer-changed');
         if ($entry) {
             $this->toast('Logged '.TimeEntry::formatShort($entry->duration_seconds).'.');
         }
     }
 
-    public function toggleComplete(int $taskId): void
+    public function setComplete(int $taskId, bool $complete, SetTaskCompletion $setTaskCompletion): void
     {
         $task = Task::findOrFail($taskId);
         $this->authorize('update', $task);
-        $task->toggleComplete($this->me());
-        $this->completedToast($task);
+        if ($setTaskCompletion->handle($task, $this->me(), $complete)) {
+            $this->completedToast($task);
+        }
     }
 
-    public function addTask(): void
+    public function addTask(CreateTask $createTask): void
     {
         $title = trim($this->newTitle);
         if ($title === '') {
             return;
         }
+        $this->validate(['newDue' => ['nullable', 'date_format:Y-m-d']], ['newDue.date_format' => 'Pick a due date from the calendar.']);
         $project = Project::query()->visibleTo($this->me())->active()->find((int) $this->newProject);
         if (! $project) {
             $this->addError('newProject', 'Pick a project for this task.');
@@ -78,18 +83,12 @@ class MyTasks extends Component
             return;
         }
         $this->authorize('contribute', $project);
-        $section = $project->firstSection();
 
-        $task = $project->tasks()->create([
-            'section_id' => $section->id,
-            'title' => mb_substr($title, 0, 255),
-            'creator_id' => $this->me()->id,
+        $createTask->handle($project, $this->me(), [
+            'title' => $title,
             'assignee_id' => $this->me()->id,
             'due_date' => $this->newDue ?: null,
-            'position' => $project->nextTaskPosition($section->id),
         ]);
-        Activity::record($task, $this->me(), 'created');
-        $project->members()->syncWithoutDetaching([$this->me()->id]);
 
         $this->reset(['newTitle', 'newDue']);
         $this->resetValidation();

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\Auth\RegisterUser;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Support\Audit;
@@ -10,11 +12,9 @@ use App\Support\SignIn;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Throwable;
@@ -60,29 +60,9 @@ class AuthController extends Controller
     }
 
     /** Sign-up creates a new workspace owned by the new user. */
-    public function register(Request $request): RedirectResponse
+    public function register(RegisterRequest $request, RegisterUser $registerUser): RedirectResponse
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'email' => ['required', 'email', 'max:190', 'unique:users,email'],
-            'workspace' => ['required', 'string', 'max:120'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
-
-        $user = DB::transaction(function () use ($data) {
-            $user = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => $data['password'],
-            ]);
-
-            $workspace = Workspace::create(['name' => $data['workspace'], 'owner_id' => $user->id]);
-            $workspace->users()->attach($user->id, ['role' => 'owner']);
-            $workspace->teams()->create(['name' => 'General'])->users()->attach($user->id);
-            $user->forceFill(['current_workspace_id' => $workspace->id])->save();
-
-            return $user;
-        });
+        $user = $registerUser->handle($request->safe()->only(['name', 'email', 'password', 'workspace']));
 
         Auth::login($user);
         $request->session()->regenerate();

@@ -2,8 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Actions\Files\StoreUploads;
+use App\Actions\Tasks\CreateTask as CreateTaskAction;
 use App\Livewire\Concerns\InteractsWithWorkspace;
-use App\Models\Activity;
 use App\Models\Attachment;
 use App\Models\Project;
 use App\Models\Task;
@@ -88,8 +89,11 @@ class CreateTask extends Component
         return $project;
     }
 
-    public function save(): void
+    public function save(CreateTaskAction $createTask, StoreUploads $storeUploads): void
     {
+        if (! $this->show) {
+            return; // already saved: a double click sends Create twice
+        }
         $project = $this->project();
         $ws = $this->workspace();
 
@@ -109,34 +113,26 @@ class CreateTask extends Component
         ], [], ['files.*' => 'file', ...CustomFields::attributes($project->fields)]);
 
         $me = $this->me();
-        $task = DB::transaction(function () use ($project, $data, $me) {
-            $task = $project->tasks()->create([
+        $task = DB::transaction(function () use ($project, $data, $me, $createTask, $storeUploads): Task {
+            $task = $createTask->handle($project, $me, [
                 'section_id' => (int) $data['section_id'],
-                'title' => trim($data['title']),
+                'title' => $data['title'],
                 'description' => $data['description'] ?: null,
-                'assignee_id' => $data['assignee_id'] ?: null,
+                'assignee_id' => $data['assignee_id'] ? (int) $data['assignee_id'] : null,
                 'due_date' => $data['due_date'] ?: null,
                 'priority' => $data['priority'],
-                'client_visible' => $this->client_visible && $project->portal_enabled,
-                'creator_id' => $me->id,
-                'position' => $project->nextTaskPosition((int) $data['section_id']),
-            ]);
-            Activity::record($task, $me, 'created');
-            CustomFields::saveAll($task, $project->fields, $this->fieldValues);
-            if ($task->assignee_id) {
-                $project->members()->syncWithoutDetaching([$task->assignee_id]);
-            }
+                'client_visible' => $this->client_visible && $me->can('shareWithClient', $project),
+            ], $this->fieldValues);
+            // A file that doesn't fit cancels the whole task, so nothing half-made is left behind.
+            $storeUploads->handle($this->files, $project, $me, $task);
 
             return $task;
         });
 
-        foreach ($this->files as $file) {
-            Attachment::storeUpload($file, $project, $me, $task);
-        }
-
         $count = count($this->files);
         $this->show = false;
-        $this->files = [];
+        // Clearing the form means a second click on Create can't add the same task again.
+        $this->reset(['title', 'description', 'assignee_id', 'due_date', 'client_visible', 'files', 'newFiles', 'fieldValues']);
         $this->dispatch('task-saved');
         $this->toast('Task created'.($count ? ' with '.$count.' '.str('file')->plural($count) : '').'.');
 

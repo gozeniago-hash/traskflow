@@ -84,10 +84,10 @@
                                          class="absolute right-0 z-20 mt-1 w-48 rounded-lg bg-white p-1 text-sm shadow-lg ring-1 ring-black/5">
                                         <button type="button" x-on:click="tfDialog.prompt('Rename resource', @js($r->title)).then(t => { if (t) $wire.renameResource({{ $r->id }}, t) })" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Rename</button>
                                         @if ($hasClient)
-                                            <button type="button" wire:click="toggleResourceShare({{ $r->id }})" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $r->client_visible ? 'Make internal only' : 'Share with client' }}</button>
+                                            <button type="button" wire:click="shareResource({{ $r->id }}, {{ $r->client_visible ? 'false' : 'true' }})" wire:loading.attr="disabled" wire:target="shareResource" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">{{ $r->client_visible ? 'Make internal only' : 'Share with client' }}</button>
                                         @endif
-                                        @unless ($loop->first)<button type="button" wire:click="moveResource({{ $r->id }}, -1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move earlier</button>@endunless
-                                        @unless ($loop->last)<button type="button" wire:click="moveResource({{ $r->id }}, 1)" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move later</button>@endunless
+                                        @unless ($loop->first)<button type="button" wire:click="moveResource({{ $r->id }}, -1)" wire:loading.attr="disabled" wire:target="moveResource" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move earlier</button>@endunless
+                                        @unless ($loop->last)<button type="button" wire:click="moveResource({{ $r->id }}, 1)" wire:loading.attr="disabled" wire:target="moveResource" class="block w-full rounded px-2 py-1.5 text-left hover:bg-gray-100">Move later</button>@endunless
                                         <button type="button" wire:click="removeResource({{ $r->id }})" wire:confirm="Remove “{{ $r->title }}”?{{ $r->isFile() ? ' The file will be deleted.' : '' }}" class="block w-full rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">Remove</button>
                                     </div>
                                 </div>

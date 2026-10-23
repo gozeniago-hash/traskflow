@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Actions\Tasks\SetTaskCompletion;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
@@ -18,20 +19,21 @@ class Home extends Component
 {
     use InteractsWithWorkspace, LiveUpdates;
 
-    #[On('task-saved')]
     protected function getListeners(): array
     {
         return [$this->workspaceChannel() => 'onRemoteChange'];
     }
 
+    #[On('task-saved')]
     public function onTaskSaved(): void {}
 
-    public function toggleComplete(int $taskId): void
+    public function setComplete(int $taskId, bool $complete, SetTaskCompletion $setTaskCompletion): void
     {
         $task = Task::findOrFail($taskId);
         $this->authorize('update', $task);
-        $task->toggleComplete($this->me());
-        $this->completedToast($task);
+        if ($setTaskCompletion->handle($task, $this->me(), $complete)) {
+            $this->completedToast($task);
+        }
     }
 
     public function render()

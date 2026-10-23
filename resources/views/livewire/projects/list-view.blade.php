@@ -44,7 +44,7 @@
                                  wire:click="$dispatch('open-task', { id: {{ $task->id }} })" data-peek-title="{{ $task->title }}">
                                 {{-- Phones: title on its own line, tags and due date wrap underneath. --}}
                                 <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 md:flex-nowrap md:overflow-hidden">
-                                    <button wire:click.stop="toggleComplete({{ $task->id }})" class="check {{ $task->isCompleted() ? 'check-done' : '' }}" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}"><x-icon name="check" class="h-3 w-3" /></button>
+                                    <button wire:click.stop="setComplete({{ $task->id }}, {{ $task->isCompleted() ? 'false' : 'true' }})" wire:loading.attr="disabled" wire:target="setComplete" class="check {{ $task->isCompleted() ? 'check-done' : '' }}" aria-label="{{ $task->isCompleted() ? 'Mark incomplete' : 'Mark complete' }}"><x-icon name="check" class="h-3 w-3" /></button>
                                     <span class="shrink-0 font-mono text-[11px] text-ink-500">{{ $project->key }}-{{ $task->number }}</span>
                                     <span class="min-w-0 flex-1 truncate text-sm md:flex-initial {{ $task->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $task->title }}</span>
                                     <span class="flex min-w-0 basis-full flex-wrap items-center gap-2 pl-7 text-xs text-ink-500 empty:hidden md:shrink-[2] md:basis-auto md:flex-nowrap md:overflow-hidden md:pl-0">

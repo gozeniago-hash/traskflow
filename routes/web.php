@@ -41,8 +41,6 @@ Route::post('/invitations/{token}', [InvitationController::class, 'accept'])->mi
 // ---------------------------------------------------------- signed-in users
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::post('/undo/{token}', UndoController::class)->name('undo');
-    Route::post('/tasks/{task}/reopen', TaskReopenController::class)->whereNumber('task')->name('tasks.reopen');
 
     Route::get('/email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
@@ -55,6 +53,8 @@ Route::middleware('auth')->group(function (): void {
         Route::post('/workspaces/{workspace}/switch', [WorkspaceController::class, 'switch'])->name('workspaces.switch');
         Route::get('/attachments/{attachment}', [AttachmentController::class, 'download'])->name('attachments.download');
         Route::get('/t/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+        Route::post('/undo/{token}', UndoController::class)->name('undo');
+        Route::post('/tasks/{task}/reopen', TaskReopenController::class)->whereNumber('task')->name('tasks.reopen');
 
         // ------------------------------------------------- internal team app
         Route::middleware('member')->group(function (): void {

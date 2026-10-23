@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Support\Audit;
-use App\Support\Totp;
+use App\Models\Concerns\ClearsBuilderCache;
+use App\Models\Concerns\LogsDatabaseChanges;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use ClearsBuilderCache, HasFactory, LogsDatabaseChanges, Notifiable;
 
     public const AVATAR_COLORS = ['#b4685c', '#4e6a9e', '#5e8c6e', '#80659e', '#a9555e', '#b07d3e', '#3f8a80', '#7570a8', '#9a6390', '#5e8c5f'];
 
@@ -49,26 +49,31 @@ class User extends Authenticatable implements MustVerifyEmail
 
     // ---------------------------------------------------------------- relations
 
+    /** @return BelongsToMany<Workspace, $this> */
     public function workspaces(): BelongsToMany
     {
         return $this->belongsToMany(Workspace::class, 'workspace_user')->withPivot(['role', 'client_id'])->withTimestamps();
     }
 
+    /** @return BelongsTo<Workspace, $this> */
     public function currentWorkspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class, 'current_workspace_id');
     }
 
+    /** @return BelongsToMany<Team, $this> */
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class)->withTimestamps();
     }
 
+    /** @return BelongsToMany<Project, $this> */
     public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class)->withTimestamps();
     }
 
+    /** @return HasMany<Task, $this> */
     public function assignedTasks(): HasMany
     {
         return $this->hasMany(Task::class, 'assignee_id');
@@ -164,35 +169,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public static function newRecoveryCodes(): array
     {
         return collect(range(1, 10))->map(fn () => Str::lower(Str::random(5).'-'.Str::random(5)))->all();
-    }
-
-    /** Checks an authenticator code or a recovery code (which is then used up). */
-    public function verifyTwoFactorCode(string $code): bool
-    {
-        if (! $this->hasTwoFactor()) {
-            return false;
-        }
-
-        $step = Totp::verify($this->two_factor_secret, $code, $this->two_factor_last_step);
-        if ($step !== null) {
-            $this->forceFill(['two_factor_last_step' => $step])->save();
-
-            return true;
-        }
-
-        $code = Str::lower(trim($code));
-        $codes = $this->two_factor_recovery_codes ?? [];
-        foreach ($codes as $i => $recovery) {
-            if (hash_equals($recovery, $code)) {
-                unset($codes[$i]);
-                $this->forceFill(['two_factor_recovery_codes' => array_values($codes)])->save();
-                Audit::log('auth.recovery_code_used', $this->name.' signed in with a recovery code ('.count($codes).' left)', $this, [], $this);
-
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /** Email verification is on when the app can actually send email (see config/taskflow.php). */

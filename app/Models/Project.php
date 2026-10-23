@@ -3,15 +3,19 @@
 namespace App\Models;
 
 use App\Support\ProjectLog;
+use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
-class Project extends Model
+class Project extends BaseModel
 {
+    /** @use HasFactory<ProjectFactory> */
+    use HasFactory;
+
     public const STATUSES = [
         'on_track' => 'On track',
         'at_risk' => 'At risk',
@@ -109,71 +113,85 @@ class Project extends Model
 
     // ---------------------------------------------------------------- relations
 
+    /** @return BelongsTo<Workspace, $this> */
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);
     }
 
+    /** @return BelongsTo<Team, $this> */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
+    /** @return BelongsTo<Client, $this> */
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
 
+    /** @return BelongsToMany<User, $this> */
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();
     }
 
+    /** @return HasMany<Section, $this> */
     public function sections(): HasMany
     {
         return $this->hasMany(Section::class)->orderBy('position')->orderBy('id');
     }
 
+    /** @return HasMany<Task, $this> */
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
+    /** @return HasMany<Task, $this> */
     public function topLevelTasks(): HasMany
     {
         return $this->hasMany(Task::class)->whereNull('parent_id');
     }
 
+    /** @return HasMany<Attachment, $this> */
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class);
     }
 
+    /** @return HasMany<TimeEntry, $this> */
     public function timeEntries(): HasMany
     {
         return $this->hasMany(TimeEntry::class);
     }
 
+    /** @return HasMany<ProjectField, $this> */
     public function fields(): HasMany
     {
         return $this->hasMany(ProjectField::class)->orderBy('position')->orderBy('id');
     }
 
+    /** @return HasMany<ProjectResource, $this> */
     public function resources(): HasMany
     {
         return $this->hasMany(ProjectResource::class)->orderBy('position')->orderBy('id');
     }
 
+    /** @return HasMany<ProjectDoc, $this> */
     public function docs(): HasMany
     {
         return $this->hasMany(ProjectDoc::class)->orderBy('position')->orderBy('id');
     }
 
+    /** @return HasMany<StatusUpdate, $this> */
     public function statusUpdates(): HasMany
     {
         return $this->hasMany(StatusUpdate::class)->latest();
@@ -190,6 +208,10 @@ class Project extends Model
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
         $query->where('projects.workspace_id', $user->current_workspace_id);
+
+        if ($user->membership() === null) {
+            return $query->whereRaw('1 = 0');
+        }
 
         if ($user->isAdmin()) {
             return $query;

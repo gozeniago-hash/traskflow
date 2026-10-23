@@ -123,4 +123,21 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | First Admin
+    |--------------------------------------------------------------------------
+    |
+    | Used by the AdminSeeder to create the first workspace owner. Nothing is
+    | created unless both the email and password are set.
+    |
+    */
+
+    'admin' => [
+        'name' => env('ADMIN_NAME', 'Admin'),
+        'email' => env('ADMIN_EMAIL'),
+        'password' => env('ADMIN_PASSWORD'),
+        'workspace' => env('ADMIN_WORKSPACE', env('APP_NAME', 'Laravel')),
+    ],
+
 ];

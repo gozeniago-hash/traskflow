@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Actions\GitHub\AddRepository;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\GithubRepository;
 use App\Support\Audit;
@@ -9,7 +10,6 @@ use App\Support\GitHub;
 use App\Support\MailStatus;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
@@ -165,7 +165,7 @@ class Settings extends Component
         $this->toast('GitHub disconnected. Linked pull requests stay on tasks until you remove the repositories.');
     }
 
-    public function addRepository(): void
+    public function addRepository(AddRepository $addRepository): void
     {
         $this->requireAdmin();
         $ws = $this->workspace();
@@ -188,24 +188,15 @@ class Settings extends Component
 
             return;
         }
-        if ($ws->githubRepositories()->where('full_name', $name)->exists()) {
-            $this->addError('newRepo', 'That repository is already added.');
-
-            return;
-        }
-
-        $repo = $ws->githubRepositories()->create(['full_name' => $name, 'webhook_secret' => Str::random(40)]);
-        Audit::log('github.repository_added', 'Added GitHub repository '.$name, $repo);
-        $hooked = $gh->installWebhook($repo);
+        $result = $addRepository->handle($ws, $name);
         $this->newRepo = '';
-        try {
-            $count = $gh->sync($repo);
-            $this->toast("Added {$name} and linked its pull requests ({$count} checked).");
-        } catch (Throwable $e) {
-            $this->toast("Added {$name}, but the first sync failed: ".$e->getMessage(), 'error');
+        if ($result['syncError'] === null) {
+            $this->toast("Added {$name} and linked its pull requests ({$result['synced']} checked).");
+        } else {
+            $this->toast("Added {$name}, but the first sync failed: ".$result['syncError'], 'error');
         }
-        if (! $hooked) {
-            $this->showWebhookFor = $repo->id;
+        if (! $result['hooked']) {
+            $this->showWebhookFor = $result['repository']->id;
         }
     }
 
@@ -233,6 +224,8 @@ class Settings extends Component
 
     public function toggleWebhookHelp(int $id): void
     {
+        $this->requireAdmin();
+        $this->repo($id);
         $this->showWebhookFor = $this->showWebhookFor === $id ? null : $id;
     }
 

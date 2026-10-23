@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Portal;
 
+use App\Enums\ApprovalStatus;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Client;
@@ -39,7 +40,7 @@ class Dashboard extends Component
             'client' => Client::find($me->clientId()),
             'projects' => $projects,
             'approvals' => Task::query()->whereIn('project_id', $projects->pluck('id'))
-                ->where('client_visible', true)->where('approval_status', 'pending')
+                ->where('client_visible', true)->where('approval_status', ApprovalStatus::Pending)
                 ->with('project')->orderBy('due_date')->get(),
         ]);
     }

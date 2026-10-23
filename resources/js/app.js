@@ -70,7 +70,15 @@ window.taskflowSortable = function (el, wire, method = 'reorder') {
             if (sameList && e.newIndex === e.oldIndex) return;
             e.from.insertBefore(e.item, ref);
 
-            wire.call(method, sectionId, ids);
+            const movedId = Number(e.item.dataset.taskId);
+            const fromSectionId = e.from.dataset.sectionId ? Number(e.from.dataset.sectionId) : null;
+            // Hold further drags in this list until the server has applied this one.
+            this.option('disabled', true);
+            el.classList.add('opacity-50', 'pointer-events-none');
+            Promise.resolve(wire.call(method, sectionId, ids, movedId, fromSectionId)).finally(() => {
+                this.option('disabled', false);
+                el.classList.remove('opacity-50', 'pointer-events-none');
+            });
         },
     });
 };

@@ -4,23 +4,27 @@ namespace App\Models;
 
 use App\Rules\SafeUpload;
 use App\Rules\WithinStorageQuota;
-use Illuminate\Database\Eloquent\Model;
+use Database\Factories\AttachmentFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class Attachment extends Model
+class Attachment extends BaseModel
 {
+    /** @use HasFactory<AttachmentFactory> */
+    use HasFactory;
+
     /** Image types shown in the in-app viewer. SVG is excluded on purpose: it can carry scripts. */
     public const VIEWABLE_IMAGES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp', 'image/avif'];
 
-    protected $fillable = ['project_id', 'task_id', 'comment_id', 'doc_id', 'user_id', 'disk', 'path', 'original_name', 'mime_type', 'size', 'client_visible'];
+    protected $fillable = ['project_id', 'task_id', 'comment_id', 'doc_id', 'user_id', 'disk', 'path', 'original_name', 'title', 'description', 'group', 'meta', 'mime_type', 'size', 'client_visible'];
 
     protected function casts(): array
     {
-        return ['client_visible' => 'boolean', 'size' => 'integer'];
+        return ['client_visible' => 'boolean', 'size' => 'integer', 'meta' => 'array'];
     }
 
     /** While true, deleting a row leaves its stored file in place (see App\Support\Undo). */
@@ -41,6 +45,23 @@ class Attachment extends Model
         return [$required ? 'required' : 'nullable', 'file', 'max:'.config('taskflow.max_upload_kb'), new SafeUpload, new WithinStorageQuota];
     }
 
+    /**
+     * Validation for the details people add to a file: title, description, group and extra label/value rows.
+     *
+     * @return array<string, array<int, string>>
+     */
+    public static function detailRules(string $prefix = ''): array
+    {
+        return [
+            $prefix.'title' => ['nullable', 'string', 'max:150'],
+            $prefix.'description' => ['nullable', 'string', 'max:1000'],
+            $prefix.'group' => ['nullable', 'string', 'max:60'],
+            $prefix.'meta' => ['array', 'max:20'],
+            $prefix.'meta.*.label' => ['nullable', 'string', 'max:60'],
+            $prefix.'meta.*.value' => ['nullable', 'string', 'max:500'],
+        ];
+    }
+
     public static function storeUpload(UploadedFile $file, Project $project, User $user, ?Task $task = null, bool $clientVisible = false, ?Comment $comment = null, ?ProjectDoc $doc = null): self
     {
         // Last line of defence: the same checks as rules(), in case a caller skipped validation.
@@ -49,7 +70,8 @@ class Attachment extends Model
             throw ValidationException::withMessages(['upload' => $validator->errors()->first('file')]);
         }
 
-        $path = $file->store('attachments/'.$project->id, 'local');
+        $disk = (string) config('taskflow.uploads_disk');
+        $path = $file->store('attachments/'.$project->id, $disk);
 
         return static::create([
             'project_id' => $project->id,
@@ -57,7 +79,7 @@ class Attachment extends Model
             'comment_id' => $comment?->id,
             'doc_id' => $doc?->id,
             'user_id' => $user->id,
-            'disk' => 'local',
+            'disk' => $disk,
             'path' => $path,
             'original_name' => $file->getClientOriginalName(),
             'mime_type' => $file->getMimeType() ?: $file->getClientMimeType(), // detected from content, not the browser's guess
@@ -66,29 +88,40 @@ class Attachment extends Model
         ]);
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /** @return BelongsTo<Task, $this> */
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);
     }
 
+    /** @return BelongsTo<ProjectDoc, $this> */
     public function doc(): BelongsTo
     {
         return $this->belongsTo(ProjectDoc::class, 'doc_id');
     }
 
+    /** @return BelongsTo<Comment, $this> */
     public function comment(): BelongsTo
     {
         return $this->belongsTo(Comment::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** The name people see: the title they gave the file, or the name it was uploaded with. */
+    public function displayName(): string
+    {
+        return $this->title ?: $this->original_name;
     }
 
     public function isVisibleToClient(): bool

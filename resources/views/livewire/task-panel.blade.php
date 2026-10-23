@@ -31,7 +31,7 @@
         {{-- Toolbar --}}
         <div class="flex items-center gap-2 border-b border-gray-200 px-4 py-2.5">
             @if ($canEdit)
-                <button wire:click="toggleComplete" class="btn {{ $task->isCompleted() ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'btn-secondary' }}">
+                <button wire:click="setComplete({{ $task->isCompleted() ? 'false' : 'true' }}, null)" wire:loading.attr="disabled" wire:target="setComplete" class="btn {{ $task->isCompleted() ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'btn-secondary' }}">
                     <x-icon name="check" /> {{ $task->isCompleted() ? 'Completed' : 'Mark complete' }}
                 </button>
             @endif
@@ -45,9 +45,9 @@
                     <span class="h-2 w-2 rounded-sm" style="background-color: {{ $task->project->color }}"></span>
                     <span class="max-w-32 truncate">{{ $task->project->name }}</span>
                 </a>
-                @if ($canEdit)
+                @can('delete', $task)
                     <button wire:click="deleteTask" wire:confirm="Delete this task{{ $task->subtasks->count() ? ' and its subtasks' : '' }}?" class="btn-ghost btn px-1.5 text-red-600" title="Delete task"><x-icon name="trash" /></button>
-                @endif
+                @endcan
                 <button type="button" x-on:click="hide()" class="btn-ghost btn px-1.5" title="Close"><x-icon name="x" class="h-5 w-5" /></button>
             </div>
         </div>
@@ -128,11 +128,11 @@
                         <dt class="text-ink-500">Client</dt>
                         <dd class="flex flex-wrap items-center gap-2">
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" wire:model.live="client_visible" @disabled(! $canEdit) class="rounded border-gray-300 text-accent-500 focus:ring-accent-400">
+                                <input type="checkbox" wire:model.live="client_visible" @disabled(! $canShare) class="rounded border-gray-300 text-accent-500 focus:ring-accent-400">
                                 <span>{{ $client_visible ? 'Visible in portal' : 'Internal only' }}</span>
                             </label>
-                            @if ($client_visible && $canEdit)
-                                @if ($task->approval_status === 'pending')
+                            @if ($client_visible && $canShare)
+                                @if ($task->approval_status === \App\Enums\ApprovalStatus::Pending)
                                     <x-approval-pill status="pending" />
                                     <button wire:click="cancelApproval" class="text-xs text-ink-500 hover:underline">Cancel request</button>
                                 @else
@@ -157,11 +157,11 @@
                         <ul class="divide-y divide-gray-100 rounded-md border border-gray-200">
                             @foreach ($task->subtasks as $sub)
                                 <li wire:key="sub-{{ $sub->id }}" class="group flex items-center gap-2 px-2.5 py-1.5 text-sm">
-                                    <button wire:click="toggleComplete({{ $sub->id }})" aria-label="{{ $sub->isCompleted() ? 'Mark subtask incomplete' : 'Mark subtask complete' }}" class="check {{ $sub->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
+                                    <button wire:click="setComplete({{ $sub->isCompleted() ? 'false' : 'true' }}, {{ $sub->id }})" wire:loading.attr="disabled" wire:target="setComplete" aria-label="{{ $sub->isCompleted() ? 'Mark subtask incomplete' : 'Mark subtask complete' }}" class="check {{ $sub->isCompleted() ? 'check-done' : '' }}"><x-icon name="check" class="h-3 w-3" /></button>
                                     <button wire:click="open({{ $sub->id }})" class="flex-1 truncate text-left hover:underline {{ $sub->isCompleted() ? 'text-ink-500 line-through' : '' }}">{{ $sub->title }}</button>
                                     @if ($sub->due_date)<span class="text-xs {{ $sub->dueClass() }}">{{ $sub->dueLabel() }}</span>@endif
                                     <x-avatar :user="$sub->assignee" size="xs" />
-                                    @if ($canEdit)<button aria-label="Delete subtask" wire:click="deleteSubtask({{ $sub->id }})" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>@endif
+                                    @can('delete', $sub)<button aria-label="Delete subtask" wire:click="deleteSubtask({{ $sub->id }})" class="invisible text-ink-500 hover:text-red-600 group-hover:visible"><x-icon name="x" class="h-3.5 w-3.5" /></button>@endcan
                                 </li>
                             @endforeach
                             @if ($canEdit)
@@ -192,7 +192,7 @@
                     <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
                         @foreach ($task->ownAttachments as $a)
                             <x-attachment-tile wire:key="att-{{ $a->id }}" :attachment="$a" group="task-{{ $task->id }}">
-                                @if ($canEdit)<button wire:click="deleteAttachment({{ $a->id }})" wire:confirm="Delete this file?" class="shrink-0 text-ink-500 opacity-0 hover:text-red-600 group-hover:opacity-100" title="Delete"><x-icon name="trash" class="h-3.5 w-3.5" /></button>@endif
+                                @can('delete', $a)<button wire:click="deleteAttachment({{ $a->id }})" wire:confirm="Delete this file?" class="shrink-0 text-ink-500 opacity-0 hover:text-red-600 group-hover:opacity-100" title="Delete"><x-icon name="trash" class="h-3.5 w-3.5" /></button>@endcan
                             </x-attachment-tile>
                         @endforeach
                     </div>
@@ -237,9 +237,9 @@
                             @if ($canEdit)
                                 <div class="ml-auto">
                                     @if ($isRunningHere)
-                                        <button wire:click="stopTimer" class="btn bg-accent-600 text-white hover:bg-accent-600"><x-icon name="stop" class="h-3.5 w-3.5" /> Stop</button>
+                                        <button wire:click="stopTimer" wire:loading.attr="disabled" wire:target="startTimer,stopTimer" class="btn bg-accent-600 text-white hover:bg-accent-600"><x-icon name="stop" class="h-3.5 w-3.5" /> Stop</button>
                                     @else
-                                        <button wire:click="startTimer" class="btn-secondary btn"><x-icon name="play" class="h-3.5 w-3.5" /> {{ $running ? 'Switch timer here' : 'Start timer' }}</button>
+                                        <button wire:click="startTimer" wire:loading.attr="disabled" wire:target="startTimer,stopTimer" class="btn-secondary btn"><x-icon name="play" class="h-3.5 w-3.5" /> {{ $running ? 'Switch timer here' : 'Start timer' }}</button>
                                     @endif
                                 </div>
                             @endif

@@ -14,9 +14,12 @@
         "php": "^8.3",
         "ext-pcntl": "*",
         "laravel/framework": "^13.17",
+        "laravel/mcp": "^1.1",
+        "laravel/reverb": "^1.9",
         "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "livewire/livewire": "^4.0",
-        "laravel/reverb": "^1.9"
+        "spatie/laravel-activitylog": "^5.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

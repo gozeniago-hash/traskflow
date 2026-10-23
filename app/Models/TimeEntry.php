@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Database\Factories\TimeEntryFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TimeEntry extends Model
+class TimeEntry extends BaseModel
 {
+    /** @use HasFactory<TimeEntryFactory> */
+    use HasFactory;
+
     protected $fillable = ['project_id', 'task_id', 'user_id', 'started_at', 'ended_at', 'duration_seconds', 'note', 'is_manual'];
 
     protected function casts(): array
@@ -20,16 +24,19 @@ class TimeEntry extends Model
         ];
     }
 
+    /** @return BelongsTo<Task, $this> */
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

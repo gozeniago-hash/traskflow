@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
  * the visitor could have typed into the request.
  *
  * X-Forwarded-For is a list: "<whatever the client sent>, …, <address seen by the edge>".
- * Railway's edge adds (or overwrites with) the real address, so only the nearest public
+ * The host's edge proxy adds (or overwrites with) the real address, so only the nearest public
  * entry can be trusted. Without this, someone could send "X-Forwarded-For: 1.2.3.4" with every request
  * and slip past the per-address limits on sign-in, sign-up and password resets.
  * (If Cloudflare is put in front later, prefer its CF-Connecting-IP header here.)

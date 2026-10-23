@@ -32,7 +32,7 @@ class MailStatus
 
         return match (true) {
             (bool) preg_match('/\b535\b|Username and Password not accepted|BadCredentials|authenticat/i', $msg) => 'Google rejected the sign-in. Check that MAIL_USERNAME is the full Google address and MAIL_PASSWORD is an app password (not the account password).',
-            (bool) preg_match('/timed out|Connection refused|Network is unreachable|getaddrinfo|Unable to connect|Connection could not be established/i', $msg) => "Couldn’t reach {$where}. On Railway, outgoing email only works on the Pro plan; on other hosts, check that the port isn’t blocked.",
+            (bool) preg_match('/timed out|Connection refused|Network is unreachable|getaddrinfo|Unable to connect|Connection could not be established/i', $msg) => "Couldn’t reach {$where}. Check that your host allows outgoing connections on that port.",
             (bool) preg_match('/\b55[0-4]\b|not allowed to send|sender address|SendAsDenied|Mail From/i', $msg) => 'The mail server refused the sender. MAIL_FROM_ADDRESS must be the Google account’s own address or one of its aliases.',
             default => 'Sending failed: '.Str::limit($msg, 200),
         };

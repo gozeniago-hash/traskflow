@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\Auth\VerifyTwoFactorCode;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TwoFactorChallengeRequest;
 use App\Models\User;
 use App\Support\Audit;
 use App\Support\SignIn;
@@ -22,21 +24,19 @@ class TwoFactorController extends Controller
         return $this->pendingUser($request) ? view('auth.two-factor') : redirect()->route('login');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(TwoFactorChallengeRequest $request, VerifyTwoFactorCode $verifyTwoFactorCode): RedirectResponse
     {
         $user = $this->pendingUser($request);
         if (! $user) {
             return redirect()->route('login')->withErrors(['email' => 'Your sign-in timed out. Please sign in again.']);
         }
 
-        $request->validate(['code' => ['required', 'string', 'max:32']]);
-
         $key = 'two-factor:'.$user->id;
         if (RateLimiter::tooManyAttempts($key, 5)) {
             throw ValidationException::withMessages(['code' => 'Too many attempts. Try again in '.RateLimiter::availableIn($key).' seconds.']);
         }
 
-        if (! $user->verifyTwoFactorCode($request->input('code'))) {
+        if (! $verifyTwoFactorCode->handle($user, $request->input('code'))) {
             RateLimiter::hit($key, 300);
             Audit::log('auth.two_factor_failed', 'Wrong verification code for '.$user->email, $user, [], $user);
             throw ValidationException::withMessages(['code' => 'That code isn’t right. Check your authenticator app and try again.']);

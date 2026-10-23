@@ -2,33 +2,26 @@
 
 namespace App\Models;
 
+use App\Enums\ApprovalStatus;
+use Database\Factories\TaskFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-class Task extends Model
+class Task extends BaseModel
 {
+    /** @use HasFactory<TaskFactory> */
+    use HasFactory;
+
     public const PRIORITIES = ['none' => 'None', 'low' => 'Low', 'medium' => 'Medium', 'high' => 'High'];
 
     public const PRIORITY_CLASSES = [
         'low' => 'bg-sky-50 text-sky-700',
         'medium' => 'bg-amber-50 text-amber-700',
         'high' => 'bg-red-50 text-red-700',
-    ];
-
-    public const APPROVAL = [
-        'pending' => 'Awaiting approval',
-        'approved' => 'Approved',
-        'changes_requested' => 'Changes requested',
-    ];
-
-    public const APPROVAL_CLASSES = [
-        'pending' => 'bg-violet-50 text-violet-700 ring-1 ring-violet-200',
-        'approved' => 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
-        'changes_requested' => 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
     ];
 
     protected $fillable = [
@@ -44,6 +37,7 @@ class Task extends Model
             'due_date' => 'date',
             'completed_at' => 'datetime',
             'approval_at' => 'datetime',
+            'approval_status' => ApprovalStatus::class,
             'client_visible' => 'boolean',
             'requested_by_client' => 'boolean',
         ];
@@ -58,53 +52,69 @@ class Task extends Model
 
     // ---------------------------------------------------------------- relations
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /** @return BelongsTo<Section, $this> */
     public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
     }
 
+    /** @return BelongsTo<Task, $this> */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Task::class, 'parent_id');
     }
 
+    /** @return HasMany<Task, $this> */
     public function subtasks(): HasMany
     {
         return $this->hasMany(Task::class, 'parent_id')->orderBy('position')->orderBy('id');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assignee_id');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
 
+    /** @return HasMany<Comment, $this> */
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class)->oldest();
     }
 
-    /** All files on the task, including ones posted in comments. */
+    /**
+     * All files on the task, including ones posted in comments.
+     *
+     * @return HasMany<Attachment, $this>
+     */
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class)->latest();
     }
 
-    /** Files attached to the task itself (not inside a comment). */
+    /**
+     * Files attached to the task itself (not inside a comment).
+     *
+     * @return HasMany<Attachment, $this>
+     */
     public function ownAttachments(): HasMany
     {
         return $this->hasMany(Attachment::class)->whereNull('comment_id')->latest();
     }
 
+    /** @return HasMany<TaskFieldValue, $this> */
     public function fieldValues(): HasMany
     {
         return $this->hasMany(TaskFieldValue::class);
@@ -116,6 +126,7 @@ class Task extends Model
         return $this->fieldValues->pluck('value', 'field_id')->all();
     }
 
+    /** @return BelongsToMany<PullRequest, $this> */
     public function pullRequests(): BelongsToMany
     {
         return $this->belongsToMany(PullRequest::class)->orderByDesc('gh_updated_at');
@@ -129,11 +140,13 @@ class Task extends Model
         return strtolower($this->ticket($projectKey)).($slug->isNotEmpty() ? '-'.$slug : '');
     }
 
+    /** @return HasMany<TimeEntry, $this> */
     public function timeEntries(): HasMany
     {
         return $this->hasMany(TimeEntry::class);
     }
 
+    /** @return HasMany<Activity, $this> */
     public function activities(): HasMany
     {
         return $this->hasMany(Activity::class)->where('kind', 'task')->oldest(); // comments and files have their own lists

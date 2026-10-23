@@ -24,7 +24,7 @@
     @endif
 
     <a href="{{ $href }}"
-       @if ($a && $a->isImage()) data-lightbox="{{ $group }}" data-src="{{ $a->viewUrl() }}" data-download="{{ $a->downloadUrl() }}" data-name="{{ $a->original_name }}" data-meta="{{ $sub }}"
+       @if ($a && $a->isImage()) data-lightbox="{{ $group }}" data-src="{{ $a->viewUrl() }}" data-download="{{ $a->downloadUrl() }}" data-name="{{ $a->displayName() }}" data-meta="{{ $sub }}"
        @elseif (! $a || $a->isPdf()) target="_blank" rel="noopener noreferrer" @endif
        class="min-w-0 flex-1 after:absolute after:inset-0 after:content-['']" title="{{ $r->title }}">
         <span class="block truncate text-sm font-medium text-ink-900">{{ $r->title }}</span>

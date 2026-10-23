@@ -233,7 +233,7 @@
                 </ul>
             @endif
 
-            @if ($openTask->approval_status === 'pending')
+            @if ($openTask->approval_status === \App\Enums\ApprovalStatus::Pending)
                 <div class="mt-5 rounded-lg border border-violet-200 bg-violet-50 p-4">
                     <p class="font-medium text-violet-900">The team is asking for your approval.</p>
                     <textarea wire:model="feedback" rows="2" placeholder="Optional note — required if you're requesting changes" class="input mt-2 bg-white"></textarea>

@@ -180,7 +180,7 @@ class NotificationFeed
                 'approved' => 'approved '.$task,
                 'changes_requested' => 'requested changes on '.$task,
                 'client_request' => 'submitted a request: '.$task,
-                'field_changed' => isset($m['to']) && $m['to'] !== null && $m['to'] !== '' ? 'set '.($m['field'] ?? 'a field').' on '.$task.' to '.$m['to'] : 'cleared '.($m['field'] ?? 'a field').' on '.$task,
+                'field_changed' => isset($m['to']) && $m['to'] !== '' ? 'set '.($m['field'] ?? 'a field').' on '.$task.' to '.$m['to'] : 'cleared '.($m['field'] ?? 'a field').' on '.$task,
                 'deleted' => 'deleted '.(! empty($m['subtask']) ? 'subtask ' : '').trim(($m['ref'] ?? '').' '.$title),
                 default => str_replace('_', ' ', $a->action).' '.$task,
             },

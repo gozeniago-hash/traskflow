@@ -7,38 +7,12 @@ use App\Models\TimeEntry;
 use App\Models\User;
 use Carbon\CarbonInterface;
 
-/** One running timer per person; starting a new one stops the previous one. */
+/** Reading tracked time. Starting and stopping timers lives in App\Actions\Time. */
 class TimeTracker
 {
     public static function running(User $user): ?TimeEntry
     {
         return TimeEntry::query()->running()->where('user_id', $user->id)->with('task.project')->latest('started_at')->first();
-    }
-
-    public static function start(Task $task, User $user): TimeEntry
-    {
-        static::stop($user);
-
-        return TimeEntry::create([
-            'project_id' => $task->project_id,
-            'task_id' => $task->id,
-            'user_id' => $user->id,
-            'started_at' => now(),
-        ]);
-    }
-
-    public static function stop(User $user): ?TimeEntry
-    {
-        $entries = TimeEntry::query()->running()->where('user_id', $user->id)->get();
-
-        foreach ($entries as $entry) {
-            $entry->forceFill([
-                'ended_at' => now(),
-                'duration_seconds' => $entry->elapsedSeconds(),
-            ])->save();
-        }
-
-        return $entries->last();
     }
 
     public static function addManual(Task $task, User $user, int $seconds, CarbonInterface $date, ?string $note = null): TimeEntry

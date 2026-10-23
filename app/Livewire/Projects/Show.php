@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Projects;
 
+use App\Actions\Projects\ArchiveProject;
+use App\Actions\Projects\UpdateProjectDetails;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
@@ -9,6 +11,7 @@ use App\Support\Audit;
 use App\Support\ProjectLog;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 #[Layout('layouts.app')]
@@ -25,6 +28,14 @@ class Show extends Component
     public bool $showFields = false;
 
     public array $form = [];
+
+    /**
+     * The details as they were when the dialog opened, to tell what the person changed.
+     *
+     * @var array<string, mixed>
+     */
+    #[Locked]
+    public array $formWas = [];
 
     protected function getListeners(): array
     {
@@ -72,11 +83,12 @@ class Show extends Component
             'start_date' => $p->start_date?->toDateString() ?? '',
             'due_date' => $p->due_date?->toDateString() ?? '',
         ];
+        $this->formWas = $this->form;
         $this->resetValidation();
         $this->showEdit = true;
     }
 
-    public function saveEdit(): void
+    public function saveEdit(UpdateProjectDetails $updateProjectDetails): void
     {
         $this->authorize('update', $this->project);
         $ws = $this->workspace();
@@ -103,27 +115,18 @@ class Show extends Component
         foreach (['team_id', 'client_id', 'owner_id', 'start_date', 'due_date'] as $key) {
             $data[$key] = $data[$key] ?: null;
         }
-        if (! $data['client_id']) {
-            $data['portal_enabled'] = false;
-        }
+        $changes = array_filter($data, fn ($value, string $key): bool => (string) ($this->formWas[$key] ?? '') !== (string) ($this->form[$key] ?? ''), ARRAY_FILTER_USE_BOTH);
+        $updateProjectDetails->handle($this->project, $changes);
 
-        $before = $this->project->only(['privacy', 'team_id', 'client_id', 'portal_enabled', 'owner_id']);
-        $this->project->update($data);
-        // Access-related changes go in the audit log.
-        $changed = array_keys(array_diff_assoc(array_map('strval', $this->project->only(array_keys($before))), array_map('strval', $before)));
-        if ($changed) {
-            Audit::log('project.access_changed', 'Changed who can access “'.$this->project->name.'” ('.implode(', ', str_replace(['_id', '_'], ['', ' '], $changed)).')', $this->project, ['from' => $before, 'to' => $this->project->only(array_keys($before))]);
-        }
         $this->showEdit = false;
         $this->dispatch('project-updated');
         $this->toast('Project updated.');
     }
 
-    public function archive(): void
+    public function archive(bool $archive, ArchiveProject $archiveProject): void
     {
         $this->authorize('delete', $this->project);
-        $this->project->update(['archived_at' => $this->project->archived_at ? null : now()]);
-        Audit::log($this->project->archived_at ? 'project.archived' : 'project.restored', ($this->project->archived_at ? 'Archived' : 'Restored').' project “'.$this->project->name.'”', $this->project);
+        $archiveProject->handle($this->project, $archive);
         $this->dispatch('project-updated');
         $this->toast($this->project->archived_at ? 'Project archived.' : 'Project restored.');
     }

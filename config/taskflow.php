@@ -4,6 +4,10 @@ return [
     // Maximum size of a single uploaded attachment, in kilobytes.
     'max_upload_kb' => (int) env('TASKFLOW_MAX_UPLOAD_KB', 20480),
 
+    // Where new uploads are kept: 'local' (this server's drive) or a bucket disk such as 's3'.
+    // Existing files remember their own disk; move them with `php artisan files:move-to <disk>`.
+    'uploads_disk' => env('TASKFLOW_UPLOADS_DISK', 'local'),
+
     // Total storage each workspace may use for uploaded files, in megabytes (0 = unlimited).
     'workspace_storage_mb' => (int) env('TASKFLOW_WORKSPACE_STORAGE_MB', 2048),
 

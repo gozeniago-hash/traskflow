@@ -11,3 +11,4 @@ parameters:
         - tests
     tmpDir: storage/framework/cache/phpstan
     reportUnmatchedIgnoredErrors: true
+    parseModelCastsMethod: true

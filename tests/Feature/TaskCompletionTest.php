@@ -39,7 +39,7 @@ class TaskCompletionTest extends TestCase
         $list = Livewire::test(ListView::class, ['project' => $task->project])
             ->assertSet('filter', 'incomplete')->assertSee('Unique checkbox task');
 
-        $list->call('toggleComplete', $task->id)
+        $list->call('setComplete', $task->id, true)
             ->assertDontSee('Unique checkbox task')
             ->assertDispatched('toast', fn ($name, $p) => $p['message'] === 'Marked '.$task->ticket().' complete.'
                 && $p['undo'] === route('tasks.reopen', $task));

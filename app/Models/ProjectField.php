@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Database\Factories\ProjectFieldFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
@@ -13,8 +14,11 @@ use Illuminate\Support\Str;
  *   select → option id, multiselect → JSON array of option ids, person → user id,
  *   checkbox → "1", date → Y-m-d, number/currency → numeric string.
  */
-class ProjectField extends Model
+class ProjectField extends BaseModel
 {
+    /** @use HasFactory<ProjectFieldFactory> */
+    use HasFactory;
+
     public const TYPES = [
         'text' => 'Text',
         'textarea' => 'Long text',
@@ -71,11 +75,13 @@ class ProjectField extends Model
         ];
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /** @return HasMany<TaskFieldValue, $this> */
     public function values(): HasMany
     {
         return $this->hasMany(TaskFieldValue::class, 'field_id');

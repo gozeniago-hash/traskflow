@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Database\Factories\ProjectResourceFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /** A pinned project reference on the Overview: an external link or an uploaded file. */
-class ProjectResource extends Model
+class ProjectResource extends BaseModel
 {
+    /** @use HasFactory<ProjectResourceFactory> */
+    use HasFactory;
+
     protected $fillable = ['user_id', 'title', 'url', 'attachment_id', 'client_visible', 'position'];
 
     protected function casts(): array
@@ -23,16 +27,19 @@ class ProjectResource extends Model
         });
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Attachment, $this> */
     public function attachment(): BelongsTo
     {
         return $this->belongsTo(Attachment::class);

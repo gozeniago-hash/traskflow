@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Database\Factories\PullRequestFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class PullRequest extends Model
+class PullRequest extends BaseModel
 {
+    /** @use HasFactory<PullRequestFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'workspace_id', 'number', 'title', 'url', 'state', 'draft', 'merged_at',
         'head_ref', 'author_login', 'author_avatar', 'gh_updated_at',
@@ -22,11 +26,13 @@ class PullRequest extends Model
         ];
     }
 
+    /** @return BelongsTo<GithubRepository, $this> */
     public function repository(): BelongsTo
     {
         return $this->belongsTo(GithubRepository::class, 'github_repository_id');
     }
 
+    /** @return BelongsToMany<Task, $this> */
     public function tasks(): BelongsToMany
     {
         return $this->belongsToMany(Task::class);

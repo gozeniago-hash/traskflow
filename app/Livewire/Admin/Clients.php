@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Admin;
 
+use App\Actions\Clients\DeleteClient;
+use App\Actions\Clients\RemoveClientContact;
+use App\Actions\Invitations\SendInvitation;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Client;
-use App\Models\User;
 use App\Support\Audit;
 use App\Support\Invites;
 use Livewire\Attributes\Layout;
@@ -90,7 +92,7 @@ class Clients extends Component
         $this->resetValidation();
     }
 
-    public function sendInvite(): void
+    public function sendInvite(SendInvitation $sendInvitation): void
     {
         $this->requireAdmin();
         $this->validate(['inviteEmail' => ['required', 'email', 'max:190']]);
@@ -108,8 +110,10 @@ class Clients extends Component
 
             return;
         }
-        $invitation = Invites::send($this->workspace(), $this->me(), $this->inviteEmail, 'client', $client->id);
+        $invitation = $sendInvitation->handle($this->workspace(), $this->me(), $this->inviteEmail, 'client', $client->id);
         $this->lastInviteUrl = $invitation->url();
+        // Cleared, so a second click can't send again and break the link in the first email.
+        $this->inviteEmail = '';
         Audit::log('invitation.sent', 'Invited '.$invitation->email.' to the '.$client->name.' client portal', $invitation, ['role' => 'client']);
         $this->toast('Invitation sent to '.$invitation->email.'.');
     }
@@ -125,22 +129,17 @@ class Clients extends Component
         $this->toast('Invitation revoked.');
     }
 
-    public function removeContact(int $clientId, int $userId): void
+    public function removeContact(int $clientId, int $userId, RemoveClientContact $removeClientContact): void
     {
         $this->requireAdmin();
-        $this->client($clientId);
-        $this->workspace()->users()->wherePivot('client_id', $clientId)->wherePivot('role', 'client')->detach($userId);
-        Audit::log('client.contact_removed', 'Removed portal access for '.User::find($userId)?->email, $this->client($clientId), ['user_id' => $userId]);
+        $removeClientContact->handle($this->client($clientId), $userId);
         $this->toast('Portal access removed.');
     }
 
-    public function delete(int $id): void
+    public function delete(int $id, DeleteClient $deleteClient): void
     {
         $this->requireAdmin();
-        $client = $this->client($id);
-        $this->workspace()->users()->wherePivot('client_id', $client->id)->wherePivot('role', 'client')->detach();
-        $client->delete();
-        Audit::log('client.deleted', 'Deleted client “'.$client->name.'”', $client);
+        $deleteClient->handle($this->client($id));
         $this->toast('Client deleted. Their projects were kept.');
     }
 

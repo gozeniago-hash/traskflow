@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\GitHub\StorePullRequest;
 use App\Models\GithubRepository;
 use App\Support\GitHub;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /** Receives pull_request events from GitHub. Each repository has its own secret. */
 class GitHubWebhookController extends Controller
 {
-    public function __invoke(Request $request, GithubRepository $repository)
+    public function __invoke(Request $request, GithubRepository $repository, StorePullRequest $storePullRequest): JsonResponse
     {
         if (! GitHub::verifySignature($request->getContent(), $request->header('X-Hub-Signature-256'), $repository->webhook_secret)) {
             return response()->json(['message' => 'Invalid signature.'], 401);
@@ -25,7 +27,7 @@ class GitHubWebhookController extends Controller
             return response()->json(['message' => 'Ignored.']);
         }
 
-        GitHub::for($repository->workspace)->upsert($repository, $request->input('pull_request'));
+        $storePullRequest->handle($repository, $request->input('pull_request'));
 
         return response()->json(['message' => 'OK']);
     }

@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\Undo;
+use App\Actions\Undo\RestoreDeleted;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class UndoController extends Controller
 {
-    public function __invoke(Request $request, string $token): JsonResponse
+    public function __invoke(Request $request, string $token, RestoreDeleted $restoreDeleted): JsonResponse
     {
         abort_unless(Str::isUuid($token), 404);
-        $result = Undo::restore($token, $request->user());
+        $result = $restoreDeleted->handle($token, $request->user());
+        $status = $result['status'];
+        unset($result['status']);
 
-        return response()->json($result, $result['ok'] ? 200 : 410);
+        return response()->json($result, $status);
     }
 }

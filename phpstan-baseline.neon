@@ -5,3753 +5,1393 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Events/ProjectChanged.php
-
 		-
 			message: '#^Method App\\Events\\ProjectChanged\:\:broadcastWith\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Events/ProjectChanged.php
-
 		-
 			message: '#^Method App\\Events\\WorkspaceChanged\:\:broadcastWith\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Events/WorkspaceChanged.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Auth/AuthController.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:users\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Auth/AuthController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\GitHubWebhookController\:\:__invoke\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/GitHubWebhookController.php
-
-		-
-			message: '#^Parameter \#1 \$workspace of static method App\\Support\\GitHub\:\:for\(\) expects App\\Models\\Workspace, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/GitHubWebhookController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/InvitationController.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:teams\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/InvitationController.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:users\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/InvitationController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/TicketController.php
-
 		-
 			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\Project\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/TicketController.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:users\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/WorkspaceController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$require_two_factor\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Middleware/EnsureAccountSecure.php
-
-		-
-			message: '#^Parameter \#1 \$workspace of method App\\Models\\User\:\:switchWorkspace\(\) expects App\\Models\\Workspace, Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Middleware/EnsureWorkspace.php
-
 		-
 			message: '#^Method App\\Http\\Middleware\\UseNearestForwardedIp\:\:nearestPublic\(\) has parameter \$hops with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Middleware/UseNearestForwardedIp.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Admin/AuditLog.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Admin/AuditLog.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$description\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Admin/AuditLog.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$ip\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Admin/AuditLog.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Admin/AuditLog.php
-
 		-
 			message: '#^Method App\\Livewire\\Admin\\AuditLog\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/Admin/AuditLog.php
-
 		-
 			message: '#^Method App\\Livewire\\Admin\\AuditLog\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Admin/AuditLog.php
-
-		-
-			message: '#^Method App\\Livewire\\Admin\\AuditLog\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Admin/AuditLog.php
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Livewire/Admin/AuditLog.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Admin/Clients.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Admin/Clients.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\<\*, \*, \*\>\:\:active\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Admin/Clients.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\Relation\<\*, \*, \*\>\:\:pending\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Admin/Clients.php
-
-		-
-			message: '#^Method App\\Livewire\\Admin\\Clients\:\:client\(\) should return App\\Models\\Client but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Admin/Clients.php
-
 		-
 			message: '#^Method App\\Livewire\\Admin\\Clients\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Admin/Clients.php
-
-		-
-			message: '#^Method App\\Livewire\\Admin\\Clients\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Admin/Clients.php
-
 		-
 			message: '#^Property App\\Livewire\\Admin\\Clients\:\:\$form type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Admin/Clients.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$current_workspace_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Admin/Members.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$email\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Admin/Members.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Admin/Members.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 4
 			path: app/Livewire/Admin/Members.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Admin/Members.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$role\.$#'
 			identifier: property.notFound
 			count: 2
 			path: app/Livewire/Admin/Members.php
-
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:projects\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Livewire/Admin/Members.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:users\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Admin/Members.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:pending\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Admin/Members.php
-
 		-
 			message: '#^Method App\\Livewire\\Admin\\Members\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Admin/Members.php
-
-		-
-			message: '#^Method App\\Livewire\\Admin\\Members\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Admin/Members.php
-
 		-
 			message: '#^Property App\\Livewire\\Admin\\Members\:\:\$inviteTeams type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Admin/Members.php
-
 		-
 			message: '#^Property App\\Livewire\\Admin\\Members\:\:\$sentLinks type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Admin/Members.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Admin/Settings.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Admin/Settings.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:active\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Admin/Settings.php
-
 		-
 			message: '#^Call to an undefined method Illuminate\\Support\\HigherOrderCollectionProxy\<string, Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:hasTwoFactor\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Livewire/Admin/Settings.php
-
 		-
 			message: '#^Method App\\Livewire\\Admin\\Settings\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Admin/Settings.php
-
-		-
-			message: '#^Method App\\Livewire\\Admin\\Settings\:\:repo\(\) should return App\\Models\\GithubRepository but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Admin/Settings.php
-
-		-
-			message: '#^Method App\\Livewire\\Admin\\Settings\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Admin/Settings.php
-
-		-
-			message: '#^Parameter \#1 \$repo of method App\\Support\\GitHub\:\:installWebhook\(\) expects App\\Models\\GithubRepository, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Admin/Settings.php
-
-		-
-			message: '#^Parameter \#1 \$repo of method App\\Support\\GitHub\:\:sync\(\) expects App\\Models\\GithubRepository, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Admin/Settings.php
-
 		-
 			message: '#^Property App\\Livewire\\Admin\\Settings\:\:\$mailTest type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Admin/Settings.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Admin/Teams.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:users\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Admin/Teams.php
-
 		-
 			message: '#^Method App\\Livewire\\Admin\\Teams\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Admin/Teams.php
-
-		-
-			message: '#^Method App\\Livewire\\Admin\\Teams\:\:team\(\) should return App\\Models\\Team but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Admin/Teams.php
-
-		-
-			message: '#^Method App\\Livewire\\Admin\\Teams\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Admin/Teams.php
-
 		-
 			message: '#^Property App\\Livewire\\Admin\\Teams\:\:\$addUser type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Admin/Teams.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$assignee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/CreateTask.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/CreateTask.php
-
 		-
 			message: '#^Method App\\Livewire\\CreateTask\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/CreateTask.php
-
-		-
-			message: '#^Method App\\Livewire\\CreateTask\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/CreateTask.php
-
-		-
-			message: '#^Parameter \#1 \$task of static method App\\Models\\Activity\:\:record\(\) expects App\\Models\\Task, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/CreateTask.php
-
-		-
-			message: '#^Parameter \#1 \$task of static method App\\Support\\CustomFields\:\:saveAll\(\) expects App\\Models\\Task, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/CreateTask.php
-
-		-
-			message: '#^Parameter \#4 \$task of static method App\\Models\\Attachment\:\:storeUpload\(\) expects App\\Models\\Task\|null, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/CreateTask.php
-
 		-
 			message: '#^Property App\\Livewire\\CreateTask\:\:\$fieldValues type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/CreateTask.php
-
 		-
 			message: '#^Property App\\Livewire\\CreateTask\:\:\$files type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/CreateTask.php
-
 		-
 			message: '#^Property App\\Livewire\\CreateTask\:\:\$newFiles type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/CreateTask.php
-
 		-
 			message: '#^Method App\\Livewire\\Home\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Home.php
-
 		-
 			message: '#^Method App\\Livewire\\Home\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Home.php
-
 		-
 			message: '#^Method App\\Livewire\\Home\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Home.php
-
 		-
 			message: '#^Method App\\Livewire\\Home\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Home.php
-
-		-
-			message: '#^Method App\\Livewire\\Home\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Home.php
-
 		-
 			message: '#^Method App\\Livewire\\MyTasks\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/MyTasks.php
-
 		-
 			message: '#^Method App\\Livewire\\MyTasks\:\:groups\(\) has parameter \$tasks with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/MyTasks.php
-
 		-
 			message: '#^Method App\\Livewire\\MyTasks\:\:groups\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/MyTasks.php
-
 		-
 			message: '#^Method App\\Livewire\\MyTasks\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/MyTasks.php
-
 		-
 			message: '#^Method App\\Livewire\\MyTasks\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/MyTasks.php
-
 		-
 			message: '#^Method App\\Livewire\\MyTasks\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/MyTasks.php
-
-		-
-			message: '#^Method App\\Livewire\\MyTasks\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/MyTasks.php
-
-		-
-			message: '#^Parameter \#1 \$task of static method App\\Models\\Activity\:\:record\(\) expects App\\Models\\Task, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/MyTasks.php
-
 		-
 			message: '#^Method App\\Livewire\\Notifications\\Bell\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Notifications/Bell.php
-
-		-
-			message: '#^Method App\\Livewire\\Notifications\\Bell\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Notifications/Bell.php
-
 		-
 			message: '#^Method App\\Livewire\\Notifications\\Index\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Notifications/Index.php
-
-		-
-			message: '#^Method App\\Livewire\\Notifications\\Index\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Notifications/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Portal\\Dashboard\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Portal/Dashboard.php
-
 		-
 			message: '#^Method App\\Livewire\\Portal\\Dashboard\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Portal/Dashboard.php
-
 		-
 			message: '#^Method App\\Livewire\\Portal\\Dashboard\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Portal/Dashboard.php
-
 		-
 			message: '#^Method App\\Livewire\\Portal\\Dashboard\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Portal/Dashboard.php
-
-		-
-			message: '#^Method App\\Livewire\\Portal\\Dashboard\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Portal/Dashboard.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Livewire/Portal/ProjectView.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tasks\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Portal/ProjectView.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:open\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Portal/ProjectView.php
-
 		-
 			message: '#^Method App\\Livewire\\Portal\\ProjectView\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Portal/ProjectView.php
-
 		-
 			message: '#^Method App\\Livewire\\Portal\\ProjectView\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Portal/ProjectView.php
-
 		-
 			message: '#^Method App\\Livewire\\Portal\\ProjectView\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Portal/ProjectView.php
-
 		-
 			message: '#^Method App\\Livewire\\Portal\\ProjectView\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Portal/ProjectView.php
-
-		-
-			message: '#^Method App\\Livewire\\Portal\\ProjectView\:\:sharedTask\(\) should return App\\Models\\Task but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Portal/ProjectView.php
-
-		-
-			message: '#^Method App\\Livewire\\Portal\\ProjectView\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Portal/ProjectView.php
-
-		-
-			message: '#^Parameter \#1 \$task of static method App\\Models\\Activity\:\:record\(\) expects App\\Models\\Task, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Portal/ProjectView.php
-
-		-
-			message: '#^Parameter \#4 \$task of static method App\\Models\\Attachment\:\:storeUpload\(\) expects App\\Models\\Task\|null, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Portal/ProjectView.php
-
-		-
-			message: '#^Parameter \#6 \$comment of static method App\\Models\\Attachment\:\:storeUpload\(\) expects App\\Models\\Comment\|null, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Portal/ProjectView.php
-
 		-
 			message: '#^Property App\\Livewire\\Portal\\ProjectView\:\:\$commentFiles type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Portal/ProjectView.php
-
 		-
 			message: '#^Property App\\Livewire\\Portal\\ProjectView\:\:\$newCommentFiles type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Portal/ProjectView.php
-
 		-
 			message: '#^Property App\\Livewire\\Portal\\ProjectView\:\:\$requestFiles type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Portal/ProjectView.php
-
 		-
 			message: '#^Property App\\Livewire\\Portal\\ProjectView\:\:\$uploads type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Portal/ProjectView.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$require_two_factor\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Livewire/Profile.php
-
 		-
 			message: '#^Method App\\Livewire\\Profile\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Profile.php
-
-		-
-			message: '#^Method App\\Livewire\\Profile\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Profile.php
-
 		-
 			message: '#^Property App\\Livewire\\Profile\:\:\$shownRecoveryCodes type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Profile.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$section_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/BoardView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:cardFields\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/BoardView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/BoardView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/BoardView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:projectTask\(\) should return App\\Models\\Task but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/BoardView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:reorder\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Projects/BoardView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:reorderSections\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:section\(\) should return App\\Models\\Section but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/BoardView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:sectionsWithTasks\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\BoardView\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: array\{int\<0, max\>, int\<0, max\>, int\<0, max\>\}, Closure\(App\\Models\\Task\)\: array\{int\<0, max\>, int\<0, max\>, int\<0, max\>\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:each\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: mixed, Closure\(App\\Models\\Task, mixed\)\: bool given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Parameter \#1 \$task of static method App\\Models\\Activity\:\:record\(\) expects App\\Models\\Task, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Livewire/Projects/BoardView.php
-
 		-
 			message: '#^Property App\\Livewire\\Projects\\BoardView\:\:\$newTask type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/BoardView.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$due_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/CalendarView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\CalendarView\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/CalendarView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\CalendarView\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/CalendarView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\CalendarView\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/CalendarView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\CalendarView\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/CalendarView.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\CalendarView\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/CalendarView.php
-
-		-
-			message: '#^Parameter \#1 \$task of static method App\\Models\\Activity\:\:record\(\) expects App\\Models\\Task, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Projects/CalendarView.php
-
-		-
-			message: '#^Unable to resolve the template type TGroupKey in call to method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:groupBy\(\)$#'
-			identifier: argument.templateType
-			count: 1
-			path: app/Livewire/Projects/CalendarView.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$content\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Docs.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Docs.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Livewire/Projects/Docs.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Docs.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Livewire/Projects/Docs.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Docs\:\:autosave\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Docs.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Docs\:\:doc\(\) should return App\\Models\\ProjectDoc\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Docs.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Docs\:\:editableDoc\(\) should return App\\Models\\ProjectDoc but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Docs.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Docs\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Docs.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Docs\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/Docs.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Docs\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Docs.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Docs\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Docs.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Docs\:\:storeDocUpload\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Docs.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Docs\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Docs.php
-
 		-
 			message: '#^Property App\\Livewire\\Projects\\Docs\:\:\$docUpload has no type specified\.$#'
 			identifier: missingType.property
 			count: 1
 			path: app/Livewire/Projects/Docs.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Livewire/Projects/Docs.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Fields.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Fields\:\:cleanOptions\(\) has parameter \$options with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Fields.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Fields\:\:cleanOptions\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Fields.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Fields\:\:field\(\) should return App\\Models\\ProjectField but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Fields.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Fields\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Fields.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Fields\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Fields.php
-
 		-
 			message: '#^Property App\\Livewire\\Projects\\Fields\:\:\$form type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Fields.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$client_visible\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Files.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Files.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$original_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Files.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Files\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Files.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Files\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/Files.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Files\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Files.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Files\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Files.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Files\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Files.php
-
 		-
 			message: '#^Property App\\Livewire\\Projects\\Files\:\:\$uploads type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Files.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Index.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:fields\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Projects/Index.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:members\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Projects/Index.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:sections\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Projects/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Index\:\:create\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Index\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Index\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Index\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Index\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Index\:\:updatedForm\(\) has parameter \$field with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Index\:\:updatedForm\(\) has parameter \$value with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/Index.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Index\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Index.php
-
 		-
 			message: '#^Property App\\Livewire\\Projects\\Index\:\:\$form type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Index.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$section_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/ListView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\ListView\:\:cardFields\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/ListView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\ListView\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/ListView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\ListView\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/ListView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\ListView\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\ListView\:\:projectTask\(\) should return App\\Models\\Task but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/ListView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\ListView\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\ListView\:\:reorder\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Projects/ListView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\ListView\:\:reorderSections\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\ListView\:\:section\(\) should return App\\Models\\Section but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/ListView.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\ListView\:\:sectionsWithTasks\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\ListView\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: array\{int\<0, max\>, int\<0, max\>, int\<0, max\>\}, Closure\(App\\Models\\Task\)\: array\{int\<0, max\>, int\<0, max\>, int\<0, max\>\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:each\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: mixed, Closure\(App\\Models\\Task, mixed\)\: bool given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Parameter \#1 \$task of static method App\\Models\\Activity\:\:record\(\) expects App\\Models\\Task, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Livewire/Projects/ListView.php
-
 		-
 			message: '#^Property App\\Livewire\\Projects\\ListView\:\:\$collapsed type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/ListView.php
-
 		-
 			message: '#^Property App\\Livewire\\Projects\\ListView\:\:\$newTask type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/ListView.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Overview.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Projects/Overview.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:open\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Projects/Overview.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Overview\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Overview.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Overview\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/Overview.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Overview\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Overview.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Overview\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Overview.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Overview\:\:resource\(\) should return App\\Models\\ProjectResource but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Overview.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Overview\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Overview.php
-
 		-
 			message: '#^Property App\\Livewire\\Projects\\Overview\:\:\$resourceFiles type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Overview.php
-
-		-
-			message: '#^Cannot call method toDateString\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Livewire/Projects/Show.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Show\:\:deleteProject\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Show.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Show\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Show.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Show\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/Show.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Show\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Show.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Show\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Show.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Show\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Show.php
-
 		-
 			message: '#^Property App\\Livewire\\Projects\\Show\:\:\$form type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Show.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Projects/Timesheet.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Timesheet\:\:export\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Timesheet.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Timesheet\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Timesheet.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Timesheet\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Projects/Timesheet.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Timesheet\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Timesheet.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Timesheet\:\:rangeLabels\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Projects/Timesheet.php
-
 		-
 			message: '#^Method App\\Livewire\\Projects\\Timesheet\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Projects/Timesheet.php
-
-		-
-			message: '#^Method App\\Livewire\\Projects\\Timesheet\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Projects/Timesheet.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$due_date\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:active\(\)\.$#'
 			identifier: method.notFound
 			count: 3
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:byResource\(\) has parameter \$tasks with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:byResource\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:completedData\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:dateRange\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:exportTimesheet\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:incompleteData\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:projectsCsv\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:projectsData\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:scopedProjects\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:taskQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:tasksCsv\(\) has parameter \$rows with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:tasksCsv\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:timesheetData\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:upcomingData\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Reports\\Index\:\:visibleProjects\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
-		-
-			message: '#^Method App\\Livewire\\Reports\\Index\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Property App\\Livewire\\Reports\\Index\:\:\$open type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Unable to resolve the template type TFlatMapKey in call to method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:flatMap\(\)$#'
 			identifier: argument.templateType
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Unable to resolve the template type TFlatMapValue in call to method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:flatMap\(\)$#'
 			identifier: argument.templateType
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Unable to resolve the template type TWhenReturnType in call to method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:when\(\)$#'
 			identifier: argument.templateType
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 5
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>title" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Livewire/Reports/Index.php
-
 		-
 			message: '#^Method App\\Livewire\\Search\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Search.php
-
-		-
-			message: '#^Method App\\Livewire\\Search\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Search.php
-
 		-
 			message: '#^Method App\\Livewire\\Sidebar\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Sidebar.php
-
 		-
 			message: '#^Method App\\Livewire\\Sidebar\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Sidebar.php
-
 		-
 			message: '#^Method App\\Livewire\\Sidebar\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Sidebar.php
-
 		-
 			message: '#^Method App\\Livewire\\Sidebar\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Sidebar.php
-
-		-
-			message: '#^Method App\\Livewire\\Sidebar\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Sidebar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$fields\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$original_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$portal_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$project_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:assignableUsers\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:canBeAssigned\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:deleteWithFiles\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:fields\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:members\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:nextTaskPosition\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:sections\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:toggleComplete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Cannot call method toDateString\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Method App\\Livewire\\TaskPanel\:\:getListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Method App\\Livewire\\TaskPanel\:\:onRemoteChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Method App\\Livewire\\TaskPanel\:\:onWorkspaceChange\(\) has parameter \$event with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Method App\\Livewire\\TaskPanel\:\:projectListeners\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Method App\\Livewire\\TaskPanel\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Method App\\Livewire\\TaskPanel\:\:updatedFieldValues\(\) has parameter \$key with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Method App\\Livewire\\TaskPanel\:\:updatedFieldValues\(\) has parameter \$value with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Method App\\Livewire\\TaskPanel\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 2
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:sortBy\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Parameter \#1 \$project of static method App\\Support\\CustomFields\:\:assignableMap\(\) expects App\\Models\\Project, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Parameter \#1 \$project of static method App\\Support\\CustomFields\:\:peopleMap\(\) expects App\\Models\\Project, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Parameter \#1 \$source of method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:concat\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Parameter \#1 \$task of static method App\\Models\\Activity\:\:record\(\) expects App\\Models\\Task, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Parameter \#2 \$project of static method App\\Models\\Attachment\:\:storeUpload\(\) expects App\\Models\\Project, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Parameter \#6 \$comment of static method App\\Models\\Attachment\:\:storeUpload\(\) expects App\\Models\\Comment\|null, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Property App\\Livewire\\TaskPanel\:\:\$commentFiles type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Property App\\Livewire\\TaskPanel\:\:\$fieldValues type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Property App\\Livewire\\TaskPanel\:\:\$newCommentFiles type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
 		-
 			message: '#^Property App\\Livewire\\TaskPanel\:\:\$uploads type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 2
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:values\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Livewire/TaskPanel.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/TimerBar.php
-
 		-
 			message: '#^Method App\\Livewire\\TimerBar\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/TimerBar.php
-
-		-
-			message: '#^Method App\\Livewire\\TimerBar\:\:workspace\(\) should return App\\Models\\Workspace but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/TimerBar.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Mail/InvitationMail.php
-
 		-
 			message: '#^Method App\\Models\\Activity\:\:log\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Activity.php
-
-		-
-			message: '#^Method App\\Models\\Activity\:\:project\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Activity.php
-
 		-
 			message: '#^Method App\\Models\\Activity\:\:record\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Activity.php
-
-		-
-			message: '#^Method App\\Models\\Activity\:\:task\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Activity.php
-
-		-
-			message: '#^Method App\\Models\\Activity\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Activity.php
-
-		-
-			message: '#^Offset ''field'' on \*NEVER\* on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Models/Activity.php
-
-		-
-			message: '#^Offset ''field'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Models/Activity.php
-
-		-
-			message: '#^Offset ''from'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Models/Activity.php
-
-		-
-			message: '#^Offset ''to'' on array\{\}\|string in isset\(\) does not exist\.$#'
-			identifier: isset.offset
-			count: 4
-			path: app/Models/Activity.php
-
-		-
-			message: '#^Offset ''to'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 2
-			path: app/Models/Activity.php
-
-		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 2
-			path: app/Models/Activity.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$client_visible\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_internal\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Method App\\Models\\Attachment\:\:comment\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Method App\\Models\\Attachment\:\:doc\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Method App\\Models\\Attachment\:\:project\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Attachment.php
-
 		-
 			message: '#^Method App\\Models\\Attachment\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Attachment.php
-
-		-
-			message: '#^Method App\\Models\\Attachment\:\:task\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Method App\\Models\\Attachment\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Method App\\Models\\AuditLog\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/AuditLog.php
-
-		-
-			message: '#^Method App\\Models\\Client\:\:contacts\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Client.php
-
-		-
-			message: '#^Method App\\Models\\Client\:\:invitations\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Client.php
-
-		-
-			message: '#^Method App\\Models\\Client\:\:projects\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Client.php
-
-		-
-			message: '#^Method App\\Models\\Client\:\:workspace\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Client.php
-
-		-
-			message: '#^Method App\\Models\\Comment\:\:attachments\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Comment.php
-
-		-
-			message: '#^Method App\\Models\\Comment\:\:task\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Comment.php
-
-		-
-			message: '#^Method App\\Models\\Comment\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Comment.php
-
-		-
-			message: '#^Method App\\Models\\DocRevision\:\:doc\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/DocRevision.php
-
-		-
-			message: '#^Method App\\Models\\DocRevision\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/DocRevision.php
-
-		-
-			message: '#^Method App\\Models\\GithubRepository\:\:pullRequests\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/GithubRepository.php
-
-		-
-			message: '#^Method App\\Models\\GithubRepository\:\:workspace\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/GithubRepository.php
-
-		-
-			message: '#^Cannot call method isFuture\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Models/Invitation.php
-
-		-
-			message: '#^Method App\\Models\\Invitation\:\:client\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Invitation.php
-
-		-
-			message: '#^Method App\\Models\\Invitation\:\:inviter\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Invitation.php
-
 		-
 			message: '#^Method App\\Models\\Invitation\:\:scopePending\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Invitation.php
-
 		-
 			message: '#^Method App\\Models\\Invitation\:\:scopePending\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Invitation.php
-
-		-
-			message: '#^Method App\\Models\\Invitation\:\:workspace\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Invitation.php
-
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:partOf\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/Models/Project.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:members\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:assignableUsers\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:attachments\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:client\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:docs\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:fields\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:members\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:owner\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:people\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:progress\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:resources\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:scopeActive\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:scopeActive\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:scopeManagedBy\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:scopeManagedBy\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:scopePartOf\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:scopePartOf\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:scopeVisibleTo\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Project.php
-
 		-
 			message: '#^Method App\\Models\\Project\:\:scopeVisibleTo\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:sections\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:statusUpdates\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:tasks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:team\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:timeEntries\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:topLevelTasks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\Project\:\:workspace\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Project.php
-
-		-
-			message: '#^Method App\\Models\\ProjectDoc\:\:attachments\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectDoc.php
-
-		-
-			message: '#^Method App\\Models\\ProjectDoc\:\:creator\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectDoc.php
-
-		-
-			message: '#^Method App\\Models\\ProjectDoc\:\:editor\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectDoc.php
-
-		-
-			message: '#^Method App\\Models\\ProjectDoc\:\:project\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectDoc.php
-
-		-
-			message: '#^Method App\\Models\\ProjectDoc\:\:revisions\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectDoc.php
-
-		-
-			message: '#^Call to function is_array\(\) with \*NEVER\* will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Models/ProjectField.php
-
 		-
 			message: '#^Method App\\Models\\ProjectField\:\:display\(\) has parameter \$people with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/ProjectField.php
-
 		-
 			message: '#^Method App\\Models\\ProjectField\:\:makeOptions\(\) has parameter \$labels with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/ProjectField.php
-
 		-
 			message: '#^Method App\\Models\\ProjectField\:\:makeOptions\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/ProjectField.php
-
 		-
 			message: '#^Method App\\Models\\ProjectField\:\:option\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/ProjectField.php
-
-		-
-			message: '#^Method App\\Models\\ProjectField\:\:project\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectField.php
-
 		-
 			message: '#^Method App\\Models\\ProjectField\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/ProjectField.php
-
-		-
-			message: '#^Method App\\Models\\ProjectField\:\:values\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectField.php
-
-		-
-			message: '#^Offset ''id'' on \*NEVER\* in isset\(\) always exists and is not nullable\.$#'
-			identifier: isset.offset
-			count: 1
-			path: app/Models/ProjectField.php
-
-		-
-			message: '#^Offset ''label'' on \*NEVER\* in isset\(\) always exists and is not nullable\.$#'
-			identifier: isset.offset
-			count: 1
-			path: app/Models/ProjectField.php
-
-		-
-			message: '#^Parameter \#1 \$array \(array\{\}\) to function array_values is empty, call has no effect\.$#'
-			identifier: arrayValues.empty
-			count: 1
-			path: app/Models/ProjectField.php
-
-		-
-			message: '#^Method App\\Models\\ProjectResource\:\:attachment\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectResource.php
-
-		-
-			message: '#^Method App\\Models\\ProjectResource\:\:project\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectResource.php
-
-		-
-			message: '#^Method App\\Models\\ProjectResource\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ProjectResource.php
-
-		-
-			message: '#^Method App\\Models\\PullRequest\:\:repository\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PullRequest.php
-
-		-
-			message: '#^Method App\\Models\\PullRequest\:\:tasks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PullRequest.php
-
-		-
-			message: '#^Method App\\Models\\Section\:\:project\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Section.php
-
-		-
-			message: '#^Method App\\Models\\Section\:\:tasks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Section.php
-
-		-
-			message: '#^Method App\\Models\\StatusUpdate\:\:project\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/StatusUpdate.php
-
-		-
-			message: '#^Method App\\Models\\StatusUpdate\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/StatusUpdate.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$key\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Cannot access property \$year on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Models/Task.php
-
-		-
-			message: '#^Cannot call method isToday\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Cannot call method isTomorrow\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Cannot call method isYesterday\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Cannot call method lt\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Models/Task.php
-
-		-
-			message: '#^Cannot call method lte\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:activities\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:assignee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:attachments\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:comments\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:creator\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
 		-
 			message: '#^Method App\\Models\\Task\:\:fieldValueMap\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:fieldValues\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:ownAttachments\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:parent\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:project\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:pullRequests\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
 		-
 			message: '#^Method App\\Models\\Task\:\:scopeInVisibleProjects\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Task.php
-
 		-
 			message: '#^Method App\\Models\\Task\:\:scopeInVisibleProjects\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Task.php
-
 		-
 			message: '#^Method App\\Models\\Task\:\:scopeOpen\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Task.php
-
 		-
 			message: '#^Method App\\Models\\Task\:\:scopeOpen\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:section\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:subtasks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\Task\:\:timeEntries\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Task.php
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>key" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Models/Task.php
-
-		-
-			message: '#^Method App\\Models\\TaskFieldValue\:\:field\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/TaskFieldValue.php
-
-		-
-			message: '#^Method App\\Models\\TaskFieldValue\:\:task\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/TaskFieldValue.php
-
-		-
-			message: '#^Method App\\Models\\Team\:\:projects\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Team.php
-
-		-
-			message: '#^Method App\\Models\\Team\:\:users\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Team.php
-
-		-
-			message: '#^Method App\\Models\\Team\:\:workspace\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Team.php
-
-		-
-			message: '#^Cannot call method getTimestamp\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Models/TimeEntry.php
-
-		-
-			message: '#^Method App\\Models\\TimeEntry\:\:project\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/TimeEntry.php
-
 		-
 			message: '#^Method App\\Models\\TimeEntry\:\:scopeRunning\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/TimeEntry.php
-
 		-
 			message: '#^Method App\\Models\\TimeEntry\:\:scopeRunning\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/TimeEntry.php
-
-		-
-			message: '#^Method App\\Models\\TimeEntry\:\:task\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/TimeEntry.php
-
-		-
-			message: '#^Method App\\Models\\TimeEntry\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/TimeEntry.php
-
-		-
-			message: '#^Empty array passed to foreach\.$#'
-			identifier: foreach.emptyArray
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:assignedTasks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:currentWorkspace\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
 		-
 			message: '#^Method App\\Models\\User\:\:newRecoveryCodes\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:projects\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:teams\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:workspaces\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
 		-
 			message: '#^Property App\\Models\\User\:\:\$membershipCache has no type specified\.$#'
 			identifier: missingType.property
 			count: 1
 			path: app/Models/User.php
-
 		-
 			message: '#^Method App\\Models\\Workspace\:\:clientUsers\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Workspace.php
-
-		-
-			message: '#^Method App\\Models\\Workspace\:\:clients\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Workspace.php
-
-		-
-			message: '#^Method App\\Models\\Workspace\:\:githubRepositories\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Workspace.php
-
-		-
-			message: '#^Method App\\Models\\Workspace\:\:invitations\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Workspace.php
-
 		-
 			message: '#^Method App\\Models\\Workspace\:\:members\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Workspace.php
-
-		-
-			message: '#^Method App\\Models\\Workspace\:\:owner\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Workspace.php
-
-		-
-			message: '#^Method App\\Models\\Workspace\:\:projects\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Workspace.php
-
-		-
-			message: '#^Method App\\Models\\Workspace\:\:teams\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Workspace.php
-
-		-
-			message: '#^Method App\\Models\\Workspace\:\:users\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Workspace.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isVisibleTo\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Policies/AttachmentPolicy.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isVisibleTo\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Policies/TaskPolicy.php
-
 		-
 			message: '#^Method App\\Rules\\SafeUpload\:\:allowedExtensions\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Rules/SafeUpload.php
-
 		-
 			message: '#^Method App\\Support\\Audit\:\:log\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Audit.php
-
 		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 2
 			path: app/Support/Audit.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$workspace\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Support/CustomFields.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:members\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:assignableMap\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:attributes\(\) has parameter \$fields with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:attributes\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:blankInputs\(\) has parameter \$fields with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:blankInputs\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:inputsFor\(\) has parameter \$fields with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:inputsFor\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:peopleMap\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:rules\(\) has parameter \$fields with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:saveAll\(\) has parameter \$fields with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\CustomFields\:\:saveAll\(\) has parameter \$inputs with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/CustomFields.php
-
 		-
 			message: '#^Method App\\Support\\Export\\Csv\:\:row\(\) has parameter \$values with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/Csv.php
-
 		-
 			message: '#^Method App\\Support\\Export\\Csv\:\:row\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/Csv.php
-
 		-
 			message: '#^Method App\\Support\\Export\\PdfTable\:\:__construct\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/PdfTable.php
-
 		-
 			message: '#^Method App\\Support\\Export\\PdfTable\:\:__construct\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/PdfTable.php
-
 		-
 			message: '#^Method App\\Support\\Export\\PdfTable\:\:__construct\(\) has parameter \$subtitleLines with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/PdfTable.php
-
 		-
 			message: '#^Method App\\Support\\Export\\PdfTable\:\:cells\(\) has parameter \$cells with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/PdfTable.php
-
 		-
 			message: '#^Method App\\Support\\Export\\PdfTable\:\:cells\(\) has parameter \$color with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/PdfTable.php
-
 		-
 			message: '#^Method App\\Support\\Export\\PdfTable\:\:line\(\) has parameter \$rgb with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/PdfTable.php
-
 		-
 			message: '#^Method App\\Support\\Export\\PdfTable\:\:rect\(\) has parameter \$rgb with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/PdfTable.php
-
 		-
 			message: '#^Method App\\Support\\Export\\PdfTable\:\:text\(\) has parameter \$rgb with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/PdfTable.php
-
 		-
 			message: '#^Method App\\Support\\Export\\Xlsx\:\:__construct\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/Xlsx.php
-
 		-
 			message: '#^Method App\\Support\\Export\\Xlsx\:\:__construct\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/Xlsx.php
-
 		-
 			message: '#^Method App\\Support\\Export\\Xlsx\:\:__construct\(\) has parameter \$subtitleLines with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/Xlsx.php
-
 		-
 			message: '#^Method App\\Support\\Export\\Xlsx\:\:row\(\) has parameter \$cells with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Export/Xlsx.php
-
 		-
 			message: '#^Offset ''csize'' does not exist on array\{name\: string, data\: string, crc\: int, size\: int, method\: int, offset\: int\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: app/Support/Export/Zip.php
-
 		-
 			message: '#^Method App\\Support\\GitHub\:\:matchTasks\(\) has parameter \$texts with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/GitHub.php
-
 		-
 			message: '#^Method App\\Support\\GitHub\:\:matchTasks\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/GitHub.php
-
 		-
 			message: '#^Method App\\Support\\GitHub\:\:ticketRefs\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/GitHub.php
-
-		-
-			message: '#^Method App\\Support\\GitHub\:\:upsert\(\) has parameter \$pr with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Support/GitHub.php
-
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
 			identifier: new.static
 			count: 1
 			path: app/Support/GitHub.php
-
 		-
 			message: '#^Method App\\Support\\HtmlSanitizer\:\:cleanAttributes\(\) has parameter \$allowed with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/HtmlSanitizer.php
-
-		-
-			message: '#^Method App\\Support\\Invites\:\:send\(\) has parameter \$teamIds with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Support/Invites.php
-
-		-
-			message: '#^Method App\\Support\\Invites\:\:send\(\) should return App\\Models\\Invitation but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Support/Invites.php
-
-		-
-			message: '#^Parameter \#1 \$invitation of class App\\Mail\\InvitationMail constructor expects App\\Models\\Invitation, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Support/Invites.php
-
 		-
 			message: '#^Method App\\Support\\MailStatus\:\:summary\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/MailStatus.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$client_visible\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$key\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Left side of && is always false\.$#'
-			identifier: booleanAnd.leftAlwaysFalse
-			count: 1
-			path: app/Support/NotificationFeed.php
-
 		-
 			message: '#^Method App\\Support\\NotificationFeed\:\:latest\(\) should return Illuminate\\Support\\Collection\<int, App\\Models\\Activity\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Support/NotificationFeed.php
-
 		-
 			message: '#^Method App\\Support\\NotificationFeed\:\:projectIds\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/NotificationFeed.php
-
 		-
 			message: '#^Method App\\Support\\NotificationFeed\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''client_visible'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 5
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''excerpt'' does not exist on array\{\}\|string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''excerpt'' on array\{\}\|string in empty\(\) does not exist\.$#'
-			identifier: empty.offset
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''field'' on \*NEVER\* on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''field'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''fields'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''from'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 3
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''internal'' on array\{\}\|string in empty\(\) does not exist\.$#'
-			identifier: empty.offset
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''ref'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''subtask'' on array\{\}\|string in empty\(\) does not exist\.$#'
-			identifier: empty.offset
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''title'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''to'' on array\{\}\|string in isset\(\) does not exist\.$#'
-			identifier: isset.offset
-			count: 4
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Offset ''to'' on array\{\}\|string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 3
-			path: app/Support/NotificationFeed.php
-
 		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:filter\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: bool\)\|null, Closure\(App\\Models\\Activity\)\: bool given\.$#'
 			identifier: argument.type
 			count: 2
 			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 2
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Variable \$title on left side of \?\? always exists and is always null\.$#'
-			identifier: nullCoalesce.variable
-			count: 3
-			path: app/Support/NotificationFeed.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$key\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Support/ProjectLog.php
-
-		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Support/ProjectLog.php
-
 		-
 			message: '#^Method App\\Support\\ProjectLog\:\:coalesced\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/ProjectLog.php
-
 		-
 			message: '#^Method App\\Support\\ProjectLog\:\:taskEvent\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/ProjectLog.php
-
-		-
-			message: '#^Offset ''fields'' on string\|null on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Support/ProjectLog.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:running\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Support/TimeTracker.php
-
 		-
 			message: '#^Access to an undefined property App\\Models\\TimeEntry\:\:\$local_start\.$#'
 			identifier: property.notFound
 			count: 2
 			path: app/Support/Timesheet.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$key\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Support/Timesheet.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Support/Timesheet.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Support/Timesheet.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Support/Timesheet.php
-
-		-
-			message: '#^Cannot call method copy\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Method App\\Support\\Timesheet\:\:byDay\(\) has parameter \$entries with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Method App\\Support\\Timesheet\:\:byDay\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Method App\\Support\\Timesheet\:\:byPerson\(\) has parameter \$entries with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Method App\\Support\\Timesheet\:\:byPerson\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Method App\\Support\\Timesheet\:\:entries\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Method App\\Support\\Timesheet\:\:export\(\) has parameter \$filterNotes with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Unable to resolve the template type TGroupKey in call to method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:groupBy\(\)$#'
 			identifier: argument.templateType
 			count: 1
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>key" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 3
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>title" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Support/Timesheet.php
-
 		-
 			message: '#^Method App\\Support\\Undo\:\:attachmentRows\(\) has parameter \$attachmentIds with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Undo.php
-
 		-
 			message: '#^Method App\\Support\\Undo\:\:attachmentRows\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Undo.php
-
 		-
 			message: '#^Method App\\Support\\Undo\:\:capture\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Undo.php
-
 		-
 			message: '#^Method App\\Support\\Undo\:\:filesOf\(\) has parameter \$attachmentRows with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Undo.php
-
 		-
 			message: '#^Method App\\Support\\Undo\:\:filesOf\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Undo.php
-
 		-
 			message: '#^Method App\\Support\\Undo\:\:repair\(\) has parameter \$row with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Undo.php
-
 		-
 			message: '#^Method App\\Support\\Undo\:\:repair\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Undo.php
-
 		-
 			message: '#^Method App\\Support\\Undo\:\:taskRows\(\) has parameter \$taskIds with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Undo.php
-
 		-
 			message: '#^Method App\\Support\\Undo\:\:taskRows\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Support/Undo.php
-
 		-
 			message: '#^Method Illuminate\\Database\\Migrations\\Migration@anonymous/database/migrations/2026_10_13_000600_add_project_keys_and_ticket_numbers\.php\:12\:\:makeKey\(\) has parameter \$taken with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: database/migrations/2026_10_13_000600_add_project_keys_and_ticket_numbers.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:comments\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:fieldValues\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:members\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:optionList\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:sections\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:subtasks\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:tasks\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:users\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: database/seeders/DemoSeeder.php
-
 		-
 			message: '#^Method Database\\Seeders\\DemoSeeder\:\:project\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: database/seeders/DemoSeeder.php
-
 		-
 			message: '#^Method Database\\Seeders\\DemoSeeder\:\:project\(\) has parameter \$members with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: database/seeders/DemoSeeder.php
-
 		-
 			message: '#^Method Database\\Seeders\\DemoSeeder\:\:project\(\) has parameter \$sections with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Method Database\\Seeders\\DemoSeeder\:\:project\(\) should return App\\Models\\Project but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Unable to resolve the template type TKey in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
-		-
-			message: '#^Unable to resolve the template type TValue in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: database/seeders/DemoSeeder.php
-
 		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: database/seeders/DemoSeederOnce.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$attachment\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$content\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 20
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$owner_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$url\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:clients\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:comments\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:display\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:githubRepositories\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:normalize\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:optionList\(\)\.$#'
-			identifier: method.notFound
-			count: 6
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:projects\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:pullRequests\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:rules\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:teams\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:ticket\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:users\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/AccessTest.php
-
 		-
 			message: '#^Method Tests\\Feature\\AccessTest\:\:roleFixture\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Parameter \#1 \$workspace of static method App\\Support\\GitHub\:\:for\(\) expects App\\Models\\Workspace, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Parameter \#2 \$project of static method App\\Models\\Attachment\:\:storeUpload\(\) expects App\\Models\\Project, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Parameter \#6 \$comment of static method App\\Models\\Attachment\:\:storeUpload\(\) expects App\\Models\\Comment\|null, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Unable to resolve the template type TKey in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Unable to resolve the template type TValue in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/AccessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/HardeningTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/HardeningTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/HardeningTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$require_two_factor\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/HardeningTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:comments\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/HardeningTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:subtasks\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/HardeningTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:tasks\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/HardeningTest.php
-
-		-
-			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/HardeningTest.php
-
-		-
-			message: '#^Parameter \#4 \$task of static method App\\Models\\Attachment\:\:storeUpload\(\) expects App\\Models\\Task\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/HardeningTest.php
-
 		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 2
 			path: tests/Feature/HardeningTest.php
-
 		-
 			message: '#^Unable to resolve the template type TValue in call to function collect$#'
 			identifier: argument.templateType
 			count: 2
 			path: tests/Feature/HardeningTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/NotificationsTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/NotificationsTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/NotificationsTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:activities\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/NotificationsTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:comments\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Feature/NotificationsTest.php
-
 		-
 			message: '#^Method Tests\\Feature\\NotificationsTest\:\:seen\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/NotificationsTest.php
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: tests/Feature/NotificationsTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$assignee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/ProjectPeopleTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/ProjectPeopleTest.php
-
 		-
 			message: '#^Method Tests\\Feature\\SectionOrderTest\:\:order\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/SectionOrderTest.php
-
 		-
 			message: '#^Access to an undefined property Livewire\\Features\\SupportTesting\\Testable\:\:\$effects\.$#'
 			identifier: property.notFound
 			count: 1
 			path: tests/Feature/SecurityReviewTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:revisions\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/SecurityReviewTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:rules\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/SecurityReviewTest.php
-
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNull\(\) with Carbon\\Carbon and ''timestamps must not…'' will always evaluate to false\.$#'
 			identifier: method.impossibleType
 			count: 1
 			path: tests/Feature/SecurityReviewTest.php
-
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNull\(\) with int\<0, max\> and ''id must not be mass…'' will always evaluate to false\.$#'
 			identifier: method.impossibleType
 			count: 1
 			path: tests/Feature/SecurityReviewTest.php
-
 		-
 			message: '#^Method Tests\\Feature\\SecurityReviewTest\:\:otherCompany\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/SecurityReviewTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\TaskCompletionTest\:\:openTask\(\) should return App\\Models\\Task but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/TaskCompletionTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/ExampleTest.php

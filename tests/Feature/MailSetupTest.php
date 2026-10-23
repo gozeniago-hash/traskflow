@@ -47,7 +47,7 @@ class MailSetupTest extends TestCase
     {
         config(['mail.mailers.smtp.host' => 'smtp.gmail.com', 'mail.mailers.smtp.port' => 587]);
         $this->assertStringContainsString('app password', MailStatus::explain(new RuntimeException('Expected response code "235" but got code "535", with message "535-5.7.8 Username and Password not accepted."')));
-        $this->assertStringContainsString('Pro plan', MailStatus::explain(new RuntimeException('Connection could not be established with host "ssl://smtp.gmail.com:587": Network is unreachable')));
+        $this->assertStringContainsString('allows outgoing connections', MailStatus::explain(new RuntimeException('Connection could not be established with host "ssl://smtp.gmail.com:587": Network is unreachable')));
     }
 
     public function test_a_failed_confirmation_email_never_locks_a_new_account_out(): void

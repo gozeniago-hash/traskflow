@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Projects;
 
+use App\Actions\Tasks\CreateTask;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
-use App\Models\Activity;
 use App\Models\Project;
 use Carbon\CarbonImmutable;
 use Livewire\Attributes\On;
@@ -68,7 +68,7 @@ class CalendarView extends Component
         $this->newTitle = '';
     }
 
-    public function createOnDay(): void
+    public function createOnDay(CreateTask $createTask): void
     {
         $this->authorize('contribute', $this->project);
         $title = trim($this->newTitle);
@@ -77,15 +77,9 @@ class CalendarView extends Component
 
             return;
         }
-        $section = $this->project->firstSection();
-        $task = $this->project->tasks()->create([
-            'section_id' => $section->id,
-            'title' => mb_substr($title, 0, 255),
-            'creator_id' => $this->me()->id,
-            'due_date' => CarbonImmutable::parse($this->addingOn)->toDateString(),
-            'position' => $this->project->nextTaskPosition($section->id),
-        ]);
-        Activity::record($task, $this->me(), 'created');
+        $this->validate(['addingOn' => ['date_format:Y-m-d']]);
+
+        $createTask->handle($this->project, $this->me(), ['title' => $title, 'due_date' => $this->addingOn]);
         $this->addingOn = null;
         $this->newTitle = '';
     }

@@ -2,16 +2,14 @@
 
 namespace App\Support;
 
+use App\Actions\GitHub\StorePullRequest;
 use App\Models\GithubRepository;
 use App\Models\Project;
-use App\Models\PullRequest;
 use App\Models\Task;
 use App\Models\Workspace;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use RuntimeException;
 use Throwable;
 
@@ -125,7 +123,7 @@ class GitHub
                 ])->throw();
                 $items = $response->json() ?: [];
                 foreach ($items as $item) {
-                    $this->upsert($repo, $item);
+                    app(StorePullRequest::class)->handle($repo, $item);
                     $count++;
                 }
                 if (count($items) < 100) {
@@ -139,40 +137,6 @@ class GitHub
         }
 
         return $count;
-    }
-
-    /** Store one PR (from the API or a webhook payload) and relink it to tickets. */
-    public function upsert(GithubRepository $repo, array $pr): PullRequest
-    {
-        $model = PullRequest::query()->firstOrNew(['github_repository_id' => $repo->id, 'number' => (int) $pr['number']]);
-        // firstOrNew only fills mass-assignable attributes; the keys must be set explicitly.
-        $model->github_repository_id = $repo->id;
-        $model->number = (int) $pr['number'];
-        $model->fill([
-            'workspace_id' => $repo->workspace_id,
-            'title' => Str::limit((string) ($pr['title'] ?? ''), 495),
-            'url' => (string) ($pr['html_url'] ?? $repo->htmlUrl().'/pull/'.$pr['number']),
-            'state' => ($pr['state'] ?? 'open') === 'closed' ? 'closed' : 'open',
-            'draft' => (bool) ($pr['draft'] ?? false),
-            'merged_at' => isset($pr['merged_at']) ? Carbon::parse($pr['merged_at']) : null,
-            'head_ref' => Str::limit((string) ($pr['head']['ref'] ?? ''), 250, ''),
-            'author_login' => $pr['user']['login'] ?? null,
-            'author_avatar' => $pr['user']['avatar_url'] ?? null,
-            'gh_updated_at' => isset($pr['updated_at']) ? Carbon::parse($pr['updated_at']) : now(),
-        ]);
-        $model->save();
-
-        $before = $model->tasks()->pluck('tasks.id')->all();
-        $after = $this->matchTasks([$pr['title'] ?? '', $pr['head']['ref'] ?? '', $pr['body'] ?? '']);
-        $model->tasks()->sync($after);
-
-        // Tell anyone looking at these tasks to refresh.
-        $touched = Task::query()->whereKey(array_unique(array_merge($before, $after)))->get(['id', 'project_id']);
-        foreach ($touched as $task) {
-            Realtime::touch((int) $task->project_id, (int) $task->id);
-        }
-
-        return $model;
     }
 
     /** Task ids in this workspace whose tickets are mentioned in any of the given texts. */

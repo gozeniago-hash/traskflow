@@ -81,6 +81,14 @@ class Index extends Component
         return [$this->workspaceChannel() => 'onRemoteChange'];
     }
 
+    /** Only the periods offered in the menu: a longer one would make the report loop over every day of it. */
+    public function updatedDays(): void
+    {
+        if (! in_array($this->days, [7, 14, 30, 60, 90], true)) {
+            $this->days = 14;
+        }
+    }
+
     public function mount(): void
     {
         if (! array_key_exists($this->report, self::REPORTS)) {

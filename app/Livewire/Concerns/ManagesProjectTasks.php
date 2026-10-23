@@ -2,6 +2,12 @@
 
 namespace App\Livewire\Concerns;
 
+use App\Actions\Ordering\MoveItem;
+use App\Actions\Sections\DeleteSection;
+use App\Actions\Tasks\ReorderTasks;
+use App\Actions\Tasks\SetTaskCompletion;
+use App\Actions\Time\StartTimer;
+use App\Actions\Time\StopTimer;
 use App\Models\Activity;
 use App\Models\Project;
 use App\Models\Section;
@@ -9,7 +15,6 @@ use App\Models\Task;
 use App\Models\TimeEntry;
 use App\Support\CustomFields;
 use App\Support\TimeTracker;
-use App\Support\Undo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -98,25 +103,26 @@ trait ManagesProjectTasks
         $this->newTask[$sectionId] = '';
     }
 
-    public function toggleComplete(int $taskId): void
+    public function setComplete(int $taskId, bool $complete, SetTaskCompletion $setTaskCompletion): void
     {
         $this->ensureCanContribute();
         $task = $this->projectTask($taskId);
-        $task->toggleComplete($this->me());
-        $this->completedToast($task);
+        if ($setTaskCompletion->handle($task, $this->me(), $complete)) {
+            $this->completedToast($task);
+        }
         $this->dispatch('task-saved');
     }
 
-    public function startTimer(int $taskId): void
+    public function startTimer(int $taskId, StartTimer $startTimer): void
     {
         $this->ensureCanContribute();
-        TimeTracker::start($this->projectTask($taskId), $this->me());
+        $startTimer->handle($this->projectTask($taskId), $this->me());
         $this->dispatch('timer-changed');
     }
 
-    public function stopTimer(): void
+    public function stopTimer(StopTimer $stopTimer): void
     {
-        $entry = TimeTracker::stop($this->me());
+        $entry = $stopTimer->handle($this->me());
         $this->dispatch('timer-changed');
         if ($entry) {
             $this->toast('Logged '.TimeEntry::formatShort($entry->duration_seconds).'.');
@@ -139,26 +145,21 @@ trait ManagesProjectTasks
         return TimeTracker::running($this->me());
     }
 
-    /** Called by the Sortable helper with the full new order of a section. */
-    public function reorder(?int $sectionId, array $ids): void
+    /**
+     * Called by the Sortable helper with the full new order of the section a task was dropped in,
+     * the dragged task, and the section the page showed it in.
+     *
+     * @param array<int, mixed> $ids
+     */
+    public function reorder(?int $sectionId, array $ids, int $movedId, ?int $fromSectionId, ReorderTasks $reorderTasks): void
     {
         $this->ensureCanContribute();
         $section = $this->section($sectionId);
         $ids = array_values(array_filter(array_map('intval', $ids)));
 
-        DB::transaction(function () use ($section, $ids): void {
-            $tasks = $this->project->tasks()->whereNull('parent_id')->whereIn('id', $ids)->get()->keyBy('id');
-            foreach ($ids as $index => $id) {
-                if (! $task = $tasks->get($id)) {
-                    continue;
-                }
-                $moved = $task->section_id !== $section->id;
-                $task->forceFill(['section_id' => $section->id, 'position' => $index + 1])->save();
-                if ($moved) {
-                    Activity::record($task, $this->me(), 'moved', ['to' => $section->name]);
-                }
-            }
-        });
+        if (! $reorderTasks->handle($section, $this->me(), $ids, $movedId, $fromSectionId)) {
+            $this->toast('Someone else moved that task just now. The list shows where it is.', 'error');
+        }
     }
 
     public function addSection(): void
@@ -191,20 +192,10 @@ trait ManagesProjectTasks
         $this->editingSection = null;
     }
 
-    public function moveSection(int $id, int $direction): void
+    public function moveSection(int $id, int $direction, MoveItem $moveItem): void
     {
         $this->ensureCanManageSections();
-        $sections = $this->project->sections()->get()->values();
-        $index = $sections->search(fn ($s) => $s->id === $id);
-        $swap = $index + ($direction < 0 ? -1 : 1);
-        if ($index === false || ! isset($sections[$swap])) {
-            return;
-        }
-        $ordered = $sections->all();
-        [$ordered[$index], $ordered[$swap]] = [$ordered[$swap], $ordered[$index]];
-        foreach ($ordered as $i => $section) {
-            $section->update(['position' => $i + 1]);
-        }
+        $moveItem->handle($this->project->sections(), $id, $direction);
     }
 
     /** Drag and drop: $ids is every section of the project in its new order. */
@@ -228,7 +219,7 @@ trait ManagesProjectTasks
         $this->editingSection = null;
     }
 
-    public function deleteSection(int $id): void
+    public function deleteSection(int $id, DeleteSection $deleteSection): void
     {
         $this->ensureCanManageSections();
         $section = $this->section($id);
@@ -240,18 +231,8 @@ trait ManagesProjectTasks
             return;
         }
 
-        // Remember the section and where each task sat, so Undo can put them back.
-        $tasks = $section->tasks()->get();
-        $undo = Undo::capture($this->me(), $this->project->id, 'section '.$section->name,
-            ['sections' => [$section->getAttributes()]], [],
-            $tasks->map(fn (Task $t) => [$t->id, $section->id, (int) $t->position])->all());
-
-        if ($fallback) {
-            $offset = $this->project->nextTaskPosition($fallback->id);
-            $tasks->each(fn (Task $t, $i) => $t->update(['section_id' => $fallback->id, 'position' => $offset + $i]));
-        }
-        $section->delete();
-        $this->toast('Section deleted'.($fallback && $tasks->isNotEmpty() ? '. Its tasks moved to “'.$fallback->name.'”.' : '.'), undo: $undo);
+        $result = $deleteSection->handle($section, $fallback, $this->me());
+        $this->toast('Section deleted'.($fallback && $result['moved'] ? '. Its tasks moved to “'.$fallback->name.'”.' : '.'), undo: $result['undo']);
     }
 
     /** Sections with their (filtered) top-level tasks. */

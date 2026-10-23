@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Projects;
 
+use App\Actions\Fields\SaveField;
+use App\Actions\Ordering\MoveItem;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Project;
 use App\Models\ProjectField;
@@ -73,6 +75,7 @@ class Fields extends Component
 
     public function edit(int $id): void
     {
+        $this->authorize('update', $this->project);
         $f = $this->field($id);
         $this->editingId = $f->id;
         $this->form = [
@@ -119,7 +122,7 @@ class Fields extends Component
         }
     }
 
-    public function save(): void
+    public function save(SaveField $saveField): void
     {
         $this->authorize('update', $this->project);
         if (trim($this->newOption) !== '') {
@@ -160,13 +163,8 @@ class Fields extends Component
             'options' => in_array($type, ['select', 'multiselect'], true) ? $this->cleanOptions($this->form['options'] ?? []) : null,
         ];
 
-        if ($editing) {
-            $editing->update($attributes);
-            $this->toast('Field updated.');
-        } else {
-            $this->project->fields()->create($attributes + ['position' => (int) $this->project->fields()->max('position') + 1]);
-            $this->toast('Field added. It now appears on every task in this project.');
-        }
+        $saveField->handle($this->project, $editing, $attributes);
+        $this->toast($editing ? 'Field updated.' : 'Field added. It now appears on every task in this project.');
 
         $this->showForm = false;
         $this->editingId = null;
@@ -206,20 +204,10 @@ class Fields extends Component
         $this->dispatch('fields-updated');
     }
 
-    public function move(int $id, int $dir): void
+    public function move(int $id, int $dir, MoveItem $moveItem): void
     {
         $this->authorize('update', $this->project);
-        $fields = $this->project->fields()->get()->values();
-        $i = $fields->search(fn ($f) => $f->id === $id);
-        $j = $i + ($dir < 0 ? -1 : 1);
-        if ($i === false || ! isset($fields[$j])) {
-            return;
-        }
-        $ordered = $fields->all();
-        [$ordered[$i], $ordered[$j]] = [$ordered[$j], $ordered[$i]];
-        foreach ($ordered as $pos => $f) {
-            $f->update(['position' => $pos + 1]);
-        }
+        $moveItem->handle($this->project->fields(), $id, $dir);
         $this->dispatch('fields-updated');
     }
 
