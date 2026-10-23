@@ -6,6 +6,7 @@ use App\Events\ProjectChanged;
 use App\Events\WorkspaceChanged;
 use App\Models\Project;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Collects which projects changed during a request and broadcasts one
@@ -104,7 +105,7 @@ class Realtime
     {
         try {
             broadcast($event)->toOthers();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Live updates are a nice-to-have; never fail a request because the socket server is down.
             Log::warning('Realtime broadcast failed: '.$e->getMessage());
         }

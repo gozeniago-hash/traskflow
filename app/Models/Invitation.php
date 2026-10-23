@@ -18,7 +18,7 @@ class Invitation extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (Invitation $invitation) {
+        static::creating(function (Invitation $invitation): void {
             $invitation->token ??= Str::random(48);
             $invitation->expires_at ??= now()->addDays(14);
         });

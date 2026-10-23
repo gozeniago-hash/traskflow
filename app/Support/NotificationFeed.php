@@ -11,6 +11,7 @@ use App\Models\ProjectResource;
 use App\Models\StatusUpdate;
 use App\Models\Task;
 use App\Models\User;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
@@ -95,7 +96,7 @@ class NotificationFeed
         return $out->take($limit)->values();
     }
 
-    public function readAt(): \Carbon\CarbonInterface
+    public function readAt(): CarbonInterface
     {
         // First time: treat the last two days as new, so the bell isn't empty or flooded.
         return $this->user->notifications_read_at ?? now()->subDays(2);

@@ -20,6 +20,8 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.13",
+        "laravel/boost": "^2.10",
         "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",
         "laravel/pint": "^1.27",
@@ -54,6 +56,16 @@
         "test": [
             "@php artisan config:clear --ansi @no_additional_args",
             "@php artisan test"
+        ],
+        "lint": "pint --test",
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "check": [
+            "@lint",
+            "@analyse",
+            "@test"
+        ],
+        "post-install-cmd": [
+            "@php -r \"is_dir('.git') && exec('git config core.hooksPath .githooks');\""
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

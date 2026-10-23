@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\MyTasks;
+use App\Livewire\Projects\ListView;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
@@ -34,7 +36,7 @@ class TaskCompletionTest extends TestCase
         $task = $this->openTask();
         $task->update(['title' => 'Unique checkbox task', 'assignee_id' => $admin->id]);
 
-        $list = Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $task->project])
+        $list = Livewire::test(ListView::class, ['project' => $task->project])
             ->assertSet('filter', 'incomplete')->assertSee('Unique checkbox task');
 
         $list->call('toggleComplete', $task->id)
@@ -45,13 +47,13 @@ class TaskCompletionTest extends TestCase
         $list->set('filter', 'completed')->assertSee('Unique checkbox task');
 
         // My Tasks and Home drop it too.
-        Livewire::test(\App\Livewire\MyTasks::class)->assertDontSee('Unique checkbox task');
+        Livewire::test(MyTasks::class)->assertDontSee('Unique checkbox task');
 
         // Undo on the toast reopens it (and is safe to press twice).
         $this->postJson(route('tasks.reopen', $task))->assertOk()->assertJson(['message' => $task->ticket().' is incomplete again.']);
         $this->postJson(route('tasks.reopen', $task))->assertOk();
         $this->assertNull($task->fresh()->completed_at);
-        Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $task->project])->assertSee('Unique checkbox task');
+        Livewire::test(ListView::class, ['project' => $task->project])->assertSee('Unique checkbox task');
     }
 
     public function test_reopening_follows_project_access(): void

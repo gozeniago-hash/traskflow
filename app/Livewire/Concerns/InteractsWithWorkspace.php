@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Concerns;
 
+use App\Models\Task;
 use App\Models\User;
 use App\Models\Workspace;
 
@@ -24,7 +25,7 @@ trait InteractsWithWorkspace
     }
 
     /** After a checkbox click: completed tasks leave the list at once, with Undo on the toast. */
-    protected function completedToast(\App\Models\Task $task): void
+    protected function completedToast(Task $task): void
     {
         if ($task->isCompleted()) {
             $this->dispatch('toast', message: 'Marked '.$task->ticket().' complete.', type: 'success', undo: route('tasks.reopen', $task));

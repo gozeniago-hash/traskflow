@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Support\Audit;
+use App\Support\Totp;
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -40,7 +42,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected static function booted(): void
     {
-        static::creating(function (User $user) {
+        static::creating(function (User $user): void {
             $user->avatar_color ??= self::AVATAR_COLORS[array_rand(self::AVATAR_COLORS)];
         });
     }
@@ -171,7 +173,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return false;
         }
 
-        $step = \App\Support\Totp::verify($this->two_factor_secret, $code, $this->two_factor_last_step);
+        $step = Totp::verify($this->two_factor_secret, $code, $this->two_factor_last_step);
         if ($step !== null) {
             $this->forceFill(['two_factor_last_step' => $step])->save();
 
@@ -184,7 +186,7 @@ class User extends Authenticatable implements MustVerifyEmail
             if (hash_equals($recovery, $code)) {
                 unset($codes[$i]);
                 $this->forceFill(['two_factor_recovery_codes' => array_values($codes)])->save();
-                \App\Support\Audit::log('auth.recovery_code_used', $this->name.' signed in with a recovery code ('.count($codes).' left)', $this, [], $this);
+                Audit::log('auth.recovery_code_used', $this->name.' signed in with a recovery code ('.count($codes).' left)', $this, [], $this);
 
                 return true;
             }

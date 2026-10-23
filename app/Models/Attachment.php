@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Rules\SafeUpload;
+use App\Rules\WithinStorageQuota;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class Attachment extends Model
 {
@@ -24,7 +28,7 @@ class Attachment extends Model
 
     protected static function booted(): void
     {
-        static::deleted(function (Attachment $attachment) {
+        static::deleted(function (Attachment $attachment): void {
             if (! static::$keepFiles) {
                 Storage::disk($attachment->disk)->delete($attachment->path);
             }
@@ -34,15 +38,15 @@ class Attachment extends Model
     /** Validation for every upload: size, allowed type, and the workspace's storage allowance. */
     public static function rules(bool $required = false): array
     {
-        return [$required ? 'required' : 'nullable', 'file', 'max:'.config('taskflow.max_upload_kb'), new \App\Rules\SafeUpload, new \App\Rules\WithinStorageQuota];
+        return [$required ? 'required' : 'nullable', 'file', 'max:'.config('taskflow.max_upload_kb'), new SafeUpload, new WithinStorageQuota];
     }
 
     public static function storeUpload(UploadedFile $file, Project $project, User $user, ?Task $task = null, bool $clientVisible = false, ?Comment $comment = null, ?ProjectDoc $doc = null): self
     {
         // Last line of defence: the same checks as rules(), in case a caller skipped validation.
-        $validator = \Illuminate\Support\Facades\Validator::make(['file' => $file], ['file' => ['file', new \App\Rules\SafeUpload, new \App\Rules\WithinStorageQuota($project->workspace_id)]], [], ['file' => 'file']);
+        $validator = Validator::make(['file' => $file], ['file' => ['file', new SafeUpload, new WithinStorageQuota($project->workspace_id)]], [], ['file' => 'file']);
         if ($validator->fails()) {
-            throw \Illuminate\Validation\ValidationException::withMessages(['upload' => $validator->errors()->first('file')]);
+            throw ValidationException::withMessages(['upload' => $validator->errors()->first('file')]);
         }
 
         $path = $file->store('attachments/'.$project->id, 'local');

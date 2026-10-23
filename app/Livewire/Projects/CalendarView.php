@@ -10,6 +10,7 @@ use Carbon\CarbonImmutable;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Throwable;
 
 class CalendarView extends Component
 {
@@ -21,6 +22,7 @@ class CalendarView extends Component
     public string $month = '';
 
     public ?string $addingOn = null;
+
     public string $newTitle = '';
 
     protected function getListeners(): array
@@ -39,15 +41,13 @@ class CalendarView extends Component
 
     #[On('task-saved')]
     #[On('timer-changed')]
-    public function onTaskSaved(): void
-    {
-    }
+    public function onTaskSaved(): void {}
 
     protected function monthStart(): CarbonImmutable
     {
         try {
             return CarbonImmutable::createFromFormat('Y-m-d', $this->month.'-01')->startOfDay();
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return CarbonImmutable::now()->startOfMonth();
         }
     }

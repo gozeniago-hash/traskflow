@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * Records who did what: sign-ins, security changes and admin actions.
@@ -30,7 +31,7 @@ class Audit
                 'ip' => $request?->ip(),
                 'user_agent' => Str::limit((string) $request?->userAgent(), 250, ''),
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Auditing must never break the action being audited.
             Log::warning('Audit log write failed: '.$e->getMessage());
         }

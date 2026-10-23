@@ -1,0 +1,8 @@
+#!/bin/sh
+# Blocks the push when any test fails.
+
+if ! php artisan test --compact; then
+    echo
+    echo "Tests failed, so nothing was pushed. Fix the failing tests and push again."
+    exit 1
+fi

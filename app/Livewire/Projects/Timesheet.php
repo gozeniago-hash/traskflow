@@ -6,6 +6,7 @@ use App\Livewire\Concerns\FiltersDateRange;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
+use App\Models\TimeEntry;
 use App\Support\Timesheet as TimesheetData;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
@@ -49,9 +50,7 @@ class Timesheet extends Component
 
     #[On('timer-changed')]
     #[On('task-saved')]
-    public function refreshTotals(): void
-    {
-    }
+    public function refreshTotals(): void {}
 
     /** Managers of this project and admins see everyone's time; members see only their own. */
     protected function canSeeTeam(): bool
@@ -79,7 +78,7 @@ class Timesheet extends Component
             $format === 'pdf' ? 'pdf' : 'xlsx', 'project', $this->project->name.' — Timesheet', $notes,
         );
 
-        return response()->streamDownload(fn () => print($contents), $filename, ['Content-Type' => $mime]);
+        return response()->streamDownload(fn () => print ($contents), $filename, ['Content-Type' => $mime]);
     }
 
     public function render()
@@ -94,7 +93,7 @@ class Timesheet extends Component
             'total' => (int) $entries->sum('duration_seconds'),
             'count' => $entries->count(),
             'members' => $this->workspace()->members()->orderBy('name')->get(['users.id', 'name']),
-            'running' => \App\Models\TimeEntry::query()->running()->where('project_id', $this->project->id)
+            'running' => TimeEntry::query()->running()->where('project_id', $this->project->id)
                 ->when(! $this->canSeeTeam(), fn ($q) => $q->where('user_id', $this->me()->id))->with('user:id,name')->get(),
             'canSeeTeam' => $this->canSeeTeam(),
         ]);

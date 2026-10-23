@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\CreateTask;
+use App\Livewire\TaskPanel;
 use App\Models\Project;
 use App\Models\User;
 use Database\Seeders\DemoSeeder;
@@ -60,7 +62,7 @@ class ProjectPeopleTest extends TestCase
         $leo = $this->user('leo@taskflow.test');
         $this->actingAs($this->user('maya@taskflow.test'));
 
-        Livewire::test(\App\Livewire\CreateTask::class)
+        Livewire::test(CreateTask::class)
             ->call('open', $project->id)
             ->assertSee('Maya Santos')->assertDontSee('Leo Tan')
             ->set('title', 'Sneaky assignment')->set('assignee_id', (string) $leo->id)
@@ -78,7 +80,7 @@ class ProjectPeopleTest extends TestCase
         $this->actingAs($maya);
         $task = $project->tasks()->create(['section_id' => $project->sections()->value('id'), 'title' => 'Spec', 'creator_id' => $maya->id, 'position' => 1]);
 
-        Livewire::test(\App\Livewire\TaskPanel::class)->call('open', $task->id)
+        Livewire::test(TaskPanel::class)->call('open', $task->id)
             ->assertDontSeeHtml('>Leo Tan<')
             ->set('assignee_id', (string) $leo->id)
             ->assertSet('assignee_id', '');
@@ -86,7 +88,7 @@ class ProjectPeopleTest extends TestCase
         $this->assertNull($task->fresh()->assignee_id);
         $this->assertFalse($project->members()->whereKey($leo->id)->exists(), 'assigning must not add people to the project');
 
-        Livewire::test(\App\Livewire\TaskPanel::class)->call('open', $task->id)->set('assignee_id', (string) $maya->id);
+        Livewire::test(TaskPanel::class)->call('open', $task->id)->set('assignee_id', (string) $maya->id);
         $this->assertSame($maya->id, $task->fresh()->assignee_id);
     }
 

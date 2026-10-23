@@ -34,15 +34,23 @@ class ProjectView extends Component
     public ?int $docId = null;
 
     public string $comment = '';
+
     public string $feedback = '';
+
     public array $uploads = [];
+
     public array $commentFiles = [];
+
     public array $newCommentFiles = [];
 
     public bool $showRequest = false;
+
     public string $requestTitle = '';
+
     public string $requestDetails = '';
+
     public string $requestDue = '';
+
     public array $requestFiles = [];
 
     protected function getListeners(): array
@@ -90,7 +98,7 @@ class ProjectView extends Component
 
     public function updatedNewCommentFiles(): void
     {
-        $this->validate(['newCommentFiles.*' => \App\Models\Attachment::rules()], [], ['newCommentFiles.*' => 'file']);
+        $this->validate(['newCommentFiles.*' => Attachment::rules()], [], ['newCommentFiles.*' => 'file']);
         $this->commentFiles = array_merge($this->commentFiles, $this->newCommentFiles);
         $this->newCommentFiles = [];
     }
@@ -107,7 +115,7 @@ class ProjectView extends Component
         $this->authorize('comment', $task);
         $this->validate([
             'comment' => ['nullable', 'string', 'max:5000'],
-            'commentFiles.*' => \App\Models\Attachment::rules(),
+            'commentFiles.*' => Attachment::rules(),
         ], [], ['commentFiles.*' => 'file']);
 
         if (trim($this->comment) === '' && ! $this->commentFiles) {
@@ -153,7 +161,7 @@ class ProjectView extends Component
     public function updatedUploads(): void
     {
         $task = $this->sharedTask($this->openTaskId);
-        $this->validate(['uploads.*' => \App\Models\Attachment::rules()]);
+        $this->validate(['uploads.*' => Attachment::rules()]);
         foreach ($this->uploads as $file) {
             Attachment::storeUpload($file, $this->project, $this->me(), $task);
         }
@@ -168,12 +176,12 @@ class ProjectView extends Component
             'requestTitle' => ['required', 'string', 'max:190'],
             'requestDetails' => ['nullable', 'string', 'max:10000'],
             'requestDue' => ['nullable', 'date', 'after_or_equal:today'],
-            'requestFiles.*' => \App\Models\Attachment::rules(),
+            'requestFiles.*' => Attachment::rules(),
         ]);
 
         $section = $this->project->sections()->firstOrCreate(
             ['name' => 'Client requests'],
-            ['position' => 0]
+            ['position' => 0],
         );
 
         $task = $this->project->tasks()->create([

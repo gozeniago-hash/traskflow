@@ -18,7 +18,7 @@ class ProjectResource extends Model
     protected static function booted(): void
     {
         // Removing a file resource removes the stored file as well.
-        static::deleted(function (ProjectResource $resource) {
+        static::deleted(function (ProjectResource $resource): void {
             $resource->attachment?->delete();
         });
     }

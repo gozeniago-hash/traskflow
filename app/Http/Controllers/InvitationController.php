@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Invitation;
 use App\Models\User;
+use App\Support\Audit;
+use App\Support\SignIn;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -50,7 +51,7 @@ class InvitationController extends Controller
             $user->markEmailAsVerified();
         }
 
-        DB::transaction(function () use ($invitation, $user) {
+        DB::transaction(function () use ($invitation, $user): void {
             $invitation->workspace->users()->syncWithoutDetaching([
                 $user->id => ['role' => $invitation->role, 'client_id' => $invitation->client_id],
             ]);
@@ -66,8 +67,8 @@ class InvitationController extends Controller
             $user->forceFill(['current_workspace_id' => $invitation->workspace_id])->save();
         });
 
-        \App\Support\Audit::log('invitation.accepted', $user->name.' ('.$user->email.') joined as '.$invitation->role, $user, [], $user, $invitation->workspace_id);
+        Audit::log('invitation.accepted', $user->name.' ('.$user->email.') joined as '.$invitation->role, $user, [], $user, $invitation->workspace_id);
 
-        return \App\Support\SignIn::complete($request, $user, true, route('dashboard'), 'Welcome to '.$invitation->workspace->name.'!');
+        return SignIn::complete($request, $user, true, route('dashboard'), 'Welcome to '.$invitation->workspace->name.'!');
     }
 }

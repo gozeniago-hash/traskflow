@@ -19,8 +19,7 @@ class ProjectChanged implements ShouldBroadcastNow
         public int $workspaceId,
         public array $taskIds = [],
         public ?string $actor = null,
-    ) {
-    }
+    ) {}
 
     public function broadcastOn(): array
     {

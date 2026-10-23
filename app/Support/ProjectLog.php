@@ -43,7 +43,7 @@ class ProjectLog
     public static function register(): void
     {
         // ---- tasks: deletions, and edits the panel doesn't log itself
-        Task::updated(function (Task $task) {
+        Task::updated(function (Task $task): void {
             if ($task->wasChanged('title')) {
                 static::taskEvent($task, 'renamed', ['from' => $task->getOriginal('title'), 'to' => $task->title]);
             }
@@ -57,7 +57,7 @@ class ProjectLog
                 static::taskEvent($task, 'start_changed', ['to' => $task->start_date?->format('M j')]);
             }
         });
-        Task::deleted(function (Task $task) {
+        Task::deleted(function (Task $task): void {
             // task_id stays empty: the task's own activity rows are removed with it.
             Activity::log($task->project_id, 'task', 'deleted', [
                 'title' => $task->title,
@@ -68,7 +68,7 @@ class ProjectLog
         });
 
         // ---- comments
-        Comment::created(function (Comment $comment) {
+        Comment::created(function (Comment $comment): void {
             $task = Task::find($comment->task_id);
             if ($task) {
                 Activity::log($task->project_id, 'comment', 'created', [
@@ -80,7 +80,7 @@ class ProjectLog
 
         // ---- sections
         Section::created(fn (Section $section) => Activity::log($section->project_id, 'section', 'created', ['title' => $section->name], $section->id));
-        Section::updated(function (Section $section) {
+        Section::updated(function (Section $section): void {
             if ($section->wasChanged('name')) {
                 Activity::log($section->project_id, 'section', 'renamed', ['from' => $section->getOriginal('name'), 'title' => $section->name], $section->id);
             }
@@ -89,7 +89,7 @@ class ProjectLog
 
         // ---- docs
         ProjectDoc::created(fn (ProjectDoc $doc) => Activity::log($doc->project_id, 'doc', 'created', ['title' => $doc->title, 'client_visible' => (bool) $doc->client_visible], $doc->id));
-        ProjectDoc::updated(function (ProjectDoc $doc) {
+        ProjectDoc::updated(function (ProjectDoc $doc): void {
             if ($doc->wasChanged('client_visible')) {
                 Activity::log($doc->project_id, 'doc', $doc->client_visible ? 'shared' : 'unshared', ['title' => $doc->title], $doc->id);
             }
@@ -100,17 +100,17 @@ class ProjectLog
         ProjectDoc::deleted(fn (ProjectDoc $doc) => Activity::log($doc->project_id, 'doc', 'deleted', ['title' => $doc->title, 'client_visible' => (bool) $doc->client_visible], $doc->id));
 
         // ---- files (images pasted into docs and files on comments are covered by those events)
-        Attachment::created(function (Attachment $file) {
+        Attachment::created(function (Attachment $file): void {
             if (! $file->doc_id && ! $file->comment_id) {
                 Activity::log($file->project_id, 'file', 'created', ['title' => $file->original_name], $file->id, $file->task_id);
             }
         });
-        Attachment::updated(function (Attachment $file) {
+        Attachment::updated(function (Attachment $file): void {
             if ($file->wasChanged('client_visible') && ! $file->task_id && ! $file->doc_id) {
                 Activity::log($file->project_id, 'file', $file->client_visible ? 'shared' : 'unshared', ['title' => $file->original_name], $file->id);
             }
         });
-        Attachment::deleted(function (Attachment $file) {
+        Attachment::deleted(function (Attachment $file): void {
             if (! $file->doc_id && ! $file->comment_id && Project::whereKey($file->project_id)->exists()) {
                 $taskId = $file->task_id && Task::whereKey($file->task_id)->exists() ? $file->task_id : null;
                 Activity::log($file->project_id, 'file', 'deleted', [
@@ -122,7 +122,7 @@ class ProjectLog
 
         // ---- key resources
         ProjectResource::created(fn (ProjectResource $r) => Activity::log($r->project_id, 'resource', 'created', ['title' => $r->title], $r->id));
-        ProjectResource::updated(function (ProjectResource $r) {
+        ProjectResource::updated(function (ProjectResource $r): void {
             if ($r->wasChanged('title')) {
                 Activity::log($r->project_id, 'resource', 'renamed', ['from' => $r->getOriginal('title'), 'title' => $r->title], $r->id);
             }
@@ -139,7 +139,7 @@ class ProjectLog
 
         // ---- the project itself
         Project::created(fn (Project $p) => Activity::log($p->id, 'project', 'created', ['title' => $p->name], $p->id));
-        Project::updated(function (Project $p) {
+        Project::updated(function (Project $p): void {
             $labels = ['name' => 'name', 'status' => 'status', 'start_date' => 'start date', 'due_date' => 'due date', 'privacy' => 'who can see it',
                 'owner_id' => 'project lead', 'team_id' => 'team', 'client_id' => 'client', 'portal_enabled' => 'client portal', 'description' => 'description'];
             $changed = array_values(array_intersect_key($labels, $p->getChanges()));

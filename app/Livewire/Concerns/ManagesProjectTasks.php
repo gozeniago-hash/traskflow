@@ -7,10 +7,13 @@ use App\Models\Project;
 use App\Models\Section;
 use App\Models\Task;
 use App\Models\TimeEntry;
+use App\Support\CustomFields;
 use App\Support\TimeTracker;
+use App\Support\Undo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 
 /**
@@ -27,11 +30,16 @@ trait ManagesProjectTasks
     }
 
     public string $filter = 'incomplete';   // incomplete | all | completed
+
     public string $assigneeFilter = '';     // '' | me | unassigned
+
     public array $newTask = [];             // [sectionId => title]
+
     public string $newSection = '';
-    #[\Livewire\Attributes\Locked] // set only by server actions that check access
+
+    #[Locked] // set only by server actions that check access
     public ?int $editingSection = null;
+
     public string $sectionName = '';
 
     #[On('task-saved')]
@@ -122,7 +130,7 @@ trait ManagesProjectTasks
 
         return [
             'cardFields' => $fields,
-            'fieldPeople' => $fields->contains('type', 'person') ? \App\Support\CustomFields::peopleMap($this->project) : [],
+            'fieldPeople' => $fields->contains('type', 'person') ? CustomFields::peopleMap($this->project) : [],
         ];
     }
 
@@ -138,7 +146,7 @@ trait ManagesProjectTasks
         $section = $this->section($sectionId);
         $ids = array_values(array_filter(array_map('intval', $ids)));
 
-        DB::transaction(function () use ($section, $ids) {
+        DB::transaction(function () use ($section, $ids): void {
             $tasks = $this->project->tasks()->whereNull('parent_id')->whereIn('id', $ids)->get()->keyBy('id');
             foreach ($ids as $index => $id) {
                 if (! $task = $tasks->get($id)) {
@@ -208,7 +216,7 @@ trait ManagesProjectTasks
         if (count($ids) !== count($current) || array_diff($current, $ids)) {
             return; // stale page or someone else added/removed a section meanwhile; the re-render shows the real order
         }
-        DB::transaction(function () use ($ids) {
+        DB::transaction(function () use ($ids): void {
             foreach ($ids as $i => $id) {
                 Section::whereKey($id)->where('project_id', $this->project->id)->update(['position' => $i + 1]);
             }
@@ -234,7 +242,7 @@ trait ManagesProjectTasks
 
         // Remember the section and where each task sat, so Undo can put them back.
         $tasks = $section->tasks()->get();
-        $undo = \App\Support\Undo::capture($this->me(), $this->project->id, 'section '.$section->name,
+        $undo = Undo::capture($this->me(), $this->project->id, 'section '.$section->name,
             ['sections' => [$section->getAttributes()]], [],
             $tasks->map(fn (Task $t) => [$t->id, $section->id, (int) $t->position])->all());
 
@@ -251,7 +259,7 @@ trait ManagesProjectTasks
     {
         $me = $this->me();
 
-        $scope = function ($q) use ($me) {
+        $scope = function ($q) use ($me): void {
             $q->with(['assignee', 'fieldValues'])->withCount([
                 'subtasks',
                 'subtasks as completed_subtasks_count' => fn (Builder $s) => $s->whereNotNull('completed_at'),

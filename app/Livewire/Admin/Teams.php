@@ -4,7 +4,10 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Team;
+use App\Models\User;
+use App\Support\Audit;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -15,10 +18,14 @@ class Teams extends Component
     use InteractsWithWorkspace;
 
     public bool $showForm = false;
-    #[\Livewire\Attributes\Locked] // set only by server actions that check access
+
+    #[Locked] // set only by server actions that check access
     public ?int $editingId = null;
+
     public string $name = '';
+
     public string $description = '';
+
     public array $addUser = [];
 
     /*
@@ -55,12 +62,12 @@ class Teams extends Component
         if ($this->editingId) {
             $team = $this->team($this->editingId);
             $team->update($data);
-            \App\Support\Audit::log('team.updated', 'Updated team “'.$team->name.'”', $team);
+            Audit::log('team.updated', 'Updated team “'.$team->name.'”', $team);
             $this->toast('Team updated.');
         } else {
             $team = $this->workspace()->teams()->create($data);
             $team->users()->attach($this->me()->id);
-            \App\Support\Audit::log('team.created', 'Created team “'.$team->name.'”', $team);
+            Audit::log('team.created', 'Created team “'.$team->name.'”', $team);
             $this->toast('Team created.');
         }
 
@@ -76,7 +83,7 @@ class Teams extends Component
         }
         $team = $this->team($teamId);
         $team->users()->syncWithoutDetaching([$userId]);
-        \App\Support\Audit::log('team.member_added', 'Added '.\App\Models\User::find($userId)?->name.' to team “'.$team->name.'”', $team, ['user_id' => $userId]);
+        Audit::log('team.member_added', 'Added '.User::find($userId)?->name.' to team “'.$team->name.'”', $team, ['user_id' => $userId]);
         $this->addUser[$teamId] = '';
     }
 
@@ -85,7 +92,7 @@ class Teams extends Component
         $this->requireAdmin();
         $team = $this->team($teamId);
         $team->users()->detach($userId);
-        \App\Support\Audit::log('team.member_removed', 'Removed '.\App\Models\User::find($userId)?->name.' from team “'.$team->name.'”', $team, ['user_id' => $userId]);
+        Audit::log('team.member_removed', 'Removed '.User::find($userId)?->name.' from team “'.$team->name.'”', $team, ['user_id' => $userId]);
     }
 
     public function delete(int $id): void
@@ -93,7 +100,7 @@ class Teams extends Component
         $this->requireAdmin();
         $team = $this->team($id);
         $team->delete();
-        \App\Support\Audit::log('team.deleted', 'Deleted team “'.$team->name.'”', $team);
+        Audit::log('team.deleted', 'Deleted team “'.$team->name.'”', $team);
         $this->toast('Team deleted. Its projects were kept.');
     }
 

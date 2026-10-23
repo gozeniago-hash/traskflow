@@ -6,6 +6,7 @@ use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
 use App\Models\ProjectField;
+use App\Support\ProjectLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
@@ -153,7 +154,7 @@ class Index extends Component
                 default => ['To do'],
             };
             foreach ($sections as $i => $name) {
-                \App\Support\ProjectLog::quietly(fn () => $project->sections()->create(['name' => $name, 'position' => $i + 1])); // starter sections aren't news
+                ProjectLog::quietly(fn () => $project->sections()->create(['name' => $name, 'position' => $i + 1])); // starter sections aren't news
             }
 
             foreach (array_values($data['fields'] ?? []) as $i => $row) {

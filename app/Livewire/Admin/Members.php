@@ -3,7 +3,9 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
+use App\Support\Audit;
 use App\Support\Invites;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -15,9 +17,13 @@ class Members extends Component
     use InteractsWithWorkspace;
 
     public bool $showInvite = false;
+
     public string $emails = '';
+
     public string $role = 'member';
+
     public array $inviteTeams = [];
+
     public array $sentLinks = [];
 
     public function openInvite(): void
@@ -35,7 +41,7 @@ class Members extends Component
             'emails' => ['required', 'string'],
             'role' => ['required', 'in:admin,manager,member'],
             'inviteTeams' => ['array'],
-            'inviteTeams.*' => [\Illuminate\Validation\Rule::exists('teams', 'id')->where('workspace_id', $this->workspace()->id)],
+            'inviteTeams.*' => [Rule::exists('teams', 'id')->where('workspace_id', $this->workspace()->id)],
         ]);
 
         $list = collect(preg_split('/[\s,;]+/', $this->emails))->filter()->map(fn ($e) => strtolower(trim($e)))->unique();
@@ -56,7 +62,7 @@ class Members extends Component
         foreach ($list->diff($existing) as $email) {
             $invitation = Invites::send($this->workspace(), $this->me(), $email, $this->role, null, $this->inviteTeams);
             $this->sentLinks[$email] = $invitation->url();
-            \App\Support\Audit::log('invitation.sent', 'Invited '.$email.' as '.$this->role, $invitation, ['role' => $this->role, 'teams' => $this->inviteTeams]);
+            Audit::log('invitation.sent', 'Invited '.$email.' as '.$this->role, $invitation, ['role' => $this->role, 'teams' => $this->inviteTeams]);
         }
 
         $this->emails = '';
@@ -75,7 +81,7 @@ class Members extends Component
             return;
         }
         $this->workspace()->users()->updateExistingPivot($userId, ['role' => $role]);
-        \App\Support\Audit::log('member.role_changed', 'Changed '.$target->name.'’s role from '.$target->pivot->role.' to '.$role, $target, ['from' => $target->pivot->role, 'to' => $role]);
+        Audit::log('member.role_changed', 'Changed '.$target->name.'’s role from '.$target->pivot->role.' to '.$role, $target, ['from' => $target->pivot->role, 'to' => $role]);
         $this->toast($target->name.' is now '.($role === 'admin' ? 'an admin' : 'a '.$role).'.');
     }
 
@@ -98,7 +104,7 @@ class Members extends Component
         if ($target->current_workspace_id === $workspace->id) {
             $target->forceFill(['current_workspace_id' => null])->save();
         }
-        \App\Support\Audit::log('member.removed', 'Removed '.$target->name.' ('.$target->email.') from the workspace', $target);
+        Audit::log('member.removed', 'Removed '.$target->name.' ('.$target->email.') from the workspace', $target);
         $this->toast($target->name.' was removed from the workspace.');
     }
 
@@ -108,7 +114,7 @@ class Members extends Component
         $invitation = $this->workspace()->invitations()->whereKey($invitationId)->whereNull('accepted_at')->first();
         if ($invitation) {
             $invitation->delete();
-            \App\Support\Audit::log('invitation.revoked', 'Revoked the invitation for '.$invitation->email, $invitation);
+            Audit::log('invitation.revoked', 'Revoked the invitation for '.$invitation->email, $invitation);
         }
         $this->toast('Invitation revoked.');
     }

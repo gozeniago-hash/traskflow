@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\Projects\BoardView;
+use App\Livewire\Projects\ListView;
 use App\Models\Project;
+use App\Models\Section;
 use App\Models\User;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -45,7 +48,7 @@ class SectionOrderTest extends TestCase
         $this->assertFalse($leo->can('update', $web), 'still no access to project settings');
 
         $reversed = array_reverse($this->order($web));
-        foreach ([\App\Livewire\Projects\ListView::class, \App\Livewire\Projects\BoardView::class] as $view) {
+        foreach ([ListView::class, BoardView::class] as $view) {
             Livewire::test($view, ['project' => $web])
                 ->assertSeeHtml('data-section-grip')
                 ->call('reorderSections', $reversed)->assertOk();
@@ -55,7 +58,7 @@ class SectionOrderTest extends TestCase
 
         // The menu's Move up / Move down works for them too.
         $first = $this->order($web)[0];
-        Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $web])->call('moveSection', $first, 1);
+        Livewire::test(ListView::class, ['project' => $web])->call('moveSection', $first, 1);
         $this->assertSame($first, $this->order($web)[1]);
     }
 
@@ -66,10 +69,10 @@ class SectionOrderTest extends TestCase
         $web = $this->web();
         $before = $this->order($web);
 
-        Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $web])
+        Livewire::test(ListView::class, ['project' => $web])
             ->assertDontSeeHtml('data-section-grip')
             ->call('reorderSections', array_reverse($before))->assertForbidden();
-        Livewire::test(\App\Livewire\Projects\BoardView::class, ['project' => $web])
+        Livewire::test(BoardView::class, ['project' => $web])
             ->call('moveSection', $before[0], 1)->assertForbidden();
 
         $this->assertSame($before, $this->order($web));
@@ -82,10 +85,10 @@ class SectionOrderTest extends TestCase
         $before = $this->order($web);
         $other = Project::where('name', 'Q4 Marketing Campaign')->first()->sections()->value('id');
 
-        $list = Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $web]);
+        $list = Livewire::test(ListView::class, ['project' => $web]);
         $list->call('reorderSections', [...array_slice($before, 1), $other]);   // foreign section
         $list->call('reorderSections', array_slice(array_reverse($before), 1)); // one missing
         $this->assertSame($before, $this->order($web));
-        $this->assertSame(1, (int) \App\Models\Section::find($other)->position, 'other project untouched');
+        $this->assertSame(1, (int) Section::find($other)->position, 'other project untouched');
     }
 }

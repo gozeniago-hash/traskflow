@@ -13,9 +13,13 @@ namespace App\Support\Export;
 class PdfTable
 {
     protected const W = 842.0;   // A4 landscape, points
+
     protected const H = 595.0;
+
     protected const M = 36.0;    // margin
+
     protected const ROW = 16.0;  // row height
+
     protected const SIZE = 8.5;  // body font size
 
     /** Helvetica glyph widths (1/1000 em) for ASCII 32–126. */
@@ -38,8 +42,7 @@ class PdfTable
         protected array $columns,
         protected array $rows,
         protected string $footerNote = '',
-    ) {
-    }
+    ) {}
 
     public function render(): string
     {
@@ -197,7 +200,7 @@ class PdfTable
             $objects[$pageId] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '.self::W.' '.self::H.'] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents '.$contentId.' 0 R >>';
             $data = function_exists('gzcompress') ? gzcompress($stream, 6) : $stream;
             $filter = function_exists('gzcompress') ? ' /Filter /FlateDecode' : '';
-            $objects[$contentId] = "<< /Length ".strlen($data).$filter." >>\nstream\n".$data."\nendstream";
+            $objects[$contentId] = '<< /Length '.strlen($data).$filter." >>\nstream\n".$data."\nendstream";
         }
         $objects[2] = '<< /Type /Pages /Kids ['.implode(' ', $kids).'] /Count '.$count.' >>';
         ksort($objects);
@@ -213,7 +216,7 @@ class PdfTable
         foreach ($offsets as $off) {
             $pdf .= sprintf("%010d 00000 n \n", $off);
         }
-        $pdf .= "trailer\n<< /Size ".(count($objects) + 1)." /Root 1 0 R /Info << /Producer (TaskFlow) /Title (".$this->escape($this->latin($this->title)).") >> >>\nstartxref\n".$xref."\n%%EOF";
+        $pdf .= "trailer\n<< /Size ".(count($objects) + 1).' /Root 1 0 R /Info << /Producer (TaskFlow) /Title ('.$this->escape($this->latin($this->title)).") >> >>\nstartxref\n".$xref."\n%%EOF";
 
         return $pdf;
     }

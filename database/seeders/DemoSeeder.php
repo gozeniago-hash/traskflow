@@ -245,7 +245,7 @@ HTML,
     }
 
     /**
-     * @param  array<string, array<int, array>>  $sections  name => [[title, assignee, dueInDays, done, priority, clientVisible, approval?], ...]
+     * @param array<string, array<int, array>> $sections name => [[title, assignee, dueInDays, done, priority, clientVisible, approval?], ...]
      */
     protected function project(Workspace $ws, array $attributes, array $members, array $sections): Project
     {

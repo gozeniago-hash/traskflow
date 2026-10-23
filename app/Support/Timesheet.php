@@ -10,6 +10,7 @@ use App\Support\Export\Xlsx;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * Recorded time for a date range, limited to projects the viewer can see.
@@ -19,10 +20,11 @@ use Illuminate\Support\Str;
 class Timesheet
 {
     public CarbonImmutable $from;
+
     public CarbonImmutable $to;
 
     /**
-     * @param  array<int>|null  $projectIds  limit to these projects (still intersected with what the viewer can see)
+     * @param array<int>|null $projectIds limit to these projects (still intersected with what the viewer can see)
      */
     public function __construct(
         public User $viewer,
@@ -36,7 +38,7 @@ class Timesheet
         try {
             $a = CarbonImmutable::parse($from, $tz)->startOfDay();
             $b = CarbonImmutable::parse($to, $tz)->endOfDay();
-        } catch (\Throwable) {
+        } catch (Throwable) {
             $a = CarbonImmutable::now($tz)->startOfMonth();
             $b = CarbonImmutable::now($tz)->endOfDay();
         }

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('project_docs', function (Blueprint $table) {
+        Schema::create('project_docs', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->string('title');
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->index(['project_id', 'position']);
         });
 
-        Schema::create('doc_revisions', function (Blueprint $table) {
+        Schema::create('doc_revisions', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('doc_id')->constrained('project_docs')->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
@@ -30,14 +30,14 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::table('attachments', function (Blueprint $table) {
+        Schema::table('attachments', function (Blueprint $table): void {
             $table->foreignId('doc_id')->nullable()->after('comment_id')->constrained('project_docs')->cascadeOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::table('attachments', function (Blueprint $table) {
+        Schema::table('attachments', function (Blueprint $table): void {
             $table->dropConstrainedForeignId('doc_id');
         });
         Schema::dropIfExists('doc_revisions');

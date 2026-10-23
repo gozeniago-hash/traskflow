@@ -10,6 +10,7 @@ use App\Models\Task;
 use App\Support\CustomFields;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -23,16 +24,24 @@ class CreateTask extends Component
     use InteractsWithWorkspace, WithFileUploads;
 
     public bool $show = false;
-    #[\Livewire\Attributes\Locked] // set only by open(), after the permission check
+
+    #[Locked] // set only by open(), after the permission check
     public ?int $projectId = null;
 
     public string $title = '';
+
     public string $description = '';
+
     public string $section_id = '';
+
     public string $assignee_id = '';
+
     public string $due_date = '';
+
     public string $priority = 'none';
+
     public bool $client_visible = false;
+
     public bool $openAfter = false;
 
     /** Custom field inputs: field_id => value */
@@ -40,6 +49,7 @@ class CreateTask extends Component
 
     /** Files queued for upload, and the input that feeds them (so picking twice adds, not replaces). */
     public array $files = [];
+
     public array $newFiles = [];
 
     #[On('create-task')]
@@ -59,7 +69,7 @@ class CreateTask extends Component
 
     public function updatedNewFiles(): void
     {
-        $this->validate(['newFiles.*' => \App\Models\Attachment::rules()], [], ['newFiles.*' => 'file']);
+        $this->validate(['newFiles.*' => Attachment::rules()], [], ['newFiles.*' => 'file']);
         $this->files = array_merge($this->files, $this->newFiles);
         $this->newFiles = [];
     }
@@ -87,14 +97,14 @@ class CreateTask extends Component
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:20000'],
             'section_id' => ['required', Rule::exists('sections', 'id')->where('project_id', $project->id)],
-            'assignee_id' => ['nullable', 'integer', function ($attribute, $value, $fail) use ($project) {
+            'assignee_id' => ['nullable', 'integer', function ($attribute, $value, $fail) use ($project): void {
                 if (! $project->canBeAssigned((int) $value)) {
                     $fail('Only people who can open this project can be assigned. Add them to the project first.');
                 }
             }],
             'due_date' => ['nullable', 'date'],
             'priority' => ['required', Rule::in(array_keys(Task::PRIORITIES))],
-            'files.*' => \App\Models\Attachment::rules(),
+            'files.*' => Attachment::rules(),
             ...CustomFields::rules($project->fields),
         ], [], ['files.*' => 'file', ...CustomFields::attributes($project->fields)]);
 

@@ -10,6 +10,7 @@ use App\Models\ProjectDoc;
 use App\Support\DocTemplates;
 use App\Support\HtmlSanitizer;
 use Illuminate\Support\Carbon;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -29,18 +30,22 @@ class Docs extends Component
     public ?int $docId = null;
 
     public bool $editing = false;
+
     public string $title = '';
 
     /** updated_at of the doc when this edit session started (conflict detection). */
     public ?string $editingSince = null;
+
     public bool $snapshotTaken = false;
 
     /** Bumped whenever the editor must be rebuilt with fresh server content. */
     public int $editorVersion = 0;
 
     public bool $showTemplates = false;
+
     public bool $showHistory = false;
-    #[\Livewire\Attributes\Locked] // set only by previewRevision(), which checks it belongs to this doc
+
+    #[Locked] // set only by previewRevision(), which checks it belongs to this doc
     public ?int $previewRevisionId = null;
 
     /** Image/file dropped into the editor (uploaded via $wire.upload). */
@@ -210,7 +215,7 @@ class Docs extends Component
     public function storeDocUpload(): array
     {
         $doc = $this->editableDoc();
-        $this->validate(['docUpload' => \App\Models\Attachment::rules(required: true)], [], ['docUpload' => 'file']);
+        $this->validate(['docUpload' => Attachment::rules(required: true)], [], ['docUpload' => 'file']);
 
         $attachment = Attachment::storeUpload($this->docUpload, $this->project, $this->me(), null, false, null, $doc);
         $this->docUpload = null;

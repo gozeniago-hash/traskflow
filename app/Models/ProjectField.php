@@ -138,7 +138,7 @@ class ProjectField extends Model
             'multiselect' => [...($this->required ? ['required'] : ['nullable']), 'array'],
             'checkbox' => ['nullable', 'boolean', ...($this->required ? ['accepted'] : [])],
             // Only someone who can open this project (not a client or an id from elsewhere).
-            'person' => [...$base, 'integer', function ($attribute, $value, $fail) {
+            'person' => [...$base, 'integer', function ($attribute, $value, $fail): void {
                 if ($value !== null && $value !== '' && ! Project::find($this->project_id)?->canBeAssigned((int) $value)) {
                     $fail('Pick someone who can open this project.');
                 }

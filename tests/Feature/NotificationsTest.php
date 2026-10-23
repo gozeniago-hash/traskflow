@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\Notifications\Bell;
+use App\Livewire\Notifications\Index;
+use App\Livewire\TaskPanel;
 use App\Models\Activity;
 use App\Models\Project;
 use App\Models\Task;
@@ -54,7 +57,7 @@ class NotificationsTest extends TestCase
         $doc->update(['content' => '<p>ab</p>']);
         $doc->update(['content' => '<p>abc</p>']); // autosaves become one "edited" entry
         $section->delete();
-        Livewire::test(\App\Livewire\TaskPanel::class)->call('open', $task->id)->call('deleteTask');
+        Livewire::test(TaskPanel::class)->call('open', $task->id)->call('deleteTask');
 
         $maya = $this->user('maya@taskflow.test');
         $seen = $this->seen($maya, $web->id);
@@ -129,7 +132,7 @@ class NotificationsTest extends TestCase
         $web->sections()->create(['name' => 'Two', 'position' => 71]);
 
         $this->actingAs($maya);
-        $bell = Livewire::test(\App\Livewire\Notifications\Bell::class)->assertSee('2 new')->assertDontSee('added the section');
+        $bell = Livewire::test(Bell::class)->assertSee('2 new')->assertDontSee('added the section');
 
         // Hovering loads the list ahead of time but doesn't mark anything read.
         $bell->call('prefetch')->assertSee('added the section “Two”')->assertSee('2 new');
@@ -151,7 +154,7 @@ class NotificationsTest extends TestCase
         $web->docs()->create(['title' => 'Web doc', 'content' => 'x']);
 
         $this->actingAs($this->user('admin@taskflow.test'));
-        Livewire::test(\App\Livewire\Notifications\Index::class)
+        Livewire::test(Index::class)
             ->assertSee('Web section')->assertSee('Q4 section')->assertSee('Web doc')
             ->set('project', (string) $web->id)->assertSee('Web section')->assertDontSee('Q4 section')
             ->set('kind', 'doc')->assertSee('Web doc')->assertDontSee('Web section');
@@ -159,7 +162,7 @@ class NotificationsTest extends TestCase
 
         // Jo can't filter his way into a project he can't open.
         $this->actingAs($this->user('jo@taskflow.test'));
-        Livewire::test(\App\Livewire\Notifications\Index::class)->set('project', (string) $web->id)->assertDontSee('Web section');
+        Livewire::test(Index::class)->set('project', (string) $web->id)->assertDontSee('Web section');
     }
 
     public function test_task_history_in_the_panel_lists_only_task_events(): void

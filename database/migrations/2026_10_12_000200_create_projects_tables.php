@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('projects', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
             $table->foreignId('team_id')->nullable()->constrained()->nullOnDelete();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->index(['workspace_id', 'archived_at']);
         });
 
-        Schema::create('project_user', function (Blueprint $table) {
+        Schema::create('project_user', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->unique(['project_id', 'user_id']);
         });
 
-        Schema::create('sections', function (Blueprint $table) {
+        Schema::create('sections', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->string('name');
@@ -44,7 +44,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('tasks', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('section_id')->nullable()->constrained()->nullOnDelete();
@@ -69,7 +69,7 @@ return new class extends Migration
             $table->index(['assignee_id', 'completed_at', 'due_date']);
         });
 
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('task_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
@@ -78,7 +78,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('attachments', function (Blueprint $table) {
+        Schema::create('attachments', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('task_id')->nullable()->constrained()->cascadeOnDelete();
@@ -92,7 +92,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('status_updates', function (Blueprint $table) {
+        Schema::create('status_updates', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
@@ -103,7 +103,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('activities', function (Blueprint $table) {
+        Schema::create('activities', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('project_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('task_id')->nullable()->constrained()->cascadeOnDelete();
@@ -113,7 +113,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('invitations', function (Blueprint $table) {
+        Schema::create('invitations', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
             $table->foreignId('client_id')->nullable()->constrained()->cascadeOnDelete();

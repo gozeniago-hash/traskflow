@@ -2,21 +2,20 @@
 
 namespace App\Livewire;
 
-use App\Support\Undo;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Activity;
 use App\Models\Attachment;
-use App\Models\ProjectField;
 use App\Models\Task;
-use App\Support\CustomFields;
-use Illuminate\Support\Facades\Validator;
 use App\Models\TimeEntry;
+use App\Support\CustomFields;
+use App\Support\ProjectLog;
 use App\Support\TimeTracker;
+use App\Support\Undo;
 use Carbon\Carbon;
-use Illuminate\Validation\Rule;
-use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Validator;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -39,21 +38,32 @@ class TaskPanel extends Component
 
     // Editable fields (saved as soon as they change)
     public string $title = '';
+
     public string $description = '';
+
     public string $assignee_id = '';
+
     public string $start_date = '';
+
     public string $due_date = '';
+
     public string $priority = 'none';
+
     public string $section_id = '';
+
     public bool $client_visible = false;
 
     public string $newSubtask = '';
+
     public string $comment = '';
+
     public bool $commentForClient = false;
+
     public array $uploads = [];
 
     // Files attached to the comment being written
     public array $commentFiles = [];
+
     public array $newCommentFiles = [];
 
     /** Set when someone else changes the open task, so we can offer to reload its fields. */
@@ -64,7 +74,9 @@ class TaskPanel extends Component
 
     // Manual time entry
     public string $manualDuration = '';
+
     public string $manualDate = '';
+
     public string $manualNote = '';
 
     protected function getListeners(): array
@@ -342,7 +354,7 @@ class TaskPanel extends Component
 
     public function updatedNewCommentFiles(): void
     {
-        $this->validate(['newCommentFiles.*' => \App\Models\Attachment::rules()], [], ['newCommentFiles.*' => 'file']);
+        $this->validate(['newCommentFiles.*' => Attachment::rules()], [], ['newCommentFiles.*' => 'file']);
         $this->commentFiles = array_merge($this->commentFiles, $this->newCommentFiles);
         $this->newCommentFiles = [];
     }
@@ -359,7 +371,7 @@ class TaskPanel extends Component
         $this->authorize('comment', $task);
         $this->validate([
             'comment' => ['nullable', 'string', 'max:10000'],
-            'commentFiles.*' => \App\Models\Attachment::rules(),
+            'commentFiles.*' => Attachment::rules(),
         ], [], ['commentFiles.*' => 'file']);
 
         if (trim($this->comment) === '' && ! $this->commentFiles) {
@@ -395,7 +407,7 @@ class TaskPanel extends Component
     public function updatedUploads(): void
     {
         $task = $this->task();
-        $this->validate(['uploads.*' => \App\Models\Attachment::rules()]);
+        $this->validate(['uploads.*' => Attachment::rules()]);
         foreach ($this->uploads as $file) {
             Attachment::storeUpload($file, $task->project, $this->me(), $task);
         }
@@ -445,7 +457,7 @@ class TaskPanel extends Component
             return;
         }
 
-        TimeTracker::addManual($task, $this->me(), $seconds, \Carbon\Carbon::parse($this->manualDate), $this->manualNote ?: null);
+        TimeTracker::addManual($task, $this->me(), $seconds, Carbon::parse($this->manualDate), $this->manualNote ?: null);
         $this->reset(['manualDuration', 'manualNote']);
         $this->toast('Added '.TimeEntry::formatShort($seconds).'.');
         $this->dispatch('timer-changed');
@@ -489,9 +501,9 @@ class TaskPanel extends Component
         $rows = Undo::taskRows([$task->id]);
         $undo = Undo::capture($this->me(), $task->project_id, 'task '.$task->title, $rows, Undo::filesOf($rows['attachments']));
 
-        Undo::keepingFiles(function () use ($task) {
+        Undo::keepingFiles(function () use ($task): void {
             $ids = Task::where('parent_id', $task->id)->pluck('id')->push($task->id);
-            \App\Support\ProjectLog::quietly(fn () => Attachment::whereIn('task_id', $ids)->get()->each->delete());
+            ProjectLog::quietly(fn () => Attachment::whereIn('task_id', $ids)->get()->each->delete());
             $task->delete();
         });
 

@@ -5,6 +5,7 @@ namespace App\Livewire\Notifications;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Project;
 use App\Support\NotificationFeed;
+use Carbon\Carbon;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -14,10 +15,17 @@ class Index extends Component
 {
     use InteractsWithWorkspace;
 
-    #[Url(except: '')] public string $project = '';
-    #[Url(except: '')] public string $kind = '';
-    #[Url(except: false)] public bool $mine = false;
+    #[Url(except: '')]
+    public string $project = '';
+
+    #[Url(except: '')]
+    public string $kind = '';
+
+    #[Url(except: false)]
+    public bool $mine = false;
+
     public int $perPage = 40;
+
     public ?string $newSince = null;
 
     public function mount(): void
@@ -59,7 +67,7 @@ class Index extends Component
             'hasMore' => $items->count() > $this->perPage,
             'projects' => Project::query()->visibleTo($me)->orderBy('name')->get(['projects.id', 'name']),
             'kinds' => $kinds,
-            'since' => \Carbon\Carbon::parse($this->newSince),
+            'since' => Carbon::parse($this->newSince),
         ])->layout($me->isClient() ? 'layouts.portal' : 'layouts.app');
     }
 }

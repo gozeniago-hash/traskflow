@@ -11,9 +11,7 @@ class WorkspaceChanged implements ShouldBroadcastNow
 {
     use InteractsWithSockets;
 
-    public function __construct(public int $workspaceId, public ?string $actor = null)
-    {
-    }
+    public function __construct(public int $workspaceId, public ?string $actor = null) {}
 
     public function broadcastOn(): array
     {

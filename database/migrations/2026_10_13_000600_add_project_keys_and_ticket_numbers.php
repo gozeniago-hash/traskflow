@@ -13,11 +13,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
+        Schema::table('projects', function (Blueprint $table): void {
             $table->string('key', 10)->nullable()->after('workspace_id');
             $table->unsignedInteger('task_counter')->default(0)->after('key');
         });
-        Schema::table('tasks', function (Blueprint $table) {
+        Schema::table('tasks', function (Blueprint $table): void {
             $table->unsignedInteger('number')->nullable()->after('project_id');
         });
 
@@ -33,10 +33,10 @@ return new class extends Migration
             DB::table('projects')->where('id', $p->id)->update(['key' => $key, 'task_counter' => $n]);
         }
 
-        Schema::table('projects', function (Blueprint $table) {
+        Schema::table('projects', function (Blueprint $table): void {
             $table->unique(['workspace_id', 'key']);
         });
-        Schema::table('tasks', function (Blueprint $table) {
+        Schema::table('tasks', function (Blueprint $table): void {
             $table->unique(['project_id', 'number']);
         });
     }
@@ -59,11 +59,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('tasks', function (Blueprint $table) {
+        Schema::table('tasks', function (Blueprint $table): void {
             $table->dropUnique(['project_id', 'number']);
             $table->dropColumn('number');
         });
-        Schema::table('projects', function (Blueprint $table) {
+        Schema::table('projects', function (Blueprint $table): void {
             $table->dropUnique(['workspace_id', 'key']);
             $table->dropColumn(['key', 'task_counter']);
         });

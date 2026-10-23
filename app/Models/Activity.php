@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ProjectLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -29,7 +30,7 @@ class Activity extends Model
     public static function log(int $projectId, string $kind, string $action, array $meta = [], ?int $subjectId = null, ?int $taskId = null, ?User $user = null): ?self
     {
         $user ??= auth()->user();
-        if (! $user || \App\Support\ProjectLog::$quiet) {
+        if (! $user || ProjectLog::$quiet) {
             return null; // seeders, webhooks and other background work aren't anyone's change
         }
 

@@ -6,6 +6,7 @@ use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\Project;
 use App\Models\ProjectField;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /** Project settings → Custom fields. */
@@ -15,10 +16,13 @@ class Fields extends Component
 
     public Project $project;
 
-    #[\Livewire\Attributes\Locked] // set only by server actions that check access
+    #[Locked] // set only by server actions that check access
     public ?int $editingId = null;
+
     public bool $showForm = false;
+
     public array $form = [];
+
     public string $newOption = '';
 
     public function mount(Project $project): void

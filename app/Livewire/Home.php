@@ -24,9 +24,7 @@ class Home extends Component
         return [$this->workspaceChannel() => 'onRemoteChange'];
     }
 
-    public function onTaskSaved(): void
-    {
-    }
+    public function onTaskSaved(): void {}
 
     public function toggleComplete(int $taskId): void
     {

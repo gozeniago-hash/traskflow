@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
+use Throwable;
 
 class Invites
 {
@@ -17,7 +19,7 @@ class Invites
     /** How many more invitations this workspace may send this hour. */
     public static function remaining(Workspace $workspace): int
     {
-        return \Illuminate\Support\Facades\RateLimiter::remaining('invites:'.$workspace->id, self::PER_HOUR);
+        return RateLimiter::remaining('invites:'.$workspace->id, self::PER_HOUR);
     }
 
     /**
@@ -27,7 +29,7 @@ class Invites
     public static function send(Workspace $workspace, User $by, string $email, string $role, ?int $clientId = null, array $teamIds = []): Invitation
     {
         $email = strtolower(trim($email));
-        \Illuminate\Support\Facades\RateLimiter::hit('invites:'.$workspace->id, 3600);
+        RateLimiter::hit('invites:'.$workspace->id, 3600);
 
         $workspace->invitations()->where('email', $email)->whereNull('accepted_at')->delete();
 
@@ -41,7 +43,7 @@ class Invites
 
         try {
             Mail::to($email)->send(new InvitationMail($invitation->load('workspace', 'inviter', 'client')));
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::warning('Invitation email failed: '.$e->getMessage());
         }
 

@@ -4,6 +4,9 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\AuditLog as Entry;
+use App\Support\Audit;
+use App\Support\Export\Csv;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -15,10 +18,18 @@ class AuditLog extends Component
 {
     use InteractsWithWorkspace;
 
-    #[Url] public string $group = '';
-    #[Url] public string $person = '';
-    #[Url] public string $from = '';
-    #[Url] public string $to = '';
+    #[Url]
+    public string $group = '';
+
+    #[Url]
+    public string $person = '';
+
+    #[Url]
+    public string $from = '';
+
+    #[Url]
+    public string $to = '';
+
     public int $perPage = 50;
 
     public function mount(): void
@@ -47,8 +58,8 @@ class AuditLog extends Component
                 ->orWhere(fn (Builder $q) => $q->where('action', 'like', 'auth.%')->whereIn('user_id', $people)))
             ->when(array_key_exists($this->group, Entry::GROUPS), fn ($q) => $q->where('action', 'like', $this->group.'.%'))
             ->when($this->person !== '', fn ($q) => $q->where('user_id', (int) $this->person))
-            ->when($this->from !== '' && strtotime($this->from), fn ($q) => $q->where('created_at', '>=', \Carbon\Carbon::parse($this->from, config('taskflow.timezone'))->startOfDay()->utc()))
-            ->when($this->to !== '' && strtotime($this->to), fn ($q) => $q->where('created_at', '<=', \Carbon\Carbon::parse($this->to, config('taskflow.timezone'))->endOfDay()->utc()))
+            ->when($this->from !== '' && strtotime($this->from), fn ($q) => $q->where('created_at', '>=', Carbon::parse($this->from, config('taskflow.timezone'))->startOfDay()->utc()))
+            ->when($this->to !== '' && strtotime($this->to), fn ($q) => $q->where('created_at', '<=', Carbon::parse($this->to, config('taskflow.timezone'))->endOfDay()->utc()))
             ->latest('created_at')->latest('id');
     }
 
@@ -57,13 +68,13 @@ class AuditLog extends Component
         $this->requireAdmin();
         $rows = $this->query()->with('user')->limit(10000)->get();
         $tz = config('taskflow.timezone');
-        \App\Support\Audit::log('workspace.audit_exported', 'Exported the audit log ('.$rows->count().' entries)', $this->workspace());
+        Audit::log('workspace.audit_exported', 'Exported the audit log ('.$rows->count().' entries)', $this->workspace());
 
-        return response()->streamDownload(function () use ($rows, $tz) {
+        return response()->streamDownload(function () use ($rows, $tz): void {
             $out = fopen('php://output', 'w');
             fputcsv($out, ['When ('.$tz.')', 'Who', 'Email', 'Action', 'What happened', 'IP address']);
             foreach ($rows as $r) {
-                fputcsv($out, \App\Support\Export\Csv::row([
+                fputcsv($out, Csv::row([
                     $r->created_at->timezone($tz)->format('Y-m-d H:i:s'), $r->user?->name ?? 'Deleted user', $r->user?->email, $r->action, $r->description, $r->ip,
                 ]));
             }

@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('workspaces', function (Blueprint $table) {
+        Schema::create('workspaces', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
             $table->foreignId('owner_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
 
-        Schema::create('clients', function (Blueprint $table) {
+        Schema::create('clients', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
             $table->string('name');
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('workspace_user', function (Blueprint $table) {
+        Schema::create('workspace_user', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
@@ -37,7 +37,7 @@ return new class extends Migration
             $table->unique(['workspace_id', 'user_id']);
         });
 
-        Schema::create('teams', function (Blueprint $table) {
+        Schema::create('teams', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
             $table->string('name');
@@ -45,7 +45,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('team_user', function (Blueprint $table) {
+        Schema::create('team_user', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('team_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

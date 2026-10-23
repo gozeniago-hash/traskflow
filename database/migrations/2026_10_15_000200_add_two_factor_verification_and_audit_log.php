@@ -9,18 +9,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table): void {
             $table->text('two_factor_secret')->nullable()->after('password');
             $table->text('two_factor_recovery_codes')->nullable()->after('two_factor_secret');
             $table->timestamp('two_factor_confirmed_at')->nullable()->after('two_factor_recovery_codes');
             $table->unsignedBigInteger('two_factor_last_step')->nullable()->after('two_factor_confirmed_at');
         });
 
-        Schema::table('workspaces', function (Blueprint $table) {
+        Schema::table('workspaces', function (Blueprint $table): void {
             $table->boolean('require_two_factor')->default(false);
         });
 
-        Schema::create('audit_logs', function (Blueprint $table) {
+        Schema::create('audit_logs', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('workspace_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();

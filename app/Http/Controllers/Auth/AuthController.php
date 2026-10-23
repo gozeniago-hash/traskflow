@@ -5,15 +5,19 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Support\Audit;
+use App\Support\SignIn;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -40,14 +44,14 @@ class AuthController extends Controller
         if (! Auth::validate($credentials) || ! $user) {
             RateLimiter::hit($key);
             if ($user) {
-                \App\Support\Audit::log('auth.login_failed', 'Failed sign-in for '.$user->email, $user, [], $user);
+                Audit::log('auth.login_failed', 'Failed sign-in for '.$user->email, $user, [], $user);
             }
             throw ValidationException::withMessages(['email' => 'These credentials do not match our records.']);
         }
 
         RateLimiter::clear($key);
 
-        return \App\Support\SignIn::complete($request, $user, $request->boolean('remember'));
+        return SignIn::complete($request, $user, $request->boolean('remember'));
     }
 
     public function showRegister(): View
@@ -82,7 +86,7 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
-        \App\Support\Audit::log('auth.registered', $user->name.' created an account and the '.$user->currentWorkspace->name.' workspace', $user, [], $user);
+        Audit::log('auth.registered', $user->name.' created an account and the '.$user->currentWorkspace->name.' workspace', $user, [], $user);
 
         if ($user->needsToVerifyEmail()) {
             if ($this->sendVerification($user)) {
@@ -90,7 +94,7 @@ class AuthController extends Controller
             }
             // The confirmation email couldn't be sent: don't lock the new account out.
             $user->markEmailAsVerified();
-            \App\Support\Audit::log('auth.verification_skipped', 'Couldn’t send the confirmation email to '.$user->email.', so it was skipped', $user, [], $user);
+            Audit::log('auth.verification_skipped', 'Couldn’t send the confirmation email to '.$user->email.', so it was skipped', $user, [], $user);
         }
 
         return redirect()->route('home')->with('status', 'Welcome to TaskFlow! Create your first project to get started.');
@@ -102,8 +106,8 @@ class AuthController extends Controller
             $user->sendEmailVerificationNotification();
 
             return true;
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Verification email failed: '.$e->getMessage());
+        } catch (Throwable $e) {
+            Log::warning('Verification email failed: '.$e->getMessage());
 
             return false;
         }
@@ -112,7 +116,7 @@ class AuthController extends Controller
     public function logout(Request $request): RedirectResponse
     {
         if ($request->user()) {
-            \App\Support\Audit::log('auth.logout', $request->user()->name.' signed out');
+            Audit::log('auth.logout', $request->user()->name.' signed out');
         }
         Auth::logout();
         $request->session()->invalidate();

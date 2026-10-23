@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\Audit;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\View\View;
+use Throwable;
 
 class PasswordResetController extends Controller
 {
@@ -25,7 +27,7 @@ class PasswordResetController extends Controller
 
         try {
             Password::sendResetLink($request->only('email'));
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Mail server down: log it, but answer the same way so nothing is revealed.
             report($e);
         }
@@ -49,11 +51,11 @@ class PasswordResetController extends Controller
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password) {
+            function (User $user, string $password): void {
                 $user->forceFill(['password' => $password, 'remember_token' => Str::random(60)])->save();
                 event(new PasswordReset($user));
-                \App\Support\Audit::log('auth.password_reset', $user->name.' reset their password by email', $user, [], $user);
-            }
+                Audit::log('auth.password_reset', $user->name.' reset their password by email', $user, [], $user);
+            },
         );
 
         return $status === Password::PASSWORD_RESET

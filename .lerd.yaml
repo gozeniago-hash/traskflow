@@ -1,0 +1,15 @@
+php_version: "8.4"
+node_version: "22"
+framework: laravel
+framework_version: "13"
+services:
+  - mailpit
+  - mysql
+  - soketi:
+      preset: soketi
+  - valkey:
+      preset: valkey
+workers:
+  - queue
+  - reverb
+  - schedule

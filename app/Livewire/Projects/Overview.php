@@ -9,6 +9,12 @@ use App\Models\Project;
 use App\Models\ProjectResource;
 use App\Models\Task;
 use App\Models\TimeEntry;
+use App\Models\User;
+use App\Support\Audit;
+use App\Support\ProjectLog;
+use App\Support\Realtime;
+use App\Support\Undo;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -21,20 +27,28 @@ class Overview extends Component
     public Project $project;
 
     public string $description = '';
+
     public bool $editingDescription = false;
 
     public string $updateStatus = 'on_track';
+
     public string $updateTitle = '';
+
     public string $updateBody = '';
+
     public bool $updateShare = true;
 
     public string $addMember = '';
 
     // Key resources
     public ?string $addingResource = null; // null | link
+
     public string $resourceUrl = '';
+
     public string $resourceTitle = '';
+
     public bool $resourceInternal = false; // resources are shared with the client portal unless marked internal
+
     public array $resourceFiles = [];
 
     protected function getListeners(): array
@@ -52,9 +66,7 @@ class Overview extends Component
 
     #[On('task-saved')]
     #[On('timer-changed')]
-    public function onTaskSaved(): void
-    {
-    }
+    public function onTaskSaved(): void {}
 
     /** The header edited the project: pick up a new description unless one is being typed. */
     public function onProjectUpdated(): void
@@ -111,9 +123,9 @@ class Overview extends Component
         $userId = (int) $this->addMember;
         if ($userId && $this->workspace()->members()->whereKey($userId)->exists()) {
             if ($this->project->members()->syncWithoutDetaching([$userId])['attached']) {
-                \App\Support\ProjectLog::member($this->project, 'added', \App\Models\User::find($userId)?->name);
+                ProjectLog::member($this->project, 'added', User::find($userId)?->name);
             }
-            \App\Support\Audit::log('project.member_added', 'Added '.\App\Models\User::find($userId)?->name.' to project “'.$this->project->name.'”', $this->project, ['user_id' => $userId]);
+            Audit::log('project.member_added', 'Added '.User::find($userId)?->name.' to project “'.$this->project->name.'”', $this->project, ['user_id' => $userId]);
         }
         $this->addMember = '';
     }
@@ -122,8 +134,8 @@ class Overview extends Component
     {
         $this->authorize('update', $this->project);
         if ($this->project->members()->detach($userId)) {
-            \App\Support\ProjectLog::member($this->project, 'removed', \App\Models\User::find($userId)?->name);
-            \App\Support\Audit::log('project.member_removed', 'Removed '.\App\Models\User::find($userId)?->name.' from project “'.$this->project->name.'”', $this->project, ['user_id' => $userId]);
+            ProjectLog::member($this->project, 'removed', User::find($userId)?->name);
+            Audit::log('project.member_removed', 'Removed '.User::find($userId)?->name.' from project “'.$this->project->name.'”', $this->project, ['user_id' => $userId]);
         }
     }
 
@@ -153,12 +165,12 @@ class Overview extends Component
     public function updatedResourceFiles(): void
     {
         $this->authorize('update', $this->project);
-        $this->validate(['resourceFiles.*' => \App\Models\Attachment::rules()], [], ['resourceFiles.*' => 'file']);
+        $this->validate(['resourceFiles.*' => Attachment::rules()], [], ['resourceFiles.*' => 'file']);
 
         foreach ($this->resourceFiles as $file) {
             $attachment = Attachment::storeUpload($file, $this->project, $this->me(), null, true);
             $title = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) ?: $file->getClientOriginalName();
-            $this->saveResource(new ProjectResource(['title' => \Illuminate\Support\Str::limit($title, 145), 'attachment_id' => $attachment->id, 'client_visible' => true]));
+            $this->saveResource(new ProjectResource(['title' => Str::limit($title, 145), 'attachment_id' => $attachment->id, 'client_visible' => true]));
         }
         $this->resourceFiles = [];
     }
@@ -175,7 +187,7 @@ class Overview extends Component
     public function renameResource(int $id, string $title): void
     {
         $this->authorize('update', $this->project);
-        $title = trim(\Illuminate\Support\Str::limit($title, 150, ''));
+        $title = trim(Str::limit($title, 150, ''));
         if ($title !== '') {
             $this->resource($id)->update(['title' => $title]);
         }
@@ -195,7 +207,7 @@ class Overview extends Component
         foreach ($order as $pos => $rid) {
             ProjectResource::whereKey($rid)->update(['position' => $pos + 1]);
         }
-        \App\Support\Realtime::touch($this->project->id);
+        Realtime::touch($this->project->id);
     }
 
     public function removeResource(int $id): void
@@ -204,10 +216,10 @@ class Overview extends Component
         $resource = $this->resource($id);
 
         $rows = $resource->attachment_id
-            ? \App\Support\Undo::attachmentRows([$resource->attachment_id])
+            ? Undo::attachmentRows([$resource->attachment_id])
             : ['project_resources' => [$resource->getAttributes()]];
-        $undo = \App\Support\Undo::capture($this->me(), $this->project->id, 'resource '.$resource->title, $rows, \App\Support\Undo::filesOf($rows['attachments'] ?? []));
-        \App\Support\Undo::keepingFiles(fn () => $resource->delete());
+        $undo = Undo::capture($this->me(), $this->project->id, 'resource '.$resource->title, $rows, Undo::filesOf($rows['attachments'] ?? []));
+        Undo::keepingFiles(fn () => $resource->delete());
         $this->toast('Resource removed.', undo: $undo);
     }
 
@@ -223,7 +235,6 @@ class Overview extends Component
     {
         return $this->project->resources()->findOrFail($id);
     }
-
 
     public function render()
     {

@@ -2,6 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\Admin\Members;
+use App\Livewire\Admin\Settings;
+use App\Livewire\Profile;
+use App\Livewire\Projects\Files;
+use App\Livewire\Projects\ListView;
+use App\Livewire\TaskPanel;
 use App\Models\Attachment;
 use App\Models\AuditLog;
 use App\Models\Project;
@@ -9,7 +15,9 @@ use App\Models\Task;
 use App\Models\TimeEntry;
 use App\Models\User;
 use App\Support\Totp;
+use App\Support\Undo;
 use Database\Seeders\DemoSeeder;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -80,13 +88,13 @@ class HardeningTest extends TestCase
         $web = $this->web();
         $this->actingAs($this->admin());
 
-        Livewire::test(\App\Livewire\Projects\Files::class, ['project' => $web])
+        Livewire::test(Files::class, ['project' => $web])
             ->set('uploads', [UploadedFile::fake()->create('brief.pdf', 200, 'application/pdf')])
             ->assertHasNoErrors();
 
         Attachment::create(['project_id' => $web->id, 'user_id' => $this->admin()->id, 'disk' => 'local', 'path' => 'x/big.bin', 'original_name' => 'big.zip', 'mime_type' => 'application/zip', 'size' => 2 * 1024 * 1024]);
 
-        Livewire::test(\App\Livewire\Projects\Files::class, ['project' => $web])
+        Livewire::test(Files::class, ['project' => $web])
             ->set('uploads', [UploadedFile::fake()->create('more.pdf', 10, 'application/pdf')])
             ->assertHasErrors('uploads.0');
         $this->assertDatabaseMissing('attachments', ['original_name' => 'more.pdf']);
@@ -101,7 +109,7 @@ class HardeningTest extends TestCase
         $this->actingAs($this->admin());
 
         foreach (['setup.exe', 'run.sh', 'page.html', 'shell.php', 'noextension'] as $name) {
-            Livewire::test(\App\Livewire\Projects\Files::class, ['project' => $web])
+            Livewire::test(Files::class, ['project' => $web])
                 ->set('uploads', [UploadedFile::fake()->create($name, 5)])
                 ->assertHasErrors('uploads.0');
             $this->assertDatabaseMissing('attachments', ['original_name' => $name]);
@@ -109,10 +117,10 @@ class HardeningTest extends TestCase
 
         // A script renamed to .pdf is caught by its content.
         $disguised = UploadedFile::fake()->createWithContent('invoice.pdf', "<?php echo 'hi';");
-        Livewire::test(\App\Livewire\Projects\Files::class, ['project' => $web])
+        Livewire::test(Files::class, ['project' => $web])
             ->set('uploads', [$disguised])->assertHasErrors('uploads.0');
 
-        Livewire::test(\App\Livewire\Projects\Files::class, ['project' => $web])
+        Livewire::test(Files::class, ['project' => $web])
             ->set('uploads', [UploadedFile::fake()->create('Scope v2.docx', 20)])
             ->assertHasNoErrors();
         $this->assertDatabaseHas('attachments', ['original_name' => 'Scope v2.docx']);
@@ -133,7 +141,7 @@ class HardeningTest extends TestCase
         TimeEntry::create(['project_id' => $web->id, 'task_id' => $sub->id, 'user_id' => $admin->id, 'started_at' => now()->subHour(), 'ended_at' => now(), 'duration_seconds' => 3600, 'is_manual' => true]);
         $file = Attachment::storeUpload(UploadedFile::fake()->create('spec.pdf', 10, 'application/pdf'), $web, $admin, $task);
 
-        $panel = Livewire::test(\App\Livewire\TaskPanel::class)->call('open', $task->id)->call('deleteTask');
+        $panel = Livewire::test(TaskPanel::class)->call('open', $task->id)->call('deleteTask');
         $undoUrl = collect($panel->effects['dispatches'] ?? [])->firstWhere('name', 'toast')['params']['undo'] ?? null;
         $this->assertNotNull($undoUrl, 'the toast offers Undo');
 
@@ -163,11 +171,11 @@ class HardeningTest extends TestCase
         $this->actingAs($admin);
         $file = Attachment::storeUpload(UploadedFile::fake()->create('old.pdf', 10, 'application/pdf'), $web, $admin);
 
-        Livewire::test(\App\Livewire\Projects\Files::class, ['project' => $web])->call('delete', $file->id);
+        Livewire::test(Files::class, ['project' => $web])->call('delete', $file->id);
         Storage::disk('local')->assertExists($file->path);
 
-        $this->travel(\App\Support\Undo::MINUTES + 1)->minutes();
-        \App\Support\Undo::purgeExpired();
+        $this->travel(Undo::MINUTES + 1)->minutes();
+        Undo::purgeExpired();
         Storage::disk('local')->assertMissing($file->path);
         $this->assertSame(0, DB::table('undo_snapshots')->count());
     }
@@ -179,7 +187,7 @@ class HardeningTest extends TestCase
         $section = $web->sections()->whereHas('tasks')->orderByDesc('position')->first();
         $taskIds = $section->tasks()->pluck('id')->all();
 
-        $list = Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $web])->call('deleteSection', $section->id);
+        $list = Livewire::test(ListView::class, ['project' => $web])->call('deleteSection', $section->id);
         $undoUrl = collect($list->effects['dispatches'] ?? [])->firstWhere('name', 'toast')['params']['undo'];
         $this->assertDatabaseMissing('sections', ['id' => $section->id]);
 
@@ -193,7 +201,7 @@ class HardeningTest extends TestCase
     protected function enableTwoFactor(User $user): string
     {
         $this->actingAs($user);
-        $profile = Livewire::test(\App\Livewire\Profile::class)->set('twoFactorPassword', 'password')->call('startTwoFactor')->assertHasNoErrors();
+        $profile = Livewire::test(Profile::class)->set('twoFactorPassword', 'password')->call('startTwoFactor')->assertHasNoErrors();
         $secret = session('two_factor.setup');
         $profile->set('setupCode', '000000')->call('confirmTwoFactor')->assertHasErrors('setupCode');
         $profile->set('setupCode', Totp::code($secret, Totp::currentStep()))->call('confirmTwoFactor')->assertHasNoErrors();
@@ -248,12 +256,12 @@ class HardeningTest extends TestCase
 
         // An admin without it can't switch the requirement on (they'd lock themselves out).
         $this->actingAs($admin);
-        Livewire::test(\App\Livewire\Admin\Settings::class)->call('setRequireTwoFactor', true);
+        Livewire::test(Settings::class)->call('setRequireTwoFactor', true);
         $this->assertFalse($admin->currentWorkspace->fresh()->require_two_factor);
 
         $this->enableTwoFactor($admin);
         $this->actingAs($admin);
-        Livewire::test(\App\Livewire\Admin\Settings::class)->call('setRequireTwoFactor', true);
+        Livewire::test(Settings::class)->call('setRequireTwoFactor', true);
         $this->assertTrue($admin->currentWorkspace->fresh()->require_two_factor);
 
         $this->actingAs($member)->get('/home')->assertRedirect(route('profile'));
@@ -272,7 +280,7 @@ class HardeningTest extends TestCase
         $this->post('/register', ['name' => 'Vera', 'email' => 'vera@example.com', 'workspace' => 'V Co', 'password' => 'Cebu-Sunrise-2026', 'password_confirmation' => 'Cebu-Sunrise-2026'])
             ->assertRedirect(route('verification.notice'));
         $vera = User::where('email', 'vera@example.com')->first();
-        Notification::assertSentTo($vera, \Illuminate\Auth\Notifications\VerifyEmail::class);
+        Notification::assertSentTo($vera, VerifyEmail::class);
 
         $this->get('/home')->assertRedirect(route('verification.notice'));
 
@@ -297,7 +305,7 @@ class HardeningTest extends TestCase
         $jo = User::where('email', 'jo@taskflow.test')->first();
         $this->actingAs($admin);
 
-        Livewire::test(\App\Livewire\Admin\Members::class)->call('changeRole', $jo->id, 'manager');
+        Livewire::test(Members::class)->call('changeRole', $jo->id, 'manager');
         $entry = AuditLog::where('action', 'member.role_changed')->latest('id')->first();
         $this->assertSame($admin->id, $entry->user_id);
         $this->assertStringContainsString($jo->name, $entry->description);

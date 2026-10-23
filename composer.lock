@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ebd90325013cf58e437b917d37e5d47",
+    "content-hash": "9bce8642eca88fe20d1719b96b5b5e03",
     "packages": [
         {
             "name": "brick/math",
@@ -39,6 +39,7 @@
                     "Brick\\Math\\Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -58,8 +59,7 @@
                 "Mathematics",
                 "Rational"
             ],
-            "time": "2026-08-30T12:46:44+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-30T12:46:44+00:00"
         },
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -97,6 +97,7 @@
                     "Carbon\\Doctrine\\": "src/Carbon/Doctrine/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -114,8 +115,7 @@
                 "date",
                 "time"
             ],
-            "time": "2026-09-06T14:11:38+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-06T14:11:38+00:00"
         },
         {
             "name": "clue/redis-protocol",
@@ -148,6 +148,7 @@
                     "Clue\\Tests\\Redis\\Protocol\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -167,8 +168,7 @@
                 "serializer",
                 "streaming"
             ],
-            "time": "2024-08-07T11:06:28+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2024-08-07T11:06:28+00:00"
         },
         {
             "name": "clue/redis-react",
@@ -208,6 +208,7 @@
                     "Clue\\Tests\\React\\Redis\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -226,8 +227,7 @@
                 "client",
                 "database"
             ],
-            "time": "2025-01-03T16:18:33+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-01-03T16:18:33+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -269,6 +269,7 @@
                     "Dflydev\\DotAccessData\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "phpcs": [
                     "phpcs"
@@ -322,8 +323,7 @@
                 "dot",
                 "notation"
             ],
-            "time": "2024-07-08T12:26:09+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2024-07-08T12:26:09+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -360,6 +360,7 @@
                     "Doctrine\\Tests\\Inflector\\": "tests"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -399,8 +400,7 @@
                 "uppercase",
                 "words"
             ],
-            "time": "2025-08-10T19:31:58+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-08-10T19:31:58+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -435,6 +435,7 @@
                     "Doctrine\\Tests\\Common\\Lexer\\": "tests"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -461,8 +462,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2026-10-01T06:59:29+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-01T06:59:29+00:00"
         },
         {
             "name": "dragonmantank/cron-expression",
@@ -505,6 +505,7 @@
                     "Cron\\Tests\\": "tests/Cron/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "phpstan": [
                     "./vendor/bin/phpstan analyze"
@@ -528,8 +529,7 @@
                 "cron",
                 "schedule"
             ],
-            "time": "2025-10-31T18:51:33+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-10-31T18:51:33+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -573,6 +573,7 @@
                     "Egulias\\EmailValidator\\Tests\\": "tests"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -590,8 +591,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2025-03-06T22:45:56+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-03-06T22:45:56+00:00"
         },
         {
             "name": "evenement/evenement",
@@ -627,6 +627,7 @@
                     "tests/functions.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -641,8 +642,7 @@
                 "event-dispatcher",
                 "event-emitter"
             ],
-            "time": "2023-08-08T05:53:35+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2023-08-08T05:53:35+00:00"
         },
         {
             "name": "fruitcake/php-cors",
@@ -683,6 +683,7 @@
                     "Fruitcake\\Cors\\Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "actions": [
                     "composer test && composer analyse && composer check-style"
@@ -720,8 +721,7 @@
                 "laravel",
                 "symfony"
             ],
-            "time": "2025-12-03T09:33:47+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-12-03T09:33:47+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -755,6 +755,7 @@
                     "GrahamCampbell\\Tests\\ResultType\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -775,8 +776,7 @@
                 "result",
                 "result-type"
             ],
-            "time": "2026-08-24T09:06:52+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-24T09:06:52+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -838,6 +838,7 @@
                     "GuzzleHttp\\Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -890,8 +891,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2026-08-24T09:21:06+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-24T09:21:06+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -932,6 +932,7 @@
                     "GuzzleHttp\\Promise\\Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -961,8 +962,7 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2026-08-24T09:11:28+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-24T09:11:28+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -1016,6 +1016,7 @@
                     "GuzzleHttp\\Tests\\Psr7\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1067,8 +1068,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2026-08-24T09:13:11+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-24T09:13:11+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
@@ -1110,6 +1110,7 @@
                     "GuzzleHttp\\UriTemplate\\Tests\\": "tests"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1140,8 +1141,7 @@
                 "guzzlehttp",
                 "uri-template"
             ],
-            "time": "2026-08-24T17:13:02+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-24T17:13:02+00:00"
         },
         {
             "name": "laravel/framework",
@@ -1360,6 +1360,7 @@
                     "tests/Database/Fixtures/MigrationCreatorFakeMigration.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1379,8 +1380,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-10-13T13:21:00+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-13T13:21:00+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -1435,12 +1435,12 @@
                     "Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Add beautiful and user-friendly forms to your command-line applications.",
-            "time": "2026-10-06T02:25:49+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-06T02:25:49+00:00"
         },
         {
             "name": "laravel/reverb",
@@ -1500,6 +1500,7 @@
                     "Laravel\\Reverb\\Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "test": [
                     "./vendor/bin/pest"
@@ -1525,8 +1526,7 @@
                 "websocket",
                 "websockets"
             ],
-            "time": "2026-09-22T14:25:47+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-22T14:25:47+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -1568,6 +1568,7 @@
                     "Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1591,8 +1592,7 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2026-09-22T14:32:34+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-22T14:32:34+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -1647,6 +1647,7 @@
                     "One\\Two\\": "tests/fixtures/vendor/one/two"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1663,8 +1664,7 @@
                 "repl",
                 "tinker"
             ],
-            "time": "2026-03-17T14:54:13+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-03-17T14:54:13+00:00"
         },
         {
             "name": "league/commonmark",
@@ -1729,6 +1729,7 @@
                     "League\\CommonMark\\Tests\\PHPStan\\": "tests/phpstan"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "phpcs": [
                     "phpcs"
@@ -1786,8 +1787,7 @@
                 "rss": "https://github.com/thephpleague/commonmark/releases.atom",
                 "source": "https://github.com/thephpleague/commonmark"
             },
-            "time": "2026-09-21T13:07:34+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-21T13:07:34+00:00"
         },
         {
             "name": "league/config",
@@ -1831,6 +1831,7 @@
                     "League\\Config\\Tests\\": "tests"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "phpcs": [
                     "phpcs"
@@ -1879,8 +1880,7 @@
                 "rss": "https://github.com/thephpleague/config/releases.atom",
                 "source": "https://github.com/thephpleague/config"
             },
-            "time": "2022-12-11T20:36:23+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2022-12-11T20:36:23+00:00"
         },
         {
             "name": "league/flysystem",
@@ -1935,6 +1935,7 @@
                     "League\\Flysystem\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "phpstan": [
                     "vendor/bin/phpstan analyse -l 6 src"
@@ -1963,8 +1964,7 @@
                 "storage",
                 "webdav"
             ],
-            "time": "2026-09-02T08:00:27+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-02T08:00:27+00:00"
         },
         {
             "name": "league/flysystem-local",
@@ -1992,6 +1992,7 @@
                     "League\\Flysystem\\Local\\": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -2009,8 +2010,7 @@
                 "flysystem",
                 "local"
             ],
-            "time": "2026-08-12T13:29:21+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-12T13:29:21+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -2041,6 +2041,7 @@
                     "League\\MimeTypeDetection\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "test": [
                     "vendor/bin/phpunit"
@@ -2059,8 +2060,7 @@
                 }
             ],
             "description": "Mime-type detection for Flysystem",
-            "time": "2026-07-09T11:49:27+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-07-09T11:49:27+00:00"
         },
         {
             "name": "league/uri",
@@ -2109,6 +2109,7 @@
                     "League\\Uri\\": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -2156,8 +2157,7 @@
                     "url": "https://github.com/sponsors/nyamsprod"
                 }
             ],
-            "time": "2026-03-15T20:20:18+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-03-15T20:20:18+00:00"
         },
         {
             "name": "league/uri-interfaces",
@@ -2197,6 +2197,7 @@
                     "League\\Uri\\": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -2239,8 +2240,7 @@
                     "url": "https://github.com/sponsors/nyamsprod"
                 }
             ],
-            "time": "2026-03-08T20:05:35+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-03-08T20:05:35+00:00"
         },
         {
             "name": "livewire/livewire",
@@ -2302,6 +2302,7 @@
                     "LegacyTests\\": "legacy_tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "setup": [
                     "@composer install",
@@ -2332,8 +2333,7 @@
                 }
             ],
             "description": "A front-end framework for Laravel.",
-            "time": "2026-09-28T18:12:51+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-28T18:12:51+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -2411,6 +2411,7 @@
                     "Monolog\\": "tests/Monolog"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "test": [
                     "@php vendor/bin/phpunit"
@@ -2436,8 +2437,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2026-09-29T19:21:12+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-29T19:21:12+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -2509,6 +2509,7 @@
                     "tests/Laravel/ServiceProvider.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "phpcs": [
                     "php-cs-fixer fix -v --diff --dry-run"
@@ -2581,8 +2582,7 @@
                     "type": "opencollective"
                 }
             ],
-            "time": "2026-10-02T07:26:52+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-02T07:26:52+00:00"
         },
         {
             "name": "nette/schema",
@@ -2623,6 +2623,7 @@
                     "Nette\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "phpstan": [
                     "phpstan analyse"
@@ -2652,8 +2653,7 @@
                 "config",
                 "nette"
             ],
-            "time": "2026-08-16T21:58:41+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-16T21:58:41+00:00"
         },
         {
             "name": "nette/utils",
@@ -2706,6 +2706,7 @@
                     "Nette\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "phpstan": [
                     "phpstan analyse"
@@ -2747,8 +2748,7 @@
                 "utility",
                 "validation"
             ],
-            "time": "2026-07-17T22:02:45+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-07-17T22:02:45+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -2792,6 +2792,7 @@
                     "PhpParser\\": "test/PhpParser/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -2805,8 +2806,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2026-09-13T18:51:52+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-13T18:51:52+00:00"
         },
         {
             "name": "nunomaduro/termwind",
@@ -2861,6 +2861,7 @@
                     "Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "lint": [
                     "pint -v"
@@ -2898,8 +2899,7 @@
                 "php",
                 "style"
             ],
-            "time": "2026-02-16T23:10:27+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-02-16T23:10:27+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -2942,6 +2942,7 @@
                     "PhpOption\\Tests\\": "tests/PhpOption/Tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
@@ -2964,8 +2965,7 @@
                 "php",
                 "type"
             ],
-            "time": "2026-08-24T00:54:40+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-24T00:54:40+00:00"
         },
         {
             "name": "psr/clock",
@@ -2990,6 +2990,7 @@
                     "Psr\\Clock\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3008,8 +3009,7 @@
                 "psr-20",
                 "time"
             ],
-            "time": "2022-11-25T14:36:26+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2022-11-25T14:36:26+00:00"
         },
         {
             "name": "psr/container",
@@ -3039,6 +3039,7 @@
                     "Psr\\Container\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3057,8 +3058,7 @@
                 "psr",
                 "psr-11"
             ],
-            "time": "2021-11-05T16:47:00+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2021-11-05T16:47:00+00:00"
         },
         {
             "name": "psr/event-dispatcher",
@@ -3088,6 +3088,7 @@
                     "Psr\\EventDispatcher\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3103,8 +3104,7 @@
                 "psr",
                 "psr-14"
             ],
-            "time": "2019-01-08T18:20:26+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2019-01-08T18:20:26+00:00"
         },
         {
             "name": "psr/http-client",
@@ -3135,6 +3135,7 @@
                     "Psr\\Http\\Client\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3155,8 +3156,7 @@
             "support": {
                 "source": "https://github.com/php-fig/http-client"
             },
-            "time": "2023-09-23T14:17:50+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2023-09-23T14:17:50+00:00"
         },
         {
             "name": "psr/http-factory",
@@ -3187,6 +3187,7 @@
                     "Psr\\Http\\Message\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3210,8 +3211,7 @@
             "support": {
                 "source": "https://github.com/php-fig/http-factory"
             },
-            "time": "2024-04-15T12:06:14+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2024-04-15T12:06:14+00:00"
         },
         {
             "name": "psr/http-message",
@@ -3241,6 +3241,7 @@
                     "Psr\\Http\\Message\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3260,8 +3261,7 @@
                 "request",
                 "response"
             ],
-            "time": "2023-04-04T09:54:51+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2023-04-04T09:54:51+00:00"
         },
         {
             "name": "psr/log",
@@ -3291,6 +3291,7 @@
                     "Psr\\Log\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3307,8 +3308,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2024-09-11T13:17:53+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2024-09-11T13:17:53+00:00"
         },
         {
             "name": "psr/simple-cache",
@@ -3338,6 +3338,7 @@
                     "Psr\\SimpleCache\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3355,8 +3356,7 @@
                 "psr-16",
                 "simple-cache"
             ],
-            "time": "2021-10-29T13:26:27+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2021-10-29T13:26:27+00:00"
         },
         {
             "name": "psy/psysh",
@@ -3418,6 +3418,7 @@
                     "Psy\\Test\\": "test/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3435,8 +3436,7 @@
                 "repl",
                 "shell"
             ],
-            "time": "2026-06-29T15:41:09+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-06-29T15:41:09+00:00"
         },
         {
             "name": "pusher/pusher-php-server",
@@ -3482,6 +3482,7 @@
                     "": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3499,8 +3500,7 @@
                 "rest",
                 "trigger"
             ],
-            "time": "2026-08-07T12:47:11+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-07T12:47:11+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -3534,6 +3534,7 @@
                     "getallheaders\\Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3544,8 +3545,7 @@
                 }
             ],
             "description": "A polyfill for getallheaders.",
-            "time": "2019-03-08T08:55:37+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2019-03-08T08:55:37+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -3602,6 +3602,7 @@
                     "Ramsey\\Collection\\Test\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "dev:analyze": [
                     "@dev:analyze:phpstan"
@@ -3662,8 +3663,7 @@
                 "queue",
                 "set"
             ],
-            "time": "2025-03-22T05:37:47+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-03-22T05:37:47+00:00"
         },
         {
             "name": "ramsey/uuid",
@@ -3734,6 +3734,7 @@
                     "Ramsey\\Uuid\\Test\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "dev:analyze": [
                     "@dev:analyze:phpstan"
@@ -3788,8 +3789,7 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2026-09-16T11:39:30+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-16T11:39:30+00:00"
         },
         {
             "name": "ratchet/rfc6455",
@@ -3821,6 +3821,7 @@
                     "Ratchet\\RFC6455\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "abtest-client": [
                     "ABTEST=client && sh tests/ab/run_ab_tests.sh"
@@ -3862,8 +3863,7 @@
                 "issues": "https://github.com/ratchetphp/RFC6455/issues",
                 "chat": "https://gitter.im/reactphp/reactphp"
             },
-            "time": "2026-06-06T14:34:23+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-06-06T14:34:23+00:00"
         },
         {
             "name": "react/cache",
@@ -3897,6 +3897,7 @@
                     "React\\Tests\\Cache\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3929,8 +3930,7 @@
                 "caching",
                 "promise"
             ],
-            "time": "2022-11-30T15:59:55+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2022-11-30T15:59:55+00:00"
         },
         {
             "name": "react/dns",
@@ -3968,6 +3968,7 @@
                     "React\\Tests\\Dns\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4000,8 +4001,7 @@
                 "dns",
                 "dns-resolver"
             ],
-            "time": "2025-11-18T19:33:51+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-11-18T19:33:51+00:00"
         },
         {
             "name": "react/event-loop",
@@ -4037,6 +4037,7 @@
                     "React\\Tests\\EventLoop\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4067,8 +4068,7 @@
                 "asynchronous",
                 "event-loop"
             ],
-            "time": "2025-11-17T20:46:25+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-11-17T20:46:25+00:00"
         },
         {
             "name": "react/promise",
@@ -4111,6 +4111,7 @@
                     "tests/Fiber.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4141,8 +4142,7 @@
                 "promise",
                 "promises"
             ],
-            "time": "2025-08-19T18:57:03+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-08-19T18:57:03+00:00"
         },
         {
             "name": "react/promise-timer",
@@ -4180,6 +4180,7 @@
                     "React\\Tests\\Promise\\Timer\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4215,8 +4216,7 @@
                 "timeout",
                 "timer"
             ],
-            "time": "2024-06-04T14:27:45+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2024-06-04T14:27:45+00:00"
         },
         {
             "name": "react/socket",
@@ -4257,6 +4257,7 @@
                     "React\\Tests\\Socket\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4290,8 +4291,7 @@
                 "socket",
                 "stream"
             ],
-            "time": "2025-11-19T20:47:34+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-11-19T20:47:34+00:00"
         },
         {
             "name": "react/stream",
@@ -4327,6 +4327,7 @@
                     "React\\Tests\\Stream\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4363,8 +4364,7 @@
                 "stream",
                 "writable"
             ],
-            "time": "2024-06-11T12:41:41+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2024-06-11T12:41:41+00:00"
         },
         {
             "name": "symfony/clock",
@@ -4400,6 +4400,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4420,8 +4421,7 @@
                 "psr20",
                 "time"
             ],
-            "time": "2026-03-24T13:12:05+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-03-24T13:12:05+00:00"
         },
         {
             "name": "symfony/console",
@@ -4476,6 +4476,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4497,8 +4498,7 @@
                 "console",
                 "terminal"
             ],
-            "time": "2026-09-18T15:55:00+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-18T15:55:00+00:00"
         },
         {
             "name": "symfony/css-selector",
@@ -4526,6 +4526,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4545,8 +4546,7 @@
             ],
             "description": "Converts CSS selectors to XPath expressions",
             "homepage": "https://symfony.com",
-            "time": "2026-08-23T10:03:40+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-23T10:03:40+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -4580,6 +4580,7 @@
                     "function.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4595,8 +4596,7 @@
             ],
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
-            "time": "2026-06-05T06:23:12+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-06-05T06:23:12+00:00"
         },
         {
             "name": "symfony/error-handler",
@@ -4641,6 +4641,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4656,8 +4657,7 @@
             ],
             "description": "Provides tools to manage errors and ease debugging PHP code",
             "homepage": "https://symfony.com",
-            "time": "2026-09-22T18:56:40+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-22T18:56:40+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -4705,6 +4705,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4720,8 +4721,7 @@
             ],
             "description": "Provides tools that allow your application components to communicate with each other by dispatching events and listening to them",
             "homepage": "https://symfony.com",
-            "time": "2026-08-21T17:10:02+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-21T17:10:02+00:00"
         },
         {
             "name": "symfony/event-dispatcher-contracts",
@@ -4756,6 +4756,7 @@
                     "Symfony\\Contracts\\EventDispatcher\\": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4779,8 +4780,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2026-06-05T06:23:12+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-06-05T06:23:12+00:00"
         },
         {
             "name": "symfony/finder",
@@ -4811,6 +4811,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4826,8 +4827,7 @@
             ],
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
-            "time": "2026-09-26T06:31:10+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-26T06:31:10+00:00"
         },
         {
             "name": "symfony/http-foundation",
@@ -4872,6 +4872,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4887,8 +4888,7 @@
             ],
             "description": "Defines an object-oriented layer for the HTTP specification",
             "homepage": "https://symfony.com",
-            "time": "2026-09-24T07:12:44+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-24T07:12:44+00:00"
         },
         {
             "name": "symfony/http-kernel",
@@ -4970,6 +4970,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4985,8 +4986,7 @@
             ],
             "description": "Provides a structured process for converting a Request into a Response",
             "homepage": "https://symfony.com",
-            "time": "2026-09-29T14:05:16+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-29T14:05:16+00:00"
         },
         {
             "name": "symfony/mailer",
@@ -5033,6 +5033,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5048,8 +5049,7 @@
             ],
             "description": "Helps sending emails",
             "homepage": "https://symfony.com",
-            "time": "2026-09-15T06:01:15+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-15T06:01:15+00:00"
         },
         {
             "name": "symfony/mime",
@@ -5097,6 +5097,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5116,8 +5117,7 @@
                 "mime",
                 "mime-type"
             ],
-            "time": "2026-09-04T10:45:44+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-04T10:45:44+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -5157,6 +5157,7 @@
                     "bootstrap.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5178,8 +5179,7 @@
                 "polyfill",
                 "portable"
             ],
-            "time": "2026-04-10T15:47:36+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-04-10T15:47:36+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
@@ -5216,6 +5216,7 @@
                     "bootstrap.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5239,8 +5240,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2026-09-25T04:15:39+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-25T04:15:39+00:00"
         },
         {
             "name": "symfony/polyfill-intl-idn",
@@ -5278,6 +5278,7 @@
                     "bootstrap.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5305,8 +5306,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2026-09-22T21:39:57+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-22T21:39:57+00:00"
         },
         {
             "name": "symfony/polyfill-intl-normalizer",
@@ -5346,6 +5346,7 @@
                     "Resources/stubs"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5369,8 +5370,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2026-09-23T22:02:09+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-23T22:02:09+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -5411,6 +5411,7 @@
                     "bootstrap.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5433,8 +5434,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2026-09-24T15:19:04+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-24T15:19:04+00:00"
         },
         {
             "name": "symfony/polyfill-php80",
@@ -5471,6 +5471,7 @@
                     "Resources/stubs"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5496,8 +5497,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2026-09-25T03:42:34+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-25T03:42:34+00:00"
         },
         {
             "name": "symfony/polyfill-php83",
@@ -5534,6 +5534,7 @@
                     "Resources/stubs"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5555,8 +5556,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2026-09-25T03:42:34+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-25T03:42:34+00:00"
         },
         {
             "name": "symfony/polyfill-php84",
@@ -5593,6 +5593,7 @@
                     "Resources/stubs"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5614,8 +5615,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2026-09-23T22:01:09+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-23T22:01:09+00:00"
         },
         {
             "name": "symfony/polyfill-php85",
@@ -5652,6 +5652,7 @@
                     "Resources/stubs"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5673,8 +5674,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2026-09-25T04:15:39+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-25T04:15:39+00:00"
         },
         {
             "name": "symfony/polyfill-php86",
@@ -5711,6 +5711,7 @@
                     "Resources/stubs"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5732,8 +5733,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2026-09-25T04:15:39+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-25T04:15:39+00:00"
         },
         {
             "name": "symfony/polyfill-uuid",
@@ -5773,6 +5773,7 @@
                     "bootstrap.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5794,8 +5795,7 @@
                 "portable",
                 "uuid"
             ],
-            "time": "2026-09-24T05:20:52+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-24T05:20:52+00:00"
         },
         {
             "name": "symfony/process",
@@ -5823,6 +5823,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5838,8 +5839,7 @@
             ],
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
-            "time": "2026-09-02T12:38:34+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-02T12:38:34+00:00"
         },
         {
             "name": "symfony/routing",
@@ -5881,6 +5881,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5902,8 +5903,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2026-09-28T19:09:50+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-28T19:09:50+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -5945,6 +5945,7 @@
                     "/Test/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5968,8 +5969,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2026-07-27T14:37:47+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-07-27T14:37:47+00:00"
         },
         {
             "name": "symfony/string",
@@ -6015,6 +6015,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -6038,8 +6039,7 @@
                 "utf-8",
                 "utf8"
             ],
-            "time": "2026-09-11T14:46:58+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-11T14:46:58+00:00"
         },
         {
             "name": "symfony/translation",
@@ -6102,6 +6102,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -6117,8 +6118,7 @@
             ],
             "description": "Provides tools to internationalize your application",
             "homepage": "https://symfony.com",
-            "time": "2026-08-21T17:10:02+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-21T17:10:02+00:00"
         },
         {
             "name": "symfony/translation-contracts",
@@ -6155,6 +6155,7 @@
                     "/Test/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -6178,8 +6179,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2026-06-05T06:23:12+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-06-05T06:23:12+00:00"
         },
         {
             "name": "symfony/uid",
@@ -6211,6 +6211,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -6235,8 +6236,7 @@
                 "ulid",
                 "uuid"
             ],
-            "time": "2026-09-23T16:18:28+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-23T16:18:28+00:00"
         },
         {
             "name": "symfony/var-dumper",
@@ -6282,6 +6282,7 @@
                     "/Tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -6301,8 +6302,7 @@
                 "debug",
                 "dump"
             ],
-            "time": "2026-08-30T20:10:52+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-30T20:10:52+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
@@ -6345,6 +6345,7 @@
                     "TijsVerkoyen\\CssToInlineStyles\\Tests\\": "tests"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -6357,8 +6358,7 @@
             ],
             "description": "CssToInlineStyles is a class that enables you to convert HTML-pages/files into HTML-pages/files with inline styles. This is very useful when you're sending emails.",
             "homepage": "https://github.com/tijsverkoyen/CssToInlineStyles",
-            "time": "2025-12-02T11:56:42+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-12-02T11:56:42+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -6411,6 +6411,7 @@
                     "Dotenv\\Tests\\": "tests/Dotenv/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -6432,8 +6433,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2026-08-24T18:07:49+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-24T18:07:49+00:00"
         },
         {
             "name": "voku/portable-ascii",
@@ -6469,6 +6469,7 @@
                     "voku\\tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -6485,11 +6486,87 @@
                 "clean",
                 "php"
             ],
-            "time": "2026-04-26T05:33:54+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-04-26T05:33:54+00:00"
         }
     ],
     "packages-dev": [
+        {
+            "name": "composer/semver",
+            "version": "3.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/semver.git",
+                "reference": "9dfce66f1e97360ea5e6d3e38ab14277e4cc591e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/semver/zipball/9dfce66f1e97360ea5e6d3e38ab14277e4cc591e",
+                "reference": "9dfce66f1e97360ea5e6d3e38ab14277e4cc591e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3.2 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.11",
+                "symfony/phpunit-bridge": "^3 || ^7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\Semver\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nils Adermann",
+                    "email": "naderman@naderman.de",
+                    "homepage": "http://www.naderman.de"
+                },
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                },
+                {
+                    "name": "Rob Bast",
+                    "email": "rob.bast@gmail.com",
+                    "homepage": "http://robbast.nl"
+                }
+            ],
+            "description": "Version comparison library that offers utilities, version constraint parsing and validation.",
+            "keywords": [
+                "semantic",
+                "semver",
+                "validation",
+                "versioning"
+            ],
+            "support": {
+                "irc": "ircs://irc.libera.chat:6697/composer",
+                "issues": "https://github.com/composer/semver/issues",
+                "source": "https://github.com/composer/semver/tree/3.5.2"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-10-22T15:37:26+00:00"
+        },
         {
             "name": "fakerphp/faker",
             "version": "v1.24.1",
@@ -6538,6 +6615,7 @@
                     "Faker\\Test\\Fixture\\": "test/Fixture/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -6552,8 +6630,7 @@
                 "faker",
                 "fixtures"
             ],
-            "time": "2024-11-21T13:46:39+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2024-11-21T13:46:39+00:00"
         },
         {
             "name": "filp/whoops",
@@ -6598,6 +6675,7 @@
                     "Whoops\\": "tests/Whoops/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "demo": [
                     "php -S localhost:8000 ./examples/example.php"
@@ -6626,8 +6704,7 @@
                 "throwable",
                 "whoops"
             ],
-            "time": "2026-10-03T17:03:57+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-03T17:03:57+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -6676,6 +6753,7 @@
                     "generator"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -6683,8 +6761,137 @@
             "keywords": [
                 "test"
             ],
-            "time": "2026-03-17T11:56:53+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-03-17T11:56:53+00:00"
+        },
+        {
+            "name": "iamcal/sql-parser",
+            "version": "v0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iamcal/SQLParser.git",
+                "reference": "610392f38de49a44dab08dc1659960a29874c4b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/iamcal/SQLParser/zipball/610392f38de49a44dab08dc1659960a29874c4b8",
+                "reference": "610392f38de49a44dab08dc1659960a29874c4b8",
+                "shasum": ""
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^1.0",
+                "phpunit/phpunit": "^5|^6|^7|^8|^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "iamcal\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cal Henderson",
+                    "email": "cal@iamcal.com"
+                }
+            ],
+            "description": "MySQL schema parser",
+            "support": {
+                "issues": "https://github.com/iamcal/SQLParser/issues",
+                "source": "https://github.com/iamcal/SQLParser/tree/v0.7"
+            },
+            "time": "2026-01-28T22:20:33+00:00"
+        },
+        {
+            "name": "larastan/larastan",
+            "version": "v3.13.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/larastan/larastan.git",
+                "reference": "043139b9829917363086d6b10f916772420a6102"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/larastan/larastan/zipball/043139b9829917363086d6b10f916772420a6102",
+                "reference": "043139b9829917363086d6b10f916772420a6102",
+                "shasum": ""
+            },
+            "require": {
+                "iamcal/sql-parser": "^0.7.0",
+                "illuminate/console": "^11.44.2 || ^12.4.1 || ^13",
+                "illuminate/container": "^11.44.2 || ^12.4.1 || ^13",
+                "illuminate/contracts": "^11.44.2 || ^12.4.1 || ^13",
+                "illuminate/database": "^11.44.2 || ^12.4.1 || ^13",
+                "illuminate/http": "^11.44.2 || ^12.4.1 || ^13",
+                "illuminate/pipeline": "^11.44.2 || ^12.4.1 || ^13",
+                "illuminate/support": "^11.44.2 || ^12.4.1 || ^13",
+                "php": "^8.2",
+                "phpstan/phpstan": "^2.3.0"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^14",
+                "laravel/framework": "^11.44.2 || ^12.7.2 || ^13",
+                "mockery/mockery": "^1.6.12",
+                "nikic/php-parser": "^5.4",
+                "orchestra/canvas": "^v9.2.2 || ^10.0.1 || ^11",
+                "orchestra/testbench-core": "^9.12.0 || ^10.1 || ^11",
+                "phpstan/phpstan-deprecation-rules": "^2.0.1",
+                "phpunit/phpunit": "^10.5.35 || ^11.5.15 || ^12.5.8 || ^13.3.0"
+            },
+            "suggest": {
+                "orchestra/testbench": "Using Larastan for analysing a package needs Testbench",
+                "phpmyadmin/sql-parser": "Install to enable Larastan's optional phpMyAdmin-based SQL parser automatically"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Larastan\\Larastan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Can Vural",
+                    "email": "can9119@gmail.com"
+                }
+            ],
+            "description": "Larastan - Discover bugs in your code without running it. A phpstan/phpstan extension for Laravel",
+            "keywords": [
+                "PHPStan",
+                "code analyse",
+                "code analysis",
+                "larastan",
+                "laravel",
+                "package",
+                "php",
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/larastan/larastan/issues",
+                "source": "https://github.com/larastan/larastan/tree/v3.13.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/canvural",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-10-16T23:32:31+00:00"
         },
         {
             "name": "laravel/agent-detector",
@@ -6728,6 +6935,7 @@
                     "tests/Overrides.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "lint": [
                     "pint"
@@ -6783,8 +6991,149 @@
                 "issues": "https://github.com/laravel/agent-detector/issues",
                 "source": "https://github.com/laravel/agent-detector"
             },
-            "time": "2026-10-05T14:40:01+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-05T14:40:01+00:00"
+        },
+        {
+            "name": "laravel/boost",
+            "version": "v2.10.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/boost.git",
+                "reference": "75c269a8a53e931c7252e7cd562e1a209356a7c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/boost/zipball/75c269a8a53e931c7252e7cd562e1a209356a7c6",
+                "reference": "75c269a8a53e931c7252e7cd562e1a209356a7c6",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.9|^8.0",
+                "illuminate/console": "^11.45.3|^12.41.1|^13.0",
+                "illuminate/contracts": "^11.45.3|^12.41.1|^13.0",
+                "illuminate/routing": "^11.45.3|^12.41.1|^13.0",
+                "illuminate/support": "^11.45.3|^12.41.1|^13.0",
+                "laravel/mcp": "^0.7.1|^0.8.0|^0.9.0|^1.0",
+                "laravel/prompts": "^0.3.10",
+                "laravel/roster": "^1.0.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "jasonmccreary/double": "^1.0",
+                "laravel/pint": "^1.27.0",
+                "mockery/mockery": "^1.6.12",
+                "orchestra/testbench": "^9.15.0|^10.6|^11.0",
+                "pestphp/pest": "^2.36.0|^3.8.4|^4.1.5",
+                "phpstan/phpstan": "^2.1.27",
+                "rector/rector": "^2.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Boost\\BoostServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Boost\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Laravel Boost accelerates AI-assisted development by providing the essential context and structure that AI needs to generate high-quality, Laravel-specific code.",
+            "homepage": "https://github.com/laravel/boost",
+            "keywords": [
+                "ai",
+                "dev",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/boost/issues",
+                "source": "https://github.com/laravel/boost"
+            },
+            "time": "2026-10-07T19:07:19+00:00"
+        },
+        {
+            "name": "laravel/mcp",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/mcp.git",
+                "reference": "e77af70cd009aaa31455626bd463b0e7e39cfcf9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/mcp/zipball/e77af70cd009aaa31455626bd463b0e7e39cfcf9",
+                "reference": "e77af70cd009aaa31455626bd463b0e7e39cfcf9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "illuminate/console": "^11.45.3|^12.41.1|^13.0",
+                "illuminate/container": "^11.45.3|^12.41.1|^13.0",
+                "illuminate/contracts": "^11.45.3|^12.41.1|^13.0",
+                "illuminate/http": "^11.45.3|^12.41.1|^13.0",
+                "illuminate/json-schema": "^12.41.1|^13.0",
+                "illuminate/routing": "^11.45.3|^12.41.1|^13.0",
+                "illuminate/support": "^11.45.3|^12.41.1|^13.0",
+                "illuminate/validation": "^11.45.3|^12.41.1|^13.0",
+                "php": "^8.2",
+                "symfony/process": "^7.4.5|^8.0.5"
+            },
+            "require-dev": {
+                "jasonmccreary/double": "^1.0",
+                "laravel/pint": "^1.20",
+                "orchestra/testbench": "^9.15|^10.8|^11.0",
+                "pestphp/pest": "^3.8.5|^4.3.2",
+                "phpstan/phpstan": "^2.1.27",
+                "rector/rector": "^2.2.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Mcp": "Laravel\\Mcp\\Facades\\Mcp"
+                    },
+                    "providers": [
+                        "Laravel\\Mcp\\Server\\McpServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Mcp\\": "src/",
+                    "Laravel\\Mcp\\Server\\": "src/Server/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Rapidly build MCP servers for your Laravel applications.",
+            "homepage": "https://github.com/laravel/mcp",
+            "keywords": [
+                "laravel",
+                "mcp"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/mcp/issues",
+                "source": "https://github.com/laravel/mcp"
+            },
+            "time": "2026-10-21T11:50:42+00:00"
         },
         {
             "name": "laravel/pail",
@@ -6842,6 +7191,7 @@
                     "Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -6868,8 +7218,7 @@
                 "issues": "https://github.com/laravel/pail/issues",
                 "source": "https://github.com/laravel/pail"
             },
-            "time": "2026-05-20T22:24:57+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-05-20T22:24:57+00:00"
         },
         {
             "name": "laravel/pao",
@@ -6932,6 +7281,7 @@
                     "Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "lint": [
                     "pint"
@@ -6988,8 +7338,7 @@
                 "issues": "https://github.com/laravel/pao/issues",
                 "source": "https://github.com/laravel/pao"
             },
-            "time": "2026-09-07T14:48:06+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-07T14:48:06+00:00"
         },
         {
             "name": "laravel/pint",
@@ -7041,6 +7390,7 @@
                     "Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -7064,8 +7414,69 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2026-09-10T10:47:55+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-09-10T10:47:55+00:00"
+        },
+        {
+            "name": "laravel/roster",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/roster.git",
+                "reference": "89e518bd88ae98ff50f6082f6b517c8d8e8245fa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/roster/zipball/89e518bd88ae98ff50f6082f6b517c8d8e8245fa",
+                "reference": "89e518bd88ae98ff50f6082f6b517c8d8e8245fa",
+                "shasum": ""
+            },
+            "require": {
+                "composer/semver": "^3.0",
+                "illuminate/console": "^11.0|^12.0|^13.0",
+                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "php": "^8.2",
+                "symfony/yaml": "^7.2|^8.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.29",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^3.0|^4.1",
+                "phpstan/phpstan": "^2.0",
+                "rector/rector": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Roster\\RosterServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Roster\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Detect packages & approaches in use within a Laravel project",
+            "homepage": "https://github.com/laravel/roster",
+            "keywords": [
+                "dev",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/roster/issues",
+                "source": "https://github.com/laravel/roster"
+            },
+            "time": "2026-07-18T17:53:15+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -7113,6 +7524,7 @@
                     "tests/Fixture"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "check": [
                     "@composer validate",
@@ -7221,8 +7633,7 @@
                 "rss": "https://github.com/mockery/mockery/releases.atom",
                 "security": "https://github.com/mockery/mockery/security/advisories"
             },
-            "time": "2026-08-19T19:37:52+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-19T19:37:52+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -7266,6 +7677,7 @@
                     "DeepCopy\\": "fixtures/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -7277,8 +7689,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2026-08-11T10:17:44+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-11T10:17:44+00:00"
         },
         {
             "name": "nunomaduro/collision",
@@ -7341,6 +7752,7 @@
                     "App\\": "tests/LaravelApp/app/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "post-update-cmd": [
                     "@fix:pdo-constant"
@@ -7397,8 +7809,7 @@
                 "issues": "https://github.com/nunomaduro/collision/issues",
                 "source": "https://github.com/nunomaduro/collision"
             },
-            "time": "2026-07-15T19:09:14+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-07-15T19:09:14+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -7433,6 +7844,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -7457,8 +7869,7 @@
             "support": {
                 "issues": "https://github.com/phar-io/manifest/issues"
             },
-            "time": "2024-03-03T12:33:53+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2024-03-03T12:33:53+00:00"
         },
         {
             "name": "phar-io/version",
@@ -7483,6 +7894,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -7507,8 +7919,71 @@
             "support": {
                 "issues": "https://github.com/phar-io/version/issues"
             },
-            "time": "2022-02-21T01:04:05+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2022-02-21T01:04:05+00:00"
+        },
+        {
+            "name": "phpstan/phpstan",
+            "version": "2.3.1",
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/6155239b488e95d26d1ebd95c6b4bb294d7f09db",
+                "reference": "6155239b488e95d26d1ebd95c6b4bb294d7f09db",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0"
+            },
+            "conflict": {
+                "phpstan/phpstan-shim": "*"
+            },
+            "bin": [
+                "phpstan",
+                "phpstan.phar"
+            ],
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ondřej Mirtes"
+                },
+                {
+                    "name": "Markus Staab"
+                },
+                {
+                    "name": "Vincent Langlet"
+                }
+            ],
+            "description": "PHPStan - PHP Static Analysis Tool",
+            "keywords": [
+                "dev",
+                "static analysis"
+            ],
+            "support": {
+                "docs": "https://phpstan.org/user-guide/getting-started",
+                "forum": "https://github.com/phpstan/phpstan/discussions",
+                "issues": "https://github.com/phpstan/phpstan/issues",
+                "security": "https://github.com/phpstan/phpstan/security/policy",
+                "source": "https://github.com/phpstan/phpstan-src"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ondrejmirtes",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/phpstan",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-10-08T21:09:11+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -7560,6 +8035,7 @@
                     "tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -7581,8 +8057,7 @@
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy"
             },
-            "time": "2026-10-03T14:03:50+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-03T14:03:50+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -7615,6 +8090,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -7635,8 +8111,7 @@
                 "issues": "https://github.com/sebastianbergmann/php-file-iterator/issues",
                 "security": "https://github.com/sebastianbergmann/php-file-iterator/security/policy"
             },
-            "time": "2026-08-25T14:40:53+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-25T14:40:53+00:00"
         },
         {
             "name": "phpunit/php-invoker",
@@ -7678,6 +8153,7 @@
                     "tests/_fixture/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -7697,8 +8173,7 @@
                 "issues": "https://github.com/sebastianbergmann/php-invoker/issues",
                 "security": "https://github.com/sebastianbergmann/php-invoker/security/policy"
             },
-            "time": "2025-02-07T04:58:58+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-02-07T04:58:58+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -7731,6 +8206,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -7750,8 +8226,7 @@
                 "issues": "https://github.com/sebastianbergmann/php-text-template/issues",
                 "security": "https://github.com/sebastianbergmann/php-text-template/security/policy"
             },
-            "time": "2026-10-03T04:51:29+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-03T04:51:29+00:00"
         },
         {
             "name": "phpunit/php-timer",
@@ -7784,6 +8259,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -7803,8 +8279,7 @@
                 "issues": "https://github.com/sebastianbergmann/php-timer/issues",
                 "security": "https://github.com/sebastianbergmann/php-timer/security/policy"
             },
-            "time": "2025-02-07T04:59:38+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-02-07T04:59:38+00:00"
         },
         {
             "name": "phpunit/phpunit",
@@ -7909,6 +8384,7 @@
                     "tests/end-to-end/_files/listing-tests-and-groups/ExampleAbstractTestCase.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -7936,8 +8412,7 @@
                     "url": "https://phpunit.de/sponsoring.html"
                 }
             ],
-            "time": "2026-10-12T15:27:27+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-12T15:27:27+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -7970,6 +8445,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -7986,8 +8462,7 @@
                 "issues": "https://github.com/sebastianbergmann/cli-parser/issues",
                 "security": "https://github.com/sebastianbergmann/cli-parser/security/policy"
             },
-            "time": "2026-05-17T05:29:34+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-05-17T05:29:34+00:00"
         },
         {
             "name": "sebastian/comparator",
@@ -8032,6 +8507,7 @@
                     "tests/_fixture"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8064,8 +8540,7 @@
                 "issues": "https://github.com/sebastianbergmann/comparator/issues",
                 "security": "https://github.com/sebastianbergmann/comparator/security/policy"
             },
-            "time": "2026-05-21T04:45:25+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-05-21T04:45:25+00:00"
         },
         {
             "name": "sebastian/complexity",
@@ -8099,6 +8574,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8115,8 +8591,7 @@
                 "issues": "https://github.com/sebastianbergmann/complexity/issues",
                 "security": "https://github.com/sebastianbergmann/complexity/security/policy"
             },
-            "time": "2025-02-07T04:55:25+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-02-07T04:55:25+00:00"
         },
         {
             "name": "sebastian/diff",
@@ -8155,6 +8630,7 @@
                     "tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8180,8 +8656,7 @@
                 "issues": "https://github.com/sebastianbergmann/diff/issues",
                 "security": "https://github.com/sebastianbergmann/diff/security/policy"
             },
-            "time": "2026-08-25T15:35:54+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-08-25T15:35:54+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -8217,6 +8692,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8237,8 +8713,7 @@
                 "issues": "https://github.com/sebastianbergmann/environment/issues",
                 "security": "https://github.com/sebastianbergmann/environment/security/policy"
             },
-            "time": "2026-05-25T13:40:20+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-05-25T13:40:20+00:00"
         },
         {
             "name": "sebastian/exporter",
@@ -8278,6 +8753,7 @@
                     "tests/_fixture"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8313,8 +8789,7 @@
                 "issues": "https://github.com/sebastianbergmann/exporter/issues",
                 "security": "https://github.com/sebastianbergmann/exporter/security/policy"
             },
-            "time": "2026-05-20T04:37:17+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-05-20T04:37:17+00:00"
         },
         {
             "name": "sebastian/global-state",
@@ -8358,6 +8833,7 @@
                     "tests/_fixture/SnapshotFunctions.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8376,8 +8852,7 @@
                 "issues": "https://github.com/sebastianbergmann/global-state/issues",
                 "security": "https://github.com/sebastianbergmann/global-state/security/policy"
             },
-            "time": "2026-06-01T15:10:33+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-06-01T15:10:33+00:00"
         },
         {
             "name": "sebastian/lines-of-code",
@@ -8411,6 +8886,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8427,8 +8903,7 @@
                 "issues": "https://github.com/sebastianbergmann/lines-of-code/issues",
                 "security": "https://github.com/sebastianbergmann/lines-of-code/security/policy"
             },
-            "time": "2026-05-19T16:22:07+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-05-19T16:22:07+00:00"
         },
         {
             "name": "sebastian/object-enumerator",
@@ -8468,6 +8943,7 @@
                     "tests/_fixture/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8483,8 +8959,7 @@
                 "issues": "https://github.com/sebastianbergmann/object-enumerator/issues",
                 "security": "https://github.com/sebastianbergmann/object-enumerator/security/policy"
             },
-            "time": "2025-02-07T04:57:48+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-02-07T04:57:48+00:00"
         },
         {
             "name": "sebastian/object-reflector",
@@ -8522,6 +8997,7 @@
                     "tests/_fixture/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8537,8 +9013,7 @@
                 "issues": "https://github.com/sebastianbergmann/object-reflector/issues",
                 "security": "https://github.com/sebastianbergmann/object-reflector/security/policy"
             },
-            "time": "2025-02-07T04:58:17+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-02-07T04:58:17+00:00"
         },
         {
             "name": "sebastian/recursion-context",
@@ -8571,6 +9046,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8594,8 +9070,7 @@
                 "issues": "https://github.com/sebastianbergmann/recursion-context/issues",
                 "security": "https://github.com/sebastianbergmann/recursion-context/security/policy"
             },
-            "time": "2025-08-13T04:44:59+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-08-13T04:44:59+00:00"
         },
         {
             "name": "sebastian/type",
@@ -8638,6 +9113,7 @@
                     "tests/_fixture/functions_that_declare_return_types.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8654,8 +9130,7 @@
                 "issues": "https://github.com/sebastianbergmann/type/issues",
                 "security": "https://github.com/sebastianbergmann/type/security/policy"
             },
-            "time": "2026-05-20T06:45:45+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-05-20T06:45:45+00:00"
         },
         {
             "name": "sebastian/version",
@@ -8685,6 +9160,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8701,8 +9177,7 @@
                 "issues": "https://github.com/sebastianbergmann/version/issues",
                 "security": "https://github.com/sebastianbergmann/version/security/policy"
             },
-            "time": "2026-10-04T05:50:08+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2026-10-04T05:50:08+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
@@ -8741,6 +9216,7 @@
                     "tests/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "scripts": {
                 "qa": [
                     "@test",
@@ -8760,8 +9236,83 @@
             "keywords": [
                 "static analysis"
             ],
-            "time": "2024-10-20T05:08:20+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2024-10-20T05:08:20+00:00"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "v8.1.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "6107ee26a25215c3df3af0a3315e56bb4fd0b7db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/6107ee26a25215c3df3af0a3315e56bb4fd0b7db",
+                "reference": "6107ee26a25215c3df3af0a3315e56bb4fd0b7db",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "symfony/polyfill-ctype": "^1.8"
+            },
+            "conflict": {
+                "symfony/console": "<7.4"
+            },
+            "require-dev": {
+                "symfony/console": "^7.4|^8.0",
+                "yaml/yaml-test-suite": "*"
+            },
+            "bin": [
+                "Resources/bin/yaml-lint"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Yaml\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Loads and dumps YAML files",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/yaml/tree/v8.1.9"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-10-12T12:37:13+00:00"
         },
         {
             "name": "theseer/tokenizer",
@@ -8789,6 +9340,7 @@
                     "src/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -8803,8 +9355,7 @@
             "support": {
                 "issues": "https://github.com/theseer/tokenizer/issues"
             },
-            "time": "2025-12-08T11:19:18+00:00",
-            "notification-url": "https://packagist.org/downloads/"
+            "time": "2025-12-08T11:19:18+00:00"
         }
     ],
     "aliases": [],
@@ -8817,5 +9368,5 @@
         "ext-pcntl": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

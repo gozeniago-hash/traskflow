@@ -31,12 +31,8 @@ trait LiveUpdates
         ];
     }
 
-    public function onProjectUpdated(): void
-    {
-    }
+    public function onProjectUpdated(): void {}
 
     /** Default handler: nothing to do, the re-render picks up the changes. */
-    public function onRemoteChange($event = null): void
-    {
-    }
+    public function onRemoteChange($event = null): void {}
 }

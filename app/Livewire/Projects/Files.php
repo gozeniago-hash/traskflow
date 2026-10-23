@@ -6,6 +6,7 @@ use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Attachment;
 use App\Models\Project;
+use App\Support\Undo;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -15,7 +16,9 @@ class Files extends Component
     use InteractsWithWorkspace, LiveUpdates, WithFileUploads;
 
     public Project $project;
+
     public array $uploads = [];
+
     public bool $shareWithClient = false;
 
     protected function getListeners(): array
@@ -30,14 +33,12 @@ class Files extends Component
     }
 
     #[On('task-saved')]
-    public function onTaskSaved(): void
-    {
-    }
+    public function onTaskSaved(): void {}
 
     public function updatedUploads(): void
     {
         $this->authorize('contribute', $this->project);
-        $this->validate(['uploads.*' => \App\Models\Attachment::rules()]);
+        $this->validate(['uploads.*' => Attachment::rules()]);
 
         foreach ($this->uploads as $file) {
             $share = $this->shareWithClient && $this->project->portal_enabled && $this->me()->can('update', $this->project);
@@ -59,9 +60,9 @@ class Files extends Component
     {
         $attachment = $this->project->attachments()->findOrFail($id);
         $this->authorize('delete', $attachment);
-        $rows = \App\Support\Undo::attachmentRows([$attachment->id]);
-        $undo = \App\Support\Undo::capture($this->me(), $this->project->id, 'file '.$attachment->original_name, $rows, \App\Support\Undo::filesOf($rows['attachments']));
-        \App\Support\Undo::keepingFiles(fn () => $attachment->delete());
+        $rows = Undo::attachmentRows([$attachment->id]);
+        $undo = Undo::capture($this->me(), $this->project->id, 'file '.$attachment->original_name, $rows, Undo::filesOf($rows['attachments']));
+        Undo::keepingFiles(fn () => $attachment->delete());
         $this->toast('File deleted.', undo: $undo);
     }
 

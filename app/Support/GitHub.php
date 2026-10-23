@@ -12,6 +12,8 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use RuntimeException;
+use Throwable;
 
 /**
  * GitHub pull request sync for a workspace.
@@ -25,9 +27,7 @@ class GitHub
     /** Ticket references: KEY-123, also in lower case inside branch names (bwr-12-fix-nav). */
     public const TICKET_PATTERN = '/(?<![A-Za-z0-9])([A-Za-z][A-Za-z0-9]{1,9})-(\d{1,7})(?!\d)/';
 
-    public function __construct(protected Workspace $workspace)
-    {
-    }
+    public function __construct(protected Workspace $workspace) {}
 
     public static function for(Workspace $workspace): static
     {
@@ -54,7 +54,7 @@ class GitHub
     {
         $response = $this->http($token)->get('/user');
         if ($response->status() === 401) {
-            throw new \RuntimeException('GitHub rejected that token. Check it was copied in full and has not expired.');
+            throw new RuntimeException('GitHub rejected that token. Check it was copied in full and has not expired.');
         }
         $response->throw();
 
@@ -66,7 +66,7 @@ class GitHub
     {
         $response = $this->http()->get('/repos/'.$fullName);
         if (in_array($response->status(), [403, 404], true)) {
-            throw new \RuntimeException("GitHub couldn't find {$fullName}, or the token doesn't have access to it.");
+            throw new RuntimeException("GitHub couldn't find {$fullName}, or the token doesn't have access to it.");
         }
         $response->throw();
 
@@ -91,7 +91,7 @@ class GitHub
                     'insecure_ssl' => '0',
                 ],
             ]);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return false;
         }
         if (! $response->successful()) {
@@ -109,7 +109,7 @@ class GitHub
         }
         try {
             $this->http()->delete('/repos/'.$repo->full_name.'/hooks/'.$repo->webhook_id);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // The repository is being removed from TaskFlow either way.
         }
     }
@@ -135,7 +135,7 @@ class GitHub
             $repo->update(['last_synced_at' => now(), 'last_error' => null]);
         } catch (RequestException $e) {
             $repo->update(['last_error' => static::describe($e)]);
-            throw new \RuntimeException($repo->last_error, 0, $e);
+            throw new RuntimeException($repo->last_error, 0, $e);
         }
 
         return $count;

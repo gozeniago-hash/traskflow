@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         // Deleted rows kept for a few minutes so a delete can be undone.
-        Schema::create('undo_snapshots', function (Blueprint $table) {
+        Schema::create('undo_snapshots', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('project_id')->nullable();

@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Closure;
+use finfo;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Http\UploadedFile;
 
@@ -40,7 +41,7 @@ class SafeUpload implements ValidationRule
         $detected = [strtolower((string) $value->getMimeType())];
         $path = $value->getRealPath();
         if ($path && is_readable($path)) {
-            $detected[] = strtolower((string) (new \finfo(FILEINFO_MIME_TYPE))->file($path));
+            $detected[] = strtolower((string) (new finfo(FILEINFO_MIME_TYPE))->file($path));
         }
         $blocked = self::BLOCKED_MIMES;
         if (in_array($extension, ['txt', 'md', 'csv'], true)) {

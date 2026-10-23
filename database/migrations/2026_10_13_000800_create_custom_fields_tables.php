@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('project_fields', function (Blueprint $table) {
+        Schema::create('project_fields', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->string('name', 80);
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->index(['project_id', 'position']);
         });
 
-        Schema::create('task_field_values', function (Blueprint $table) {
+        Schema::create('task_field_values', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('task_id')->constrained()->cascadeOnDelete();
             $table->foreignId('field_id')->constrained('project_fields')->cascadeOnDelete();

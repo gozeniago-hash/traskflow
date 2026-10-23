@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Task extends Model
 {
@@ -50,7 +51,7 @@ class Task extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (Task $task) {
+        static::creating(function (Task $task): void {
             $task->number ??= Project::nextTaskNumber((int) $task->project_id);
         });
     }
@@ -123,7 +124,7 @@ class Task extends Model
     /** A branch name that links a PR to this task, e.g. bwr-5-visual-design-homepage. */
     public function branchName(?string $projectKey = null): string
     {
-        $slug = \Illuminate\Support\Str::of($this->title)->slug()->limit(40, '')->rtrim('-');
+        $slug = Str::of($this->title)->slug()->limit(40, '')->rtrim('-');
 
         return strtolower($this->ticket($projectKey)).($slug->isNotEmpty() ? '-'.$slug : '');
     }

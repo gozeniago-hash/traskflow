@@ -11,6 +11,7 @@ class ListView extends Component
     use ManagesProjectTasks;
 
     public Project $project;
+
     public array $collapsed = [];
 
     public function mount(Project $project): void

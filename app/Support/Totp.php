@@ -9,7 +9,9 @@ namespace App\Support;
 class Totp
 {
     protected const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
     protected const PERIOD = 30;
+
     protected const DIGITS = 6;
 
     public static function generateSecret(int $bytes = 20): string

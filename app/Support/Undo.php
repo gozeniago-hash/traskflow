@@ -3,11 +3,13 @@
 namespace App\Support;
 
 use App\Models\Attachment;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * Makes deletes undoable for a few minutes.
@@ -25,9 +27,9 @@ class Undo
     protected const ORDER = ['sections', 'tasks', 'comments', 'attachments', 'project_resources', 'activities', 'time_entries', 'task_field_values', 'pull_request_task'];
 
     /**
-     * @param  array<string, array<int, array>>  $rows   table => rows
-     * @param  array<int, array{disk:string,path:string}>  $files  stored files to keep until the window ends
-     * @param  array<int, array{0:int,1:int,2:int}>  $moves  [taskId, sectionId, position] to put back after restoring
+     * @param array<string, array<int, array>> $rows table => rows
+     * @param array<int, array{disk:string,path:string}> $files stored files to keep until the window ends
+     * @param array<int, array{0:int,1:int,2:int}> $moves [taskId, sectionId, position] to put back after restoring
      */
     public static function capture(User $user, ?int $projectId, string $label, array $rows, array $files = [], array $moves = []): string
     {
@@ -109,7 +111,7 @@ class Undo
 
         $payload = json_decode($snap->payload, true);
         try {
-            DB::transaction(function () use ($payload, $snap) {
+            DB::transaction(function () use ($payload, $snap): void {
                 foreach (self::ORDER as $table) {
                     foreach ($payload['rows'][$table] ?? [] as $row) {
                         $row = static::repair($table, $row, $snap->project_id);
@@ -124,7 +126,7 @@ class Undo
                 }
                 DB::table('undo_snapshots')->where('id', $snap->id)->delete();
             });
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::warning('Undo failed: '.$e->getMessage());
 
             return ['ok' => false, 'message' => 'Couldn’t undo: something it depended on was changed or removed.', 'project_id' => null];
@@ -132,7 +134,7 @@ class Undo
 
         if ($snap->project_id) {
             Realtime::touch((int) $snap->project_id);
-            if (\App\Models\Project::whereKey($snap->project_id)->exists()) {
+            if (Project::whereKey($snap->project_id)->exists()) {
                 ProjectLog::restored((int) $snap->project_id, $snap->label);
             }
         }

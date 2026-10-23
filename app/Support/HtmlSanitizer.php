@@ -5,6 +5,7 @@ namespace App\Support;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use Illuminate\Support\Str;
 
 /**
  * Whitelist sanitizer for rich-text docs (the output of the Trix editor).
@@ -181,6 +182,6 @@ class HtmlSanitizer
         $text = html_entity_decode(strip_tags(preg_replace('/<(br|\/div|\/p|\/li|\/h[1-3])[^>]*>/i', ' ', (string) $html)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $text = trim(preg_replace('/\s+/u', ' ', $text));
 
-        return $limit ? \Illuminate\Support\Str::limit($text, $limit) : $text;
+        return $limit ? Str::limit($text, $limit) : $text;
     }
 }

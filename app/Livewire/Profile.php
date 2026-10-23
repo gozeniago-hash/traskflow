@@ -4,11 +4,14 @@ namespace App\Livewire;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\User;
+use App\Support\Audit;
+use App\Support\Totp;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Throwable;
 
 #[Title('Profile')]
 class Profile extends Component
@@ -16,17 +19,26 @@ class Profile extends Component
     use InteractsWithWorkspace;
 
     public string $name = '';
+
     public string $email = '';
+
     public string $title = '';
+
     public string $avatar_color = '';
+
     public string $current_password = '';
+
     public string $password = '';
+
     public string $password_confirmation = '';
 
     // Two-step verification
     public bool $settingUp2fa = false;
+
     public string $setupCode = '';
+
     public string $twoFactorPassword = '';
+
     public ?array $shownRecoveryCodes = null;
 
     public function mount(): void
@@ -50,13 +62,13 @@ class Profile extends Component
         $emailChanged = strtolower($data['email']) !== strtolower($me->email);
         $me->update($data);
         if ($emailChanged) {
-            \App\Support\Audit::log('auth.email_changed', $me->name.' changed their email to '.$me->email, $me);
+            Audit::log('auth.email_changed', $me->name.' changed their email to '.$me->email, $me);
             if (config('taskflow.verify_email')) {
                 // The new address has to be confirmed too.
                 $me->forceFill(['email_verified_at' => null])->save();
                 try {
                     $me->sendEmailVerificationNotification();
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     report($e);
                 }
                 $this->redirectRoute('verification.notice');
@@ -76,7 +88,7 @@ class Profile extends Component
         ]);
         $this->me()->update(['password' => Hash::make($this->password)]);
         $this->reset(['current_password', 'password', 'password_confirmation']);
-        \App\Support\Audit::log('auth.password_changed', $this->me()->name.' changed their password', $this->me());
+        Audit::log('auth.password_changed', $this->me()->name.' changed their password', $this->me());
         $this->toast('Password updated.');
     }
 
@@ -85,7 +97,7 @@ class Profile extends Component
     public function startTwoFactor(): void
     {
         $this->validate(['twoFactorPassword' => ['required', 'current_password']], [], ['twoFactorPassword' => 'password']);
-        session()->put('two_factor.setup', \App\Support\Totp::generateSecret());
+        session()->put('two_factor.setup', Totp::generateSecret());
         $this->reset(['twoFactorPassword', 'setupCode']);
         $this->settingUp2fa = true;
     }
@@ -102,14 +114,14 @@ class Profile extends Component
         abort_unless($secret, 419);
         $this->validate(['setupCode' => ['required', 'string']], [], ['setupCode' => 'code']);
 
-        $step = \App\Support\Totp::verify($secret, $this->setupCode);
+        $step = Totp::verify($secret, $this->setupCode);
         if ($step === null) {
             $this->addError('setupCode', 'That code didn’t match. Make sure your phone’s clock is set automatically, then try the newest code.');
 
             return;
         }
 
-        $codes = \App\Models\User::newRecoveryCodes();
+        $codes = User::newRecoveryCodes();
         $this->me()->forceFill([
             'two_factor_secret' => $secret,
             'two_factor_recovery_codes' => $codes,
@@ -117,7 +129,7 @@ class Profile extends Component
             'two_factor_last_step' => $step,
         ])->save();
         session()->forget('two_factor.setup');
-        \App\Support\Audit::log('auth.two_factor_enabled', $this->me()->name.' turned on two-step verification', $this->me());
+        Audit::log('auth.two_factor_enabled', $this->me()->name.' turned on two-step verification', $this->me());
 
         $this->reset(['settingUp2fa', 'setupCode']);
         $this->shownRecoveryCodes = $codes;
@@ -134,9 +146,9 @@ class Profile extends Component
     public function regenerateRecoveryCodes(): void
     {
         $this->validate(['twoFactorPassword' => ['required', 'current_password']], [], ['twoFactorPassword' => 'password']);
-        $codes = \App\Models\User::newRecoveryCodes();
+        $codes = User::newRecoveryCodes();
         $this->me()->forceFill(['two_factor_recovery_codes' => $codes])->save();
-        \App\Support\Audit::log('auth.recovery_codes_regenerated', $this->me()->name.' made new recovery codes', $this->me());
+        Audit::log('auth.recovery_codes_regenerated', $this->me()->name.' made new recovery codes', $this->me());
         $this->reset('twoFactorPassword');
         $this->shownRecoveryCodes = $codes;
         $this->toast('New recovery codes made. The old ones no longer work.');
@@ -152,7 +164,7 @@ class Profile extends Component
         }
         $this->validate(['twoFactorPassword' => ['required', 'current_password']], [], ['twoFactorPassword' => 'password']);
         $me->forceFill(['two_factor_secret' => null, 'two_factor_recovery_codes' => null, 'two_factor_confirmed_at' => null, 'two_factor_last_step' => null])->save();
-        \App\Support\Audit::log('auth.two_factor_disabled', $me->name.' turned off two-step verification', $me);
+        Audit::log('auth.two_factor_disabled', $me->name.' turned off two-step verification', $me);
         $this->reset(['twoFactorPassword', 'shownRecoveryCodes']);
         $this->toast('Two-step verification is off.');
     }
@@ -166,7 +178,7 @@ class Profile extends Component
             'twoFactorOn' => $this->me()->hasTwoFactor(),
             'twoFactorRequired' => (bool) $this->me()->currentWorkspace?->require_two_factor && ! $this->me()->isClient(),
             'setupSecret' => $secret,
-            'setupUri' => $secret ? \App\Support\Totp::uri($secret, $this->me()->email) : null,
+            'setupUri' => $secret ? Totp::uri($secret, $this->me()->email) : null,
             'recoveryLeft' => count($this->me()->two_factor_recovery_codes ?? []),
         ])
             ->layout($this->me()->isClient() ? 'layouts.portal' : 'layouts.app');

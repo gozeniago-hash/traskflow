@@ -26,7 +26,9 @@ class MyTasks extends Component
     public string $show = 'incomplete'; // incomplete | completed
 
     public string $newTitle = '';
+
     public string $newProject = '';
+
     public string $newDue = '';
 
     #[On('task-saved')]
@@ -36,9 +38,7 @@ class MyTasks extends Component
         return [$this->workspaceChannel() => 'onRemoteChange'];
     }
 
-    public function onTaskSaved(): void
-    {
-    }
+    public function onTaskSaved(): void {}
 
     public function startTimer(int $taskId): void
     {

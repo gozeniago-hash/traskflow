@@ -4,6 +4,7 @@ namespace App\Livewire\Notifications;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Support\NotificationFeed;
+use Carbon\Carbon;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -53,7 +54,7 @@ class Bell extends Component
             'feed' => $feed,
             'count' => $feed->unreadCount(),
             'items' => $this->loaded ? $feed->latest(12) : collect(),
-            'since' => $this->newSince ? \Carbon\Carbon::parse($this->newSince) : null,
+            'since' => $this->newSince ? Carbon::parse($this->newSince) : null,
             'allUrl' => $this->me()->isClient() ? route('portal.notifications') : route('notifications'),
         ]);
     }

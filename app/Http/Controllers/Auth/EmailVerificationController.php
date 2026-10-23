@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class EmailVerificationController extends Controller
 {
@@ -34,7 +35,7 @@ class EmailVerificationController extends Controller
 
         try {
             $request->user()->sendEmailVerificationNotification();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             report($e);
 
             return back()->withErrors(['email' => 'We couldn’t send the email just now. Try again in a few minutes.']);

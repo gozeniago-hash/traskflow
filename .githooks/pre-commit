@@ -1,0 +1,18 @@
+#!/bin/sh
+# Blocks the commit when code style or static analysis fails.
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php')
+
+if [ -n "$staged" ]; then
+    if ! vendor/bin/pint --test $staged; then
+        echo
+        echo "Code style check failed. Run: vendor/bin/pint --dirty   then stage the changes and commit again."
+        exit 1
+    fi
+fi
+
+if ! vendor/bin/phpstan analyse --memory-limit=1G --no-progress; then
+    echo
+    echo "Static analysis found problems in the code. Fix them (do not add them to phpstan-baseline.neon) and commit again."
+    exit 1
+fi

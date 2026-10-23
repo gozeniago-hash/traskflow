@@ -5,6 +5,8 @@ namespace App\Livewire\Projects;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
+use App\Support\Audit;
+use App\Support\ProjectLog;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -15,10 +17,13 @@ class Show extends Component
     use InteractsWithWorkspace, LiveUpdates;
 
     public Project $project;
+
     public string $view = 'list';
 
     public bool $showEdit = false;
+
     public bool $showFields = false;
+
     public array $form = [];
 
     protected function getListeners(): array
@@ -107,7 +112,7 @@ class Show extends Component
         // Access-related changes go in the audit log.
         $changed = array_keys(array_diff_assoc(array_map('strval', $this->project->only(array_keys($before))), array_map('strval', $before)));
         if ($changed) {
-            \App\Support\Audit::log('project.access_changed', 'Changed who can access “'.$this->project->name.'” ('.implode(', ', str_replace(['_id', '_'], ['', ' '], $changed)).')', $this->project, ['from' => $before, 'to' => $this->project->only(array_keys($before))]);
+            Audit::log('project.access_changed', 'Changed who can access “'.$this->project->name.'” ('.implode(', ', str_replace(['_id', '_'], ['', ' '], $changed)).')', $this->project, ['from' => $before, 'to' => $this->project->only(array_keys($before))]);
         }
         $this->showEdit = false;
         $this->dispatch('project-updated');
@@ -118,7 +123,7 @@ class Show extends Component
     {
         $this->authorize('delete', $this->project);
         $this->project->update(['archived_at' => $this->project->archived_at ? null : now()]);
-        \App\Support\Audit::log($this->project->archived_at ? 'project.archived' : 'project.restored', ($this->project->archived_at ? 'Archived' : 'Restored').' project “'.$this->project->name.'”', $this->project);
+        Audit::log($this->project->archived_at ? 'project.archived' : 'project.restored', ($this->project->archived_at ? 'Archived' : 'Restored').' project “'.$this->project->name.'”', $this->project);
         $this->dispatch('project-updated');
         $this->toast($this->project->archived_at ? 'Project archived.' : 'Project restored.');
     }
@@ -126,13 +131,13 @@ class Show extends Component
     public function deleteProject()
     {
         $this->authorize('delete', $this->project);
-        \App\Support\ProjectLog::quietly(function () {
+        ProjectLog::quietly(function (): void {
             foreach ($this->project->attachments as $attachment) {
                 $attachment->delete(); // removes the stored file too
             }
             $this->project->delete();
         });
-        \App\Support\Audit::log('project.deleted', 'Deleted project “'.$this->project->name.'” ('.$this->project->key.') and all its tasks and files', $this->project);
+        Audit::log('project.deleted', 'Deleted project “'.$this->project->name.'” ('.$this->project->key.') and all its tasks and files', $this->project);
         session()->flash('status', 'Project deleted.');
 
         return $this->redirectRoute('projects.index', navigate: true);

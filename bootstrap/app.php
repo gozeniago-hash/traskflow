@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Middleware\EnsureAccountSecure;
+use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureClient;
+use App\Http\Middleware\EnsureMember;
+use App\Http\Middleware\EnsureWorkspace;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\UseNearestForwardedIp;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,17 +21,17 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withBroadcasting(__DIR__.'/../routes/channels.php', ['middleware' => ['web', 'auth']])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'workspace' => \App\Http\Middleware\EnsureWorkspace::class,
-            'member' => \App\Http\Middleware\EnsureMember::class,
-            'client' => \App\Http\Middleware\EnsureClient::class,
-            'admin' => \App\Http\Middleware\EnsureAdmin::class,
-            'secure' => \App\Http\Middleware\EnsureAccountSecure::class,
+            'workspace' => EnsureWorkspace::class,
+            'member' => EnsureMember::class,
+            'client' => EnsureClient::class,
+            'admin' => EnsureAdmin::class,
+            'secure' => EnsureAccountSecure::class,
         ]);
         // Railway (and most PaaS hosts) terminate HTTPS at a proxy.
         $middleware->trustProxies(at: '*');
         // …but read the visitor's address from the last hop only (see the middleware).
-        $middleware->prepend(\App\Http\Middleware\UseNearestForwardedIp::class);
-        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        $middleware->prepend(UseNearestForwardedIp::class);
+        $middleware->append(SecurityHeaders::class);
         // Every page and live action counts against the per-person limit (config taskflow.requests_per_minute).
         $middleware->web(append: ['throttle:web']);
         $middleware->validateCsrfTokens(except: ['github/webhook/*']);

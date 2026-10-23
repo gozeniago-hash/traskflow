@@ -4,11 +4,18 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Models\GithubRepository;
+use App\Support\Audit;
 use App\Support\GitHub;
+use App\Support\MailStatus;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use RuntimeException;
+use Throwable;
 
 #[Layout('layouts.app')]
 #[Title('Settings')]
@@ -19,8 +26,10 @@ class Settings extends Component
     public string $name = '';
 
     public string $githubToken = '';
+
     public string $newRepo = '';
-    #[\Livewire\Attributes\Locked] // set only by server actions that check access
+
+    #[Locked] // set only by server actions that check access
     public ?int $showWebhookFor = null;
 
     public function mount(): void
@@ -37,12 +46,12 @@ class Settings extends Component
         $this->requireAdmin();
         $me = $this->me();
         $key = 'mail-test:'.$me->id;
-        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 3)) {
+        if (RateLimiter::tooManyAttempts($key, 3)) {
             $this->mailTest = ['ok' => false, 'message' => 'Wait a few minutes before sending another test email.'];
 
             return;
         }
-        \Illuminate\Support\Facades\RateLimiter::hit($key, 600);
+        RateLimiter::hit($key, 600);
 
         if (in_array(config('mail.default'), ['log', 'array'], true)) {
             $this->mailTest = ['ok' => false, 'message' => 'Outgoing email isn’t set up yet, so nothing was sent.'];
@@ -51,15 +60,15 @@ class Settings extends Component
         }
 
         try {
-            \Illuminate\Support\Facades\Mail::raw(
+            Mail::raw(
                 "This is a test from TaskFlow.\n\nIf you can read this, invitations, password resets and email confirmations will reach people too.",
-                fn ($m) => $m->to($me->email)->subject('TaskFlow test email')
+                fn ($m) => $m->to($me->email)->subject('TaskFlow test email'),
             );
-            \App\Support\Audit::log('workspace.mail_test', 'Sent a test email to '.$me->email, $this->workspace());
+            Audit::log('workspace.mail_test', 'Sent a test email to '.$me->email, $this->workspace());
             $this->mailTest = ['ok' => true, 'message' => 'Sent to '.$me->email.'. Check your inbox (and spam folder).'];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             report($e);
-            $this->mailTest = ['ok' => false, 'message' => \App\Support\MailStatus::explain($e)];
+            $this->mailTest = ['ok' => false, 'message' => MailStatus::explain($e)];
         }
     }
 
@@ -72,7 +81,7 @@ class Settings extends Component
             return;
         }
         $this->workspace()->update(['require_two_factor' => $on]);
-        \App\Support\Audit::log($on ? 'workspace.two_factor_required' : 'workspace.two_factor_optional',
+        Audit::log($on ? 'workspace.two_factor_required' : 'workspace.two_factor_optional',
             $on ? 'Required two-step verification for everyone on the team' : 'Made two-step verification optional', $this->workspace());
         $this->toast($on ? 'Two-step verification is now required. Teammates without it will be asked to set it up.' : 'Two-step verification is now optional.');
     }
@@ -84,7 +93,7 @@ class Settings extends Component
         $old = $this->workspace()->name;
         $this->workspace()->update(['name' => $this->name]);
         if ($old !== $this->name) {
-            \App\Support\Audit::log('workspace.renamed', 'Renamed the workspace from “'.$old.'” to “'.$this->name.'”', $this->workspace());
+            Audit::log('workspace.renamed', 'Renamed the workspace from “'.$old.'” to “'.$this->name.'”', $this->workspace());
         }
         $this->dispatch('workspace-updated');
         $this->toast('Workspace renamed.');
@@ -104,7 +113,7 @@ class Settings extends Component
             ],
             'archived' => $ws->projects()->whereNotNull('archived_at')->orderBy('name')->get(),
             'storage' => ['used' => $ws->storageUsed(), 'quota' => $ws->storageQuota()],
-            'mail' => \App\Support\MailStatus::summary(),
+            'mail' => MailStatus::summary(),
             'security' => [
                 'required' => (bool) $ws->require_two_factor,
                 'without' => $ws->members()->get()->reject->hasTwoFactor()->count(),
@@ -122,7 +131,7 @@ class Settings extends Component
         $this->requireAdmin();
         $project = $this->workspace()->projects()->findOrFail($projectId);
         $project->update(['archived_at' => null]);
-        \App\Support\Audit::log('project.restored', 'Restored archived project “'.$project->name.'”', $project);
+        Audit::log('project.restored', 'Restored archived project “'.$project->name.'”', $project);
         $this->dispatch('project-updated');
         $this->toast('Project restored.');
     }
@@ -136,14 +145,14 @@ class Settings extends Component
         $ws = $this->workspace();
         try {
             $login = GitHub::for($ws)->verifyToken(trim($this->githubToken));
-        } catch (\Throwable $e) {
-            $this->addError('githubToken', $e instanceof \RuntimeException ? $e->getMessage() : "Couldn't reach GitHub. Try again in a moment.");
+        } catch (Throwable $e) {
+            $this->addError('githubToken', $e instanceof RuntimeException ? $e->getMessage() : "Couldn't reach GitHub. Try again in a moment.");
 
             return;
         }
         $ws->forceFill(['github_token' => trim($this->githubToken), 'github_login' => $login])->save();
         $this->githubToken = '';
-        \App\Support\Audit::log('github.connected', 'Connected GitHub as @'.$login, $this->workspace());
+        Audit::log('github.connected', 'Connected GitHub as @'.$login, $this->workspace());
         $this->toast('GitHub connected as @'.$login.'.');
     }
 
@@ -152,7 +161,7 @@ class Settings extends Component
         $this->requireAdmin();
         $ws = $this->workspace();
         $ws->forceFill(['github_token' => null, 'github_login' => null])->save();
-        \App\Support\Audit::log('github.disconnected', 'Disconnected GitHub', $this->workspace());
+        Audit::log('github.disconnected', 'Disconnected GitHub', $this->workspace());
         $this->toast('GitHub disconnected. Linked pull requests stay on tasks until you remove the repositories.');
     }
 
@@ -174,8 +183,8 @@ class Settings extends Component
         }
         try {
             $name = $gh->verifyRepository($name);
-        } catch (\Throwable $e) {
-            $this->addError('newRepo', $e instanceof \RuntimeException ? $e->getMessage() : "Couldn't reach GitHub. Try again in a moment.");
+        } catch (Throwable $e) {
+            $this->addError('newRepo', $e instanceof RuntimeException ? $e->getMessage() : "Couldn't reach GitHub. Try again in a moment.");
 
             return;
         }
@@ -186,13 +195,13 @@ class Settings extends Component
         }
 
         $repo = $ws->githubRepositories()->create(['full_name' => $name, 'webhook_secret' => Str::random(40)]);
-        \App\Support\Audit::log('github.repository_added', 'Added GitHub repository '.$name, $repo);
+        Audit::log('github.repository_added', 'Added GitHub repository '.$name, $repo);
         $hooked = $gh->installWebhook($repo);
         $this->newRepo = '';
         try {
             $count = $gh->sync($repo);
             $this->toast("Added {$name} and linked its pull requests ({$count} checked).");
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->toast("Added {$name}, but the first sync failed: ".$e->getMessage(), 'error');
         }
         if (! $hooked) {
@@ -207,7 +216,7 @@ class Settings extends Component
         try {
             $count = GitHub::for($this->workspace())->sync($repo);
             $this->toast("Synced {$repo->full_name} ({$count} pull requests checked).");
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->toast($e->getMessage(), 'error');
         }
     }
@@ -218,7 +227,7 @@ class Settings extends Component
         $repo = $this->repo($id);
         GitHub::for($this->workspace())->removeWebhook($repo);
         $repo->delete();
-        \App\Support\Audit::log('github.repository_removed', 'Removed GitHub repository '.$repo->full_name, $repo);
+        Audit::log('github.repository_removed', 'Removed GitHub repository '.$repo->full_name, $repo);
         $this->toast('Repository removed.');
     }
 

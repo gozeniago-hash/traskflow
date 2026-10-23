@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('invitations', function (Blueprint $table) {
+        Schema::table('invitations', function (Blueprint $table): void {
             $table->json('team_ids')->nullable()->after('role');
         });
     }

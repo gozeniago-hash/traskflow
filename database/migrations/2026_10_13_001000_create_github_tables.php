@@ -8,12 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('workspaces', function (Blueprint $table) {
+        Schema::table('workspaces', function (Blueprint $table): void {
             $table->text('github_token')->nullable(); // encrypted
             $table->string('github_login', 100)->nullable();
         });
 
-        Schema::create('github_repositories', function (Blueprint $table) {
+        Schema::create('github_repositories', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
             $table->string('full_name', 200); // owner/repo
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->unique(['workspace_id', 'full_name']);
         });
 
-        Schema::create('pull_requests', function (Blueprint $table) {
+        Schema::create('pull_requests', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
             $table->foreignId('github_repository_id')->constrained()->cascadeOnDelete();
@@ -44,7 +44,7 @@ return new class extends Migration
             $table->unique(['github_repository_id', 'number']);
         });
 
-        Schema::create('pull_request_task', function (Blueprint $table) {
+        Schema::create('pull_request_task', function (Blueprint $table): void {
             $table->foreignId('pull_request_id')->constrained()->cascadeOnDelete();
             $table->foreignId('task_id')->constrained()->cascadeOnDelete();
             $table->primary(['pull_request_id', 'task_id']);

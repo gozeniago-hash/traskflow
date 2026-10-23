@@ -14,9 +14,7 @@ class TimerBar extends Component
     use InteractsWithWorkspace;
 
     #[On('timer-changed')]
-    public function refreshTimer(): void
-    {
-    }
+    public function refreshTimer(): void {}
 
     public function stop(): void
     {

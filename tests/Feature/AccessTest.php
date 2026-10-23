@@ -2,16 +2,39 @@
 
 namespace Tests\Feature;
 
+use App\Events\ProjectChanged;
+use App\Livewire\Admin\Clients;
+use App\Livewire\Admin\Members;
+use App\Livewire\Admin\Settings;
+use App\Livewire\Admin\Teams;
+use App\Livewire\Portal\ProjectView;
+use App\Livewire\Projects\Docs;
+use App\Livewire\Projects\Fields;
+use App\Livewire\Projects\ListView;
+use App\Livewire\Projects\Overview;
+use App\Livewire\Projects\Show;
+use App\Livewire\Reports\Index;
+use App\Livewire\Sidebar;
+use App\Livewire\TaskPanel;
 use App\Models\Attachment;
+use App\Models\Invitation;
 use App\Models\Project;
 use App\Models\ProjectField;
-use App\Models\ProjectDoc;
 use App\Models\Task;
+use App\Models\TimeEntry;
 use App\Models\User;
+use App\Models\Workspace;
+use App\Support\GitHub;
+use App\Support\Realtime;
+use App\Support\Timesheet;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -197,7 +220,7 @@ class AccessTest extends TestCase
         $web = Project::where('name', 'Brightside Website Redesign')->first();
         $this->actingAs($owner);
 
-        Livewire::test(\App\Livewire\Projects\Fields::class, ['project' => $web])
+        Livewire::test(Fields::class, ['project' => $web])
             ->call('create')
             ->set('form.name', 'Severity')
             ->set('form.type', 'select')
@@ -212,7 +235,7 @@ class AccessTest extends TestCase
 
         // Editing and renaming an option keeps its id.
         $id = $field->optionList()[0]['id'];
-        Livewire::test(\App\Livewire\Projects\Fields::class, ['project' => $web])
+        Livewire::test(Fields::class, ['project' => $web])
             ->call('edit', $field->id)
             ->set('form.options.0.label', 'Critical')
             ->call('save')
@@ -220,7 +243,7 @@ class AccessTest extends TestCase
         $this->assertSame(['id' => $id, 'label' => 'Critical'], array_intersect_key($field->fresh()->optionList()[0], ['id' => 1, 'label' => 1]));
 
         // Presets work too.
-        Livewire::test(\App\Livewire\Projects\Fields::class, ['project' => $web])
+        Livewire::test(Fields::class, ['project' => $web])
             ->call('addPreset', 'effort')->call('save')->assertHasNoErrors();
         $this->assertTrue($web->fields()->where('name', 'Effort')->exists());
     }
@@ -231,9 +254,9 @@ class AccessTest extends TestCase
         $this->actingAs($admin);
         $project = Project::where('workspace_id', $admin->current_workspace_id)->firstOrFail();
 
-        $overview = Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $project]);
+        $overview = Livewire::test(Overview::class, ['project' => $project]);
 
-        Livewire::test(\App\Livewire\Projects\Show::class, ['project' => $project, 'view' => 'overview'])
+        Livewire::test(Show::class, ['project' => $project, 'view' => 'overview'])
             ->call('openEdit')
             ->set('form.start_date', '')
             ->set('form.due_date', '2026-11-30')
@@ -249,12 +272,12 @@ class AccessTest extends TestCase
         $admin = User::where('email', 'admin@taskflow.test')->first();
         $this->actingAs($admin);
 
-        Livewire::test(\App\Livewire\Admin\Settings::class)
+        Livewire::test(Settings::class)
             ->set('name', 'Appyugo Inc')
             ->call('save')
             ->assertDispatched('workspace-updated');
 
-        Livewire::test(\App\Livewire\Sidebar::class, ['route' => 'settings'])
+        Livewire::test(Sidebar::class, ['route' => 'settings'])
             ->assertSee('Appyugo Inc');
     }
 
@@ -269,14 +292,14 @@ class AccessTest extends TestCase
         $ws->forceFill(['github_token' => 'test-token', 'github_login' => 'octo'])->save();
         $repo = $ws->githubRepositories()->create(['full_name' => 'acme/site', 'webhook_secret' => 'shh']);
 
-        \Illuminate\Support\Facades\Http::fake([
-            'api.github.com/repos/acme/site/pulls*' => \Illuminate\Support\Facades\Http::response([
+        Http::fake([
+            'api.github.com/repos/acme/site/pulls*' => Http::response([
                 ['number' => 7, 'title' => $ticket.' Hero section', 'html_url' => 'https://github.com/acme/site/pull/7', 'state' => 'open', 'draft' => false, 'merged_at' => null, 'head' => ['ref' => 'feature'], 'user' => ['login' => 'octo'], 'updated_at' => now()->toIso8601String(), 'body' => ''],
                 ['number' => 8, 'title' => 'Unrelated', 'html_url' => 'https://github.com/acme/site/pull/8', 'state' => 'closed', 'merged_at' => now()->toIso8601String(), 'head' => ['ref' => 'chore'], 'user' => ['login' => 'octo'], 'updated_at' => now()->toIso8601String(), 'body' => null],
             ]),
         ]);
 
-        $this->assertSame(2, \App\Support\GitHub::for($ws)->sync($repo));
+        $this->assertSame(2, GitHub::for($ws)->sync($repo));
         $this->assertSame([7], $task->pullRequests()->pluck('number')->all());
 
         // A webhook moves the link to another ticket via the branch name; bad signatures are refused.
@@ -304,7 +327,7 @@ class AccessTest extends TestCase
         $web = Project::where('name', 'Brightside Website Redesign')->first();
         $this->actingAs($admin);
 
-        Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $web])
+        Livewire::test(Overview::class, ['project' => $web])
             ->set('resourceUrl', 'figma.com/file/abc')
             ->call('addLink')
             ->assertHasNoErrors()
@@ -319,13 +342,13 @@ class AccessTest extends TestCase
 
         // Shared with the client by default…
         $this->actingAs($client)->get($file->attachment->downloadUrl())->assertOk();
-        Livewire::test(\App\Livewire\Portal\ProjectView::class, ['project' => $web])->assertSee('Brief')->assertSee('Figma');
+        Livewire::test(ProjectView::class, ['project' => $web])->assertSee('Brief')->assertSee('Figma');
 
         // …until marked internal.
         $this->actingAs($admin);
-        Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $web])->call('toggleResourceShare', $file->id);
+        Livewire::test(Overview::class, ['project' => $web])->call('toggleResourceShare', $file->id);
         $this->actingAs($client)->get($file->attachment->fresh()->downloadUrl())->assertForbidden();
-        Livewire::test(\App\Livewire\Portal\ProjectView::class, ['project' => $web])->assertDontSee('Brief')->assertSee('Figma');
+        Livewire::test(ProjectView::class, ['project' => $web])->assertDontSee('Brief')->assertSee('Figma');
     }
 
     public function test_timesheets_show_and_export_recorded_time(): void
@@ -337,7 +360,7 @@ class AccessTest extends TestCase
         $this->actingAs($admin);
 
         $day = now(config('taskflow.timezone'))->startOfMonth()->addDays(2)->setTime(9, 0);
-        \App\Models\TimeEntry::create([
+        TimeEntry::create([
             'project_id' => $web->id, 'task_id' => $task->id, 'user_id' => $admin->id,
             'started_at' => $day->copy()->utc(), 'ended_at' => $day->copy()->addMinutes(90)->utc(),
             'duration_seconds' => 5400, 'note' => 'Timesheet test entry', 'is_manual' => false,
@@ -349,14 +372,14 @@ class AccessTest extends TestCase
         $tab->call('export', 'xlsx')->assertFileDownloaded();
         $tab->call('export', 'pdf')->assertFileDownloaded();
 
-        $sheet = new \App\Support\Timesheet($admin, $day->copy()->startOfMonth()->toDateString(), $day->copy()->endOfMonth()->toDateString(), [$web->id]);
+        $sheet = new Timesheet($admin, $day->copy()->startOfMonth()->toDateString(), $day->copy()->endOfMonth()->toDateString(), [$web->id]);
         [$pdf, $name, $mime] = $sheet->export('pdf', 'project', 'Test');
         $this->assertStringStartsWith('%PDF-1.4', $pdf);
         $this->assertSame('application/pdf', $mime);
         [$xlsx] = $sheet->export('xlsx', 'people', 'Test');
         $this->assertStringStartsWith("PK\x03\x04", $xlsx);
 
-        Livewire::test(\App\Livewire\Reports\Index::class)
+        Livewire::test(Index::class)
             ->set('report', 'timesheet')->set('range', 'this_month')
             ->assertSee($admin->name)
             ->call('exportTimesheet', 'xlsx')->assertFileDownloaded();
@@ -368,7 +391,7 @@ class AccessTest extends TestCase
     public function test_task_panel_never_shows_a_task_from_another_workspace(): void
     {
         $outsider = User::create(['name' => 'Other Owner', 'email' => 'owner@othercorp.test', 'password' => 'Secret123!']);
-        $other = \App\Models\Workspace::create(['name' => 'OtherCorp', 'owner_id' => $outsider->id]);
+        $other = Workspace::create(['name' => 'OtherCorp', 'owner_id' => $outsider->id]);
         $other->users()->attach($outsider->id, ['role' => 'owner']);
         $project = Project::create(['workspace_id' => $other->id, 'name' => 'Secret Merger', 'owner_id' => $outsider->id, 'privacy' => 'workspace', 'color' => '#4e6a9e', 'status' => 'on_track']);
         $section = $project->sections()->create(['name' => 'Todo', 'position' => 1]);
@@ -379,19 +402,19 @@ class AccessTest extends TestCase
 
         // The browser can't point the panel at another task…
         try {
-            Livewire::test(\App\Livewire\TaskPanel::class)->set('taskId', $secret->id);
+            Livewire::test(TaskPanel::class)->set('taskId', $secret->id);
             $this->fail('taskId should be locked');
-        } catch (\Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException) {
+        } catch (CannotUpdateLockedPropertyException) {
             $this->addToAssertionCount(1);
         }
 
         // …a crafted ?task= link opens nothing…
-        Livewire::withQueryParams(['task' => $secret->id])->test(\App\Livewire\TaskPanel::class)
+        Livewire::withQueryParams(['task' => $secret->id])->test(TaskPanel::class)
             ->assertSet('taskId', null)
             ->assertDontSee('Secret Merger')->assertDontSee('Board-only comment');
 
         // …and opening it directly is refused.
-        Livewire::test(\App\Livewire\TaskPanel::class)->call('open', $secret->id)->assertForbidden();
+        Livewire::test(TaskPanel::class)->call('open', $secret->id)->assertForbidden();
     }
 
     public function test_only_admins_can_change_teams(): void
@@ -403,7 +426,7 @@ class AccessTest extends TestCase
         $anyTeam = $ws->teams()->whereHas('users', fn ($q) => $q->whereKey($leo->id))->first() ?? $private;
 
         $this->actingAs($leo);
-        $teams = fn () => Livewire::test(\App\Livewire\Admin\Teams::class);
+        $teams = fn () => Livewire::test(Teams::class);
         $teams()->assertDontSee('New team')->assertDontSee('Add a member');
 
         // A member can't add themselves (or anyone) to a team, or change teams in any other way.
@@ -418,7 +441,7 @@ class AccessTest extends TestCase
 
         // Admins still can.
         $this->actingAs(User::where('email', 'admin@taskflow.test')->first());
-        Livewire::test(\App\Livewire\Admin\Teams::class)
+        Livewire::test(Teams::class)
             ->set('addUser.'.$private->id, (string) $leo->id)->call('addMember', $private->id)->assertHasNoErrors();
         $this->assertTrue($private->users()->whereKey($leo->id)->exists());
     }
@@ -428,7 +451,7 @@ class AccessTest extends TestCase
         $leo = User::where('email', 'leo@taskflow.test')->first();
         $client = $leo->currentWorkspace->clients()->first();
         $this->actingAs($leo);
-        $page = fn () => Livewire::test(\App\Livewire\Admin\Clients::class);
+        $page = fn () => Livewire::test(Clients::class);
 
         $page()->assertSee($client->name)->assertDontSee('New client')->assertDontSee('Invite to portal');
         $page()->call('create')->assertForbidden();
@@ -439,7 +462,7 @@ class AccessTest extends TestCase
         try {
             $page()->set('inviteFor', $client->id);
             $this->fail('inviteFor should be locked');
-        } catch (\Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException) {
+        } catch (CannotUpdateLockedPropertyException) {
         }
         // …and sending without a client picked by an admin is refused too.
         $page()->set('inviteEmail', 'outsider@evil.test')->call('sendInvite')->assertForbidden();
@@ -447,14 +470,14 @@ class AccessTest extends TestCase
         $this->assertDatabaseMissing('invitations', ['email' => 'outsider@evil.test']);
 
         $this->actingAs(User::where('email', 'admin@taskflow.test')->first());
-        Livewire::test(\App\Livewire\Admin\Clients::class)->call('openInvite', $client->id)
+        Livewire::test(Clients::class)->call('openInvite', $client->id)
             ->set('inviteEmail', 'new.contact@brightside.test')->call('sendInvite')->assertHasNoErrors();
         $this->assertDatabaseHas('invitations', ['email' => 'new.contact@brightside.test', 'role' => 'client']);
     }
 
     public function test_common_passwords_are_rejected(): void
     {
-        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class); // sign-up limits are tested separately
+        $this->withoutMiddleware(ThrottleRequests::class); // sign-up limits are tested separately
         foreach (['password', 'Password', '12345678', 'aaaaaaaa'] as $weak) {
             $this->post('/register', ['name' => 'Weak', 'email' => 'weak@example.com', 'workspace' => 'W', 'password' => $weak, 'password_confirmation' => $weak])
                 ->assertSessionHasErrors('password');
@@ -471,15 +494,15 @@ class AccessTest extends TestCase
         $this->actingAs($admin);
 
         // No team picked: the new member sees workspace-wide projects only.
-        Livewire::test(\App\Livewire\Admin\Members::class)->call('openInvite')
+        Livewire::test(Members::class)->call('openInvite')
             ->set('emails', 'plain@appyugo.test')->call('invite')->assertHasNoErrors();
         // Team picked: they join that team.
-        Livewire::test(\App\Livewire\Admin\Members::class)->call('openInvite')
+        Livewire::test(Members::class)->call('openInvite')
             ->set('emails', 'teamed@appyugo.test')->set('inviteTeams', [(string) $teamProject->team_id])->call('invite')->assertHasNoErrors();
         auth()->logout();
 
         foreach (['plain@appyugo.test' => false, 'teamed@appyugo.test' => true] as $email => $shouldSee) {
-            $invitation = \App\Models\Invitation::where('email', $email)->firstOrFail();
+            $invitation = Invitation::where('email', $email)->firstOrFail();
             $this->post(route('invitations.accept', $invitation->token), ['name' => 'New Person', 'password' => 'Cebu-Sunrise-2026', 'password_confirmation' => 'Cebu-Sunrise-2026'])
                 ->assertRedirect(route('dashboard'));
             $user = User::where('email', $email)->first();
@@ -506,7 +529,7 @@ class AccessTest extends TestCase
             $task = $p->tasks()->create(['title' => 'Shared task '.$p->id, 'section_id' => $section->id, 'creator_id' => $admin->id, 'position' => 1, 'assignee_id' => $admin->id]);
             $p->tasks()->create(['title' => 'Leo task '.$p->id, 'section_id' => $section->id, 'creator_id' => $admin->id, 'position' => 2, 'assignee_id' => $leo->id]);
             foreach ([$leo, $admin] as $u) {
-                \App\Models\TimeEntry::create(['project_id' => $p->id, 'task_id' => $task->id, 'user_id' => $u->id,
+                TimeEntry::create(['project_id' => $p->id, 'task_id' => $task->id, 'user_id' => $u->id,
                     'started_at' => now()->subHours(3), 'ended_at' => now()->subHours(2), 'duration_seconds' => 3600, 'note' => 'Time by '.$u->name]);
             }
         }
@@ -522,19 +545,19 @@ class AccessTest extends TestCase
         $this->actingAs($leo);
 
         // Can do the work…
-        Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $project])
+        Livewire::test(ListView::class, ['project' => $project])
             ->set('newTask.'.$project->sections()->first()->id, 'Member task')->call('addTask', $project->sections()->first()->id)->assertHasNoErrors();
         $this->assertDatabaseHas('tasks', ['title' => 'Member task', 'project_id' => $project->id]);
-        Livewire::test(\App\Livewire\Projects\Docs::class, ['project' => $project])->call('create')->assertHasNoErrors();
+        Livewire::test(Docs::class, ['project' => $project])->call('create')->assertHasNoErrors();
 
         // …but not change the project.
-        $show = fn () => Livewire::test(\App\Livewire\Projects\Show::class, ['project' => $project, 'view' => 'list']);
+        $show = fn () => Livewire::test(Show::class, ['project' => $project, 'view' => 'list']);
         $show()->assertDontSee('Edit project details')->assertDontSee('Custom fields');
         $show()->call('openEdit')->assertForbidden();
         $show()->call('setStatus', 'at_risk')->assertForbidden();
         $show()->call('openFields')->assertForbidden();
-        Livewire::test(\App\Livewire\Projects\ListView::class, ['project' => $project])->set('newSection', 'Hack')->call('addSection')->assertForbidden();
-        $ov = fn () => Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $project]);
+        Livewire::test(ListView::class, ['project' => $project])->set('newSection', 'Hack')->call('addSection')->assertForbidden();
+        $ov = fn () => Livewire::test(Overview::class, ['project' => $project]);
         $ov()->call('saveDescription')->assertForbidden();
         $ov()->set('updateTitle', 'x')->call('postUpdate')->assertForbidden();
         $ov()->set('addMember', (string) $leo->id)->call('addProjectMember')->assertForbidden();
@@ -548,9 +571,9 @@ class AccessTest extends TestCase
         $this->get(route('home'))->assertDontSee(route('teams'))->assertDontSee(route('members'));
 
         // Reports and timesheets: only their own data.
-        Livewire::test(\App\Livewire\Reports\Index::class)->set('report', 'incomplete')->set('person', '')->call('expandAll', true)
+        Livewire::test(Index::class)->set('report', 'incomplete')->set('person', '')->call('expandAll', true)
             ->assertSee('Leo task '.$project->id)->assertDontSee('Shared task '.$project->id)->assertDontSee('Projects by status');
-        Livewire::test(\App\Livewire\Reports\Index::class)->set('report', 'timesheet')->set('range', 'last_7')->call('expandAll', true)
+        Livewire::test(Index::class)->set('report', 'timesheet')->set('range', 'last_7')->call('expandAll', true)
             ->assertSee('Time by '.$leo->name)->assertDontSee('Time by Alex Rivera');
         Livewire::test(\App\Livewire\Projects\Timesheet::class, ['project' => $project])->set('range', 'last_7')->set('person', '')
             ->assertSee('Time by '.$leo->name)->assertDontSee('Time by Alex Rivera')->assertSee('Your time only');
@@ -562,19 +585,19 @@ class AccessTest extends TestCase
         $this->actingAs($jo);
 
         // Their project: full control and everyone's data.
-        Livewire::test(\App\Livewire\Projects\Show::class, ['project' => $project, 'view' => 'list'])->assertSee('Edit project details')
+        Livewire::test(Show::class, ['project' => $project, 'view' => 'list'])->assertSee('Edit project details')
             ->call('setStatus', 'at_risk')->assertHasNoErrors();
         $this->assertSame('at_risk', $project->fresh()->status);
-        Livewire::test(\App\Livewire\Projects\Overview::class, ['project' => $project])->set('addMember', (string) User::where('email', 'leo@taskflow.test')->value('id'))->call('addProjectMember')->assertHasNoErrors();
+        Livewire::test(Overview::class, ['project' => $project])->set('addMember', (string) User::where('email', 'leo@taskflow.test')->value('id'))->call('addProjectMember')->assertHasNoErrors();
         Livewire::test(\App\Livewire\Projects\Timesheet::class, ['project' => $project])->set('range', 'last_7')
             ->assertSee('Time by Leo Tan')->assertSee('Time by Alex Rivera');
 
         // A workspace-wide project they're not part of: can see and work, not manage.
-        Livewire::test(\App\Livewire\Projects\Show::class, ['project' => $other, 'view' => 'list'])->call('setStatus', 'at_risk')->assertForbidden();
+        Livewire::test(Show::class, ['project' => $other, 'view' => 'list'])->call('setStatus', 'at_risk')->assertForbidden();
         Livewire::test(\App\Livewire\Projects\Timesheet::class, ['project' => $other])->set('range', 'last_7')->assertDontSee('Time by Alex Rivera');
 
         // Reports cover their projects, everyone in them.
-        Livewire::test(\App\Livewire\Reports\Index::class)->set('report', 'timesheet')->set('range', 'last_7')->call('expandAll', true)
+        Livewire::test(Index::class)->set('report', 'timesheet')->set('range', 'last_7')->call('expandAll', true)
             ->assertSee('Time by Alex Rivera')->assertSee('Roles Project')->assertDontSee('Not Jo');
 
         // Can create projects; no workspace modules.
@@ -585,15 +608,15 @@ class AccessTest extends TestCase
     public function test_changes_broadcast_one_live_update_per_project(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key']);
-        \Illuminate\Support\Facades\Event::fake([\App\Events\ProjectChanged::class]);
+        Event::fake([ProjectChanged::class]);
 
         $web = Project::where('name', 'Brightside Website Redesign')->first();
         $task = $web->tasks()->create(['title' => 'Live one', 'section_id' => $web->sections()->first()->id]);
         $task->comments()->create(['body' => 'hi', 'is_internal' => true]);
-        \App\Support\Realtime::flush();
+        Realtime::flush();
 
-        \Illuminate\Support\Facades\Event::assertDispatchedTimes(\App\Events\ProjectChanged::class, 1);
-        \Illuminate\Support\Facades\Event::assertDispatched(\App\Events\ProjectChanged::class, function ($e) use ($web, $task) {
+        Event::assertDispatchedTimes(ProjectChanged::class, 1);
+        Event::assertDispatched(ProjectChanged::class, function ($e) use ($web, $task) {
             $channels = array_map(fn ($c) => $c->name, $e->broadcastOn());
 
             return $e->projectId === $web->id

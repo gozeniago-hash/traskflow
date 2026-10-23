@@ -19,13 +19,13 @@ class ProjectDoc extends Model
     protected static function booted(): void
     {
         // Content is always stored sanitized, no matter where it comes from.
-        static::saving(function (ProjectDoc $doc) {
+        static::saving(function (ProjectDoc $doc): void {
             if ($doc->isDirty('content')) {
                 $doc->content = HtmlSanitizer::clean($doc->content);
             }
         });
 
-        static::deleting(function (ProjectDoc $doc) {
+        static::deleting(function (ProjectDoc $doc): void {
             foreach ($doc->attachments as $attachment) {
                 $attachment->delete(); // removes stored files
             }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ProjectLog;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -64,7 +65,7 @@ class Project extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (Project $project) {
+        static::creating(function (Project $project): void {
             $project->key = $project->key
                 ? strtoupper($project->key)
                 : static::generateKey($project->name, (int) $project->workspace_id);
@@ -200,7 +201,7 @@ class Project extends Model
 
         $teamIds = $user->teams()->pluck('teams.id');
 
-        return $query->where(function (Builder $q) use ($user, $teamIds) {
+        return $query->where(function (Builder $q) use ($user, $teamIds): void {
             $q->where('privacy', 'workspace')
                 ->orWhere('owner_id', $user->id)
                 ->orWhereHas('members', fn (Builder $m) => $m->where('users.id', $user->id))
@@ -266,7 +267,7 @@ class Project extends Model
             return $query;
         }
 
-        return $query->where(function (Builder $q) {
+        return $query->where(function (Builder $q): void {
             $q->whereIn('workspace_user.role', ['owner', 'admin'])
                 ->orWhere('users.id', $this->owner_id)
                 ->orWhereIn('users.id', fn ($m) => $m->select('user_id')->from('project_user')->where('project_id', $this->id));
@@ -314,6 +315,6 @@ class Project extends Model
 
     public function firstSection(): Section
     {
-        return $this->sections()->first() ?? \App\Support\ProjectLog::quietly(fn () => $this->sections()->create(['name' => 'To do', 'position' => 1]));
+        return $this->sections()->first() ?? ProjectLog::quietly(fn () => $this->sections()->create(['name' => 'To do', 'position' => 1]));
     }
 }

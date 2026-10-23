@@ -5,8 +5,11 @@ namespace App\Livewire\Reports;
 use App\Livewire\Concerns\InteractsWithWorkspace;
 use App\Livewire\Concerns\LiveUpdates;
 use App\Models\Project;
+use App\Models\ProjectField;
 use App\Models\Task;
 use App\Models\TimeEntry;
+use App\Support\Export\Csv;
+use App\Support\Timesheet;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -16,6 +19,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 /**
  * Workspace reports. Everything is limited to projects the viewer can see,
@@ -89,9 +93,7 @@ class Index extends Component
     }
 
     #[On('task-saved')]
-    public function onTaskSaved(): void
-    {
-    }
+    public function onTaskSaved(): void {}
 
     public function updatedReport(): void
     {
@@ -120,7 +122,7 @@ class Index extends Component
 
     protected function applyRange(): void
     {
-        $today = today(\App\Support\Timesheet::tz());
+        $today = today(Timesheet::tz());
         [$from, $to] = match ($this->range) {
             'today' => [$today, $today],
             'this_week' => [$today->copy()->startOfWeek(), $today->copy()->endOfWeek()],
@@ -146,7 +148,7 @@ class Index extends Component
         try {
             $from = $this->from ? Carbon::parse($this->from)->startOfDay() : today()->startOfMonth();
             $to = $this->to ? Carbon::parse($this->to)->endOfDay() : today()->endOfDay();
-        } catch (\Throwable) {
+        } catch (Throwable) {
             $from = today()->startOfMonth();
             $to = today()->endOfDay();
         }
@@ -335,11 +337,11 @@ class Index extends Component
 
     // ----------------------------------------------------------- timesheet
 
-    protected function timesheet(): \App\Support\Timesheet
+    protected function timesheet(): Timesheet
     {
         [$from, $to] = $this->dateRange();
 
-        return new \App\Support\Timesheet(
+        return new Timesheet(
             $this->me(), $from->toDateString(), $to->toDateString(),
             $this->project !== '' ? [(int) $this->project] : ($this->me()->isManager() ? $this->scopedProjects()->pluck('projects.id')->all() : null),
             ctype_digit($this->personFilter()) ? (int) $this->personFilter() : null,
@@ -386,7 +388,7 @@ class Index extends Component
             $format === 'pdf' ? 'pdf' : 'xlsx', 'people', 'Timesheet by resource', $notes ?: ['All projects'],
         );
 
-        return response()->streamDownload(fn () => print($contents), $filename, ['Content-Type' => $mime]);
+        return response()->streamDownload(fn () => print ($contents), $filename, ['Content-Type' => $mime]);
     }
 
     // -------------------------------------------------------------- export
@@ -403,12 +405,12 @@ class Index extends Component
             default => $this->tasksCsv($this->incompleteData()['rows']),
         };
 
-        return response()->streamDownload(function () use ($header, $lines) {
+        return response()->streamDownload(function () use ($header, $lines): void {
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM so Excel reads accents correctly
-            fputcsv($out, \App\Support\Export\Csv::row($header));
+            fputcsv($out, Csv::row($header));
             foreach ($lines as $line) {
-                fputcsv($out, \App\Support\Export\Csv::row($line)); // no spreadsheet formulas from user text
+                fputcsv($out, Csv::row($line)); // no spreadsheet formulas from user text
             }
             fclose($out);
         }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
@@ -418,7 +420,7 @@ class Index extends Component
     {
         // Custom fields from every project in the export, one column per field name.
         $projectIds = $rows->flatMap(fn ($r) => $r['tasks']->pluck('project_id'))->unique();
-        $fields = \App\Models\ProjectField::whereIn('project_id', $projectIds)->orderBy('position')->get();
+        $fields = ProjectField::whereIn('project_id', $projectIds)->orderBy('position')->get();
         $fieldNames = $fields->pluck('name')->unique()->values();
         $fieldsByProject = $fields->groupBy('project_id');
         $people = $fields->contains('type', 'person') ? $this->workspace()->members()->pluck('name', 'users.id')->all() : [];

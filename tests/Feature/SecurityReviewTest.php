@@ -3,11 +3,17 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\UseNearestForwardedIp;
+use App\Livewire\CreateTask;
+use App\Livewire\Projects\Docs;
+use App\Livewire\Reports\Index;
+use App\Models\AuditLog;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Support\Export\Csv;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Validator;
 use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -44,7 +50,7 @@ class SecurityReviewTest extends TestCase
         $this->actingAs(User::where('email', 'leo@taskflow.test')->first());
         $web = Project::where('name', 'Brightside Website Redesign')->first();
 
-        $docs = Livewire::test(\App\Livewire\Projects\Docs::class, ['project' => $web]);
+        $docs = Livewire::test(Docs::class, ['project' => $web]);
 
         // The id can't be planted from the browser…
         try {
@@ -53,7 +59,7 @@ class SecurityReviewTest extends TestCase
         } catch (CannotUpdateLockedPropertyException) {
         }
         // …and asking for it through the action is refused.
-        Livewire::test(\App\Livewire\Projects\Docs::class, ['project' => $web])
+        Livewire::test(Docs::class, ['project' => $web])
             ->call('previewRevision', $foreign->id)->assertNotFound();
     }
 
@@ -62,9 +68,9 @@ class SecurityReviewTest extends TestCase
         [, $foreign] = $this->otherCompany();
         $this->actingAs(User::where('email', 'leo@taskflow.test')->first());
 
-        Livewire::test(\App\Livewire\CreateTask::class)->call('open', $foreign->id)->assertForbidden();
+        Livewire::test(CreateTask::class)->call('open', $foreign->id)->assertForbidden();
 
-        $form = Livewire::test(\App\Livewire\CreateTask::class);
+        $form = Livewire::test(CreateTask::class);
         try {
             $form->set('projectId', $foreign->id);
             $this->fail('projectId should be locked');
@@ -81,13 +87,13 @@ class SecurityReviewTest extends TestCase
         $task = $web->tasks()->whereNull('parent_id')->whereNull('completed_at')->first();
         $task->update(['title' => '=HYPERLINK("http://evil.example","Click")', 'assignee_id' => $admin->id]);
 
-        $response = Livewire::test(\App\Livewire\Reports\Index::class)->call('export');
+        $response = Livewire::test(Index::class)->call('export');
         $csv = base64_decode($response->effects['download']['content']);
         $this->assertStringContainsString('"\'=HYPERLINK(', $csv);
         $this->assertStringNotContainsString(',"=HYPERLINK(', $csv);
 
-        $this->assertSame("'@SUM(A1)", \App\Support\Export\Csv::cell('@SUM(A1)'));
-        $this->assertSame('-42', \App\Support\Export\Csv::cell('-42')); // real numbers stay numbers
+        $this->assertSame("'@SUM(A1)", Csv::cell('@SUM(A1)'));
+        $this->assertSame('-42', Csv::cell('-42')); // real numbers stay numbers
     }
 
     public function test_visitors_cannot_fake_their_address_to_dodge_rate_limits(): void
@@ -112,7 +118,7 @@ class SecurityReviewTest extends TestCase
         $client = User::where('email', 'client@brightside.test')->first();
         $maya = User::where('email', 'maya@taskflow.test')->first();
 
-        $check = fn ($id) => \Illuminate\Support\Facades\Validator::make(['v' => $id], ['v' => $field->rules()])->passes();
+        $check = fn ($id) => Validator::make(['v' => $id], ['v' => $field->rules()])->passes();
         $this->assertTrue($check($maya->id));
         $this->assertFalse($check($outsider->id), 'someone from another company');
         $this->assertFalse($check($client->id), 'a client contact');
@@ -144,7 +150,7 @@ class SecurityReviewTest extends TestCase
 
     public function test_audit_log_rows_only_accept_known_columns(): void
     {
-        $row = new \App\Models\AuditLog(['action' => 'x.y', 'description' => 'd', 'id' => 999, 'created_at' => '2000-01-01']);
+        $row = new AuditLog(['action' => 'x.y', 'description' => 'd', 'id' => 999, 'created_at' => '2000-01-01']);
         $this->assertSame('x.y', $row->action);
         $this->assertNull($row->id, 'id must not be mass-assignable');
         $this->assertNull($row->created_at, 'timestamps must not be mass-assignable');

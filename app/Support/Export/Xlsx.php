@@ -2,6 +2,10 @@
 
 namespace App\Support\Export;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
+
 /**
  * Small .xlsx builder: one sheet, a title block, a bold header row, typed columns and
  * optional bold group/total rows. Dates are real Excel dates and hours real numbers,
@@ -18,7 +22,9 @@ class Xlsx
     ];
 
     protected const TITLE = 8;
+
     protected const SUBTITLE = 9;
+
     protected const HEADER = 10;
 
     public function __construct(
@@ -27,8 +33,7 @@ class Xlsx
         protected array $rows,
         protected ?string $title = null,
         protected array $subtitleLines = [],
-    ) {
-    }
+    ) {}
 
     public function render(): string
     {
@@ -87,6 +92,7 @@ class Xlsx
                     if ($bold) {
                         $cells[] = '<c r="'.$this->ref($i + 1, $r).'" s="1"/>';
                     }
+
                     continue;
                 }
                 $type = $col['type'] ?? 'text';
@@ -172,16 +178,16 @@ class Xlsx
 
     protected function isDate(mixed $value): bool
     {
-        return $value instanceof \DateTimeInterface
+        return $value instanceof DateTimeInterface
             || (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}/', $value) && strtotime($value) !== false);
     }
 
-    protected function excelDate(\DateTimeInterface|string $date): int
+    protected function excelDate(DateTimeInterface|string $date): int
     {
-        $d = $date instanceof \DateTimeInterface ? $date : new \DateTimeImmutable($date);
-        $epoch = new \DateTimeImmutable('1899-12-30', new \DateTimeZone('UTC'));
+        $d = $date instanceof DateTimeInterface ? $date : new DateTimeImmutable($date);
+        $epoch = new DateTimeImmutable('1899-12-30', new DateTimeZone('UTC'));
 
-        return (int) $epoch->diff(new \DateTimeImmutable($d->format('Y-m-d'), new \DateTimeZone('UTC')))->days;
+        return (int) $epoch->diff(new DateTimeImmutable($d->format('Y-m-d'), new DateTimeZone('UTC')))->days;
     }
 
     protected function safeSheetName(): string
